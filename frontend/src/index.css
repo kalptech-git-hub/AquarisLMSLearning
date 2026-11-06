@@ -1,0 +1,164 @@
+/* Inter */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
+/* Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+
+@import "tailwindcss";
+
+/* body {
+  font-family: "Plus Jakarta Sans", "Roboto Mono", "Roboto", sans-serif;
+} */
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* body {
+  font-family: "Poppins", sans-serif;
+} */
+/* html,
+body,
+#root {
+  @apply min-h-screen bg-gray-100 overflow-y-auto;
+} */
+
+/* body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+} */
+
+/* body {
+  font-family: "Roboto", sans-serif;
+} */
+
+/* body {
+  font-family: "Lato", sans-serif;
+} */
+
+/* body {
+  font-family: "Space Grotesk", sans-serif;
+} */
+
+/* body {
+  font-family: "Nunito", sans-serif;
+} */
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom Scrollbar - Indigo themed */
+/* ::-webkit-scrollbar {
+  width: 8px;
+} */
+
+/* subtle */
+/* ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05); 
+  border-radius: 10px;
+} */
+
+/* indigo-500 with opacity */
+/* ::-webkit-scrollbar-thumb {
+  background: rgba(111, 113, 255, 0.577); 
+  border-radius: 10px;
+} */
+
+/* darker on hover */
+/* ::-webkit-scrollbar-thumb:hover {
+  background: rgba(192, 193, 234, 0.9); 
+} */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* IE and old Edge */
+body {
+  -ms-overflow-style: none;
+}
+
+html {
+    overflow-y: scroll;
+}
+
+
+/* #toolbarContainer {
+    display: none !important;
+}
+
+#sidebarContainer {
+    display: none !important;
+} */
+
+/* New: react-toastify's built-in mobile media query (max-width: 480px) forces the toast
+   container to full-bleed width, top:0, and no border-radius — overriding the per-toast
+   "!rounded-2xl !w-[380px]" classes set at each toast() call site (e.g. AdminLayout.jsx),
+   since that override is on the container itself, not something a toast-level className
+   can win against. This scoped override restores side/top margins (clearing notches via
+   safe-area-inset-top) and rounded corners on phone, while leaving every toast() call
+   site's own styling untouched at sm: and up. */
+@media only screen and (max-width: 480px) {
+  /* was: several rounds of container-level width/left/right/specificity overrides,
+     none of which fixed the cutoff — the actual cause was the toast's own !w-[380px]
+     className in AdminLayout.jsx being wider than the viewport itself. Now that the
+     toast width is fluid on phone (fixed in that file), this block only needs to keep
+     the container off the very edge of the screen and clear the top notch/status bar. */
+  .Toastify__toast-container {
+    box-sizing: border-box !important;
+    padding: 12px !important;
+    top: max(12px, env(safe-area-inset-top)) !important;
+  }
+
+  .Toastify__toast {
+    border-radius: 1rem !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Hide native fullscreen button on video elements */
+video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+}

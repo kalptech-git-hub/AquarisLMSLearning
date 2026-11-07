@@ -147,7 +147,7 @@ app.use("/api/quizzes", require("./routes/quiz.routes"));
 app.use("/api/notifications", require("./routes/notification.routes"));
 app.use("/api/live-sessions", require("./routes/live-session.routes"));
 app.use("/api/dictionary", require("./routes/dictionary.routes"));
-// app.use("/api/company", require("./routes/company.routes"));
+app.use("/api/company", require("./routes/company.routes"));
 
 const speakingRoutes = require("./routes/speaking.routes");
 app.use("/api/speaking", speakingRoutes);

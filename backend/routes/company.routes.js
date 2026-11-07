@@ -13,7 +13,7 @@ const {
 router.use(authMiddleware, companyAdminMiddleware);
 
 // Employees
-// router.post("/employees", userUpload.single("user_profile_photo"), createEmployee);
+router.post("/employees", userUpload.single("user_profile_photo"), createEmployee);
 
 
 module.exports = router;

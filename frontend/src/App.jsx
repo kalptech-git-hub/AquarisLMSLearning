@@ -39,6 +39,7 @@ import StudentCourseDetails from "./components/MyLearningComponents/StudentCours
 import StudentCourseLearn from "./pages/Dashboard/student/StudentCourseLearn";
 import CompanyDashboard from "./pages/Dashboard/company/CompanyDashboard.jsx";
 import CompanyLayout from "./components/company/CompanyLayout.jsx";
+import CompanyEmployeesManagement from "./pages/Dashboard/company/CompanyEmployeesManagement.jsx";
 
 const AppContent = ({ toastPosition }) => {
   const location = useLocation();
@@ -116,7 +117,7 @@ const AppContent = ({ toastPosition }) => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<CompanyDashboard />} />
-          {/* We can add courses and enrollments here next */}
+          <Route path="employees" element={<CompanyEmployeesManagement />} />
         </Route>
 
         <Route

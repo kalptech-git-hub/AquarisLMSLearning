@@ -336,15 +336,16 @@ const HeroSectionNew = () => {
           <div className="lg:col-span-7 text-left pb-2 lg:pb-6">
             {/* Main Headline */}
             <h1 className="text-3xl sm:text-[42px] md:text-[48px] lg:text-[54px] font-[Poppins] font-bold text-white tracking-tight leading-[1.18] sm:leading-[1.16]">
-              Master Japanese <br />
-              Language &amp; Unlock <br />
-              Global Opportunities
+              Empowering Future <br />
+              Engineers Through <br />
+              Industry-Focused Training
             </h1>
 
             {/* Subtitle */}
             <p className="mt-4 sm:mt-5 text-sm md:text-[16px] text-slate-200/90 max-w-xl leading-[1.6] font-normal">
-              A complete Japanese LMS ecosystem designed for practical fluency. Learn with structured modules, native audio pronunciation drills, interactive quizzes, and verified certificates.
-            </p>
+              Welcome to Aquaris Engineering Pvt. Ltd., a professional learning and training platform designed to develop technical skills and industry-ready talent.
+
+Explore specialized engineering courses, gain practical knowledge, enhance your professional skills, and build a successful career with structured training programs.  </p>
 
             {/* Action Buttons Row */}
             <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-5 sm:gap-6">
@@ -357,17 +358,15 @@ const HeroSectionNew = () => {
                 View Courses
               </button>
 
-              {/* Play Video Button */}
-              <button
-                type="button"
-                onClick={() => setIsVideoOpen(true)}
-                className="inline-flex items-center gap-3 text-white font-semibold text-sm sm:text-base hover:text-red-200 transition-colors group cursor-pointer"
-              >
-                <span className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#f05a28] shadow-lg shadow-orange-900/30 group-hover:scale-110 group-active:scale-95 transition-transform duration-200">
-                  <FiPlay className="text-base fill-[#f05a28] translate-x-0.5" />
-                </span>
-                <span>Play Video</span>
-              </button>
+             {/* Join as Trainee Button */}
+<button
+  type="button"
+  
+  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full  text-[#fff] font-semibold text-sm sm:text-base shadow-lg  hover:text-white hover:-translate-y-1 active:scale-95 transition-all duration-300 cursor-pointer"
+>
+  Join as Trainee
+  <FiArrowRight className="text-lg transition-transform duration-300 group-hover:translate-x-1" />
+</button>
             </div>
           </div>
 

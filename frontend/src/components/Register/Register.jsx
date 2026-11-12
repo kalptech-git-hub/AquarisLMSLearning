@@ -1248,7 +1248,7 @@ const Register = () => {
                         </h2>
 
                         <p className="text-gray-500 mb-5 text-center lg:text-left">
-                            Start your Japanese learning journey today.
+                          Start your technical learning journey with TrainSphere today.
                         </p>
 
                         {/* FORM */}
@@ -1550,14 +1550,15 @@ const Register = () => {
                                 className="w-80 mx-auto drop-shadow-2xl"
                             />
 
-                            <h3 className="text-4xl font-bold mt-8 mb-4">
-                                Learn Japanese
-                            </h3>
+                           <h3 className="text-4xl font-bold mt-8 mb-8">
+    Learn & Grow with Aquaris
+</h3>
 
-                            <p className="text-lg text-red-100 leading-relaxed max-w-md">
-                                Master Hiragana, Katakana, Kanji, grammar, and speaking
-                                skills with immersive interactive lessons.
-                            </p>
+<p className="text-lg text-red-100 leading-relaxed max-w-md mt-4">
+    Develop your technical knowledge, engineering expertise, and
+    professional skills through interactive lessons and practical
+    training programs.
+</p>
 
                         </div>
 

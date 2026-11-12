@@ -61,8 +61,8 @@ const LoginPage = () => {
 
             <p className="text-gray-500 mb-5 text-center lg:text-left">
               {showForgot
-                ? "Enter your registered email to receive reset instructions."
-                : "Login to continue your Japanese learning journey."}
+                ? "Enter your registered email to receive password reset instructions."
+: "Login to continue your technical learning and training journey."}
             </p>
 
             {showForgot ? (
@@ -93,8 +93,8 @@ const LoginPage = () => {
               </h3> */}
 
               <p className="text-lg text-red-100 leading-relaxed max-w-md">
-                Continue mastering Hiragana, Katakana, Kanji, grammar, and
-                speaking skills with immersive interactive lessons.
+                Continue developing your technical knowledge, engineering concepts,
+                and professional skills through interactive learning and practical training.
               </p>
             </div>
           </div>

@@ -447,11 +447,11 @@ const Navbar = ({ hideOnHero = false }) => {
                                         />
                                     </svg> */}
 
-                                    <img
+                                    {/* <img
                                         src="/lms_logo.png"
                                         alt="AFJ Logo"
                                         className="relative z-10 w-full h-auto object-contain object-center select-none pointer-events-none block origin-bottom-right lg:scale-x-[1.04] xl:scale-x-[1.08] lg:scale-y-[1.12] xl:scale-y-[1.2]"
-                                    />
+                                    /> */}
 
                                 </div>
 
@@ -468,11 +468,11 @@ const Navbar = ({ hideOnHero = false }) => {
                                     "
                                 >
                                     <span className="text-red-500">
-                                        Nihongo
+                                        Train
                                     </span>
 
-                                    <span className="ml-1 text-[#0b2341]">
-                                        LMS
+                                    <span className="text-[#0b2341]">
+                                        Sphere
                                     </span>
                                 </div>
                             </motion.div>

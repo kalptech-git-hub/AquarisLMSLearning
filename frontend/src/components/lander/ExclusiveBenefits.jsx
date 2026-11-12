@@ -11,39 +11,39 @@ import {
 const features = [
   {
     icon: <FiBookOpen className="text-xl text-[#b8233a]" />,
-    title: "Personalized Learning",
+    title: "Industry-Focused Training",
     description:
-      "Learn at your own pace with personalized courses designed around your learning goals and skill level.",
+      "Learn practical engineering concepts through structured training programs designed around industry requirements.",
   },
   {
     icon: <FiHelpCircle className="text-xl text-[#b8233a]" />,
-    title: "Personalized Support",
+    title: "Expert Technical Guidance",
     description:
-      "Get instant, intelligent assistance whenever you need help with lessons, questions, or learning activities.",
+      "Get guidance and support from experienced professionals to strengthen your technical knowledge and skills.",
   },
   {
     icon: <FiAward className="text-xl text-[#b8233a]" />,
-    title: "Expert Instructors",
+    title: "Practical Learning Experience",
     description:
-      "Learn from experienced instructors who provide practical knowledge, guidance, and real-world insights.",
+      "Gain hands-on experience through real-world projects, technical assignments, and practical activities.",
   },
   {
     icon: <FiClock className="text-xl text-[#b8233a]" />,
     title: "Flexible Learning Schedule",
     description:
-      "Study anytime, anywhere and manage your learning according to your personal schedule.",
+      "Learn at your own pace with organized training schedules and flexible learning opportunities.",
   },
   {
     icon: <FiFileText className="text-xl text-[#b8233a]" />,
-    title: "Industry-Recognized Certification",
+    title: "Skill Development & Certification",
     description:
-      "Complete your courses and earn certificates that showcase your skills and support your professional growth.",
+      "Enhance your professional skills and receive course completion certificates after successful training.",
   },
   {
     icon: <FiTrendingUp className="text-xl text-[#b8233a]" />,
-    title: "Career & Skill Development",
+    title: "Career Development Opportunities",
     description:
-      "Build job-ready skills through practical learning, assessments, projects, and career-focused training.",
+      "Build confidence, improve your technical abilities, and prepare yourself for future career opportunities.",
   },
 ];
 
@@ -56,8 +56,8 @@ const ExclusiveBenefits = () => {
           {/* Main Title on Left */}
           <div className="max-w-2xl">
             <h2 className="text-3xl sm:text-4xl md:text-[42px] font-extrabold text-[#111827] tracking-tight leading-[1.18]">
-              Discover the Exclusive Benefits of <br className="hidden sm:inline" />
-              Our Learning Platform
+             Discover the Exclusive Benefits of  <br className="hidden sm:inline" />
+              Our Engineering Training Platform
             </h2>
           </div>
 
@@ -70,7 +70,7 @@ const ExclusiveBenefits = () => {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
-              Transform your learning journey with personalized courses, expert guidance, and flexible learning options.
+              Enhance your technical skills with industry-focused training, expert mentorship, and practical learning opportunities designed to prepare you for a successful engineering career.
             </p>
           </div>
         </div>

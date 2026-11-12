@@ -113,25 +113,34 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronDown, FiHelpCircle } from "react-icons/fi";
 
+
 const faqs = [
     {
-        q: "Are these courses suitable for absolute beginners?",
-        a: "Yes! Our beginner courses start from ground zero, covering writing systems (Hiragana and Katakana), basic phonetics, essential daily greetings, and fundamental sentence grammar step-by-step."
+        q: "What is Aquaris Engineering Pvt. Ltd. training platform?",
+        a: "Aquaris Engineering Pvt. Ltd. provides a structured training platform designed to help trainees develop technical knowledge, practical skills, and industry-relevant expertise through organized learning programs."
     },
     {
-        q: "How do I browse and enroll in available courses?",
-        a: "You can click on the 'Courses' button in the navigation or on any course action button to explore our complete catalog. Click 'Enroll Now' on any course to register and secure your spot."
+        q: "How can I register and enroll in a training course?",
+        a: "You can register as a trainee and explore the available training programs. Select your preferred course, complete the enrollment process, and start your professional learning journey with Aquaris Engineering."
     },
     {
-        q: "How does the Speaking Practice Lab work?",
-        a: "Each course includes integrated voice recording tools. You can listen to native Japanese audio pronunciations, record your own voice via microphone, and practice speaking phrases with clear pitch accents."
+        q: "What types of training programs are available?",
+        a: "Our training programs focus on technical skill development, engineering fundamentals, practical learning, software technologies, project-based activities, and professional development based on available courses."
     },
     {
-        q: "What study materials and resources are included in each course?",
-        a: "Each course includes structured video lessons, PDF grammar notes, textbook references, interactive speaking audio drills, and chapter-wise quiz assessments."
+        q: "How can I track my training progress?",
+        a: "Trainees can monitor their enrolled courses, completed modules, pending assignments, assessment results, and overall training progress through the learning dashboard."
     },
-   
+    {
+        q: "Are practical assignments and assessments included?",
+        a: "Yes! Training programs can include practical assignments, technical exercises, quizzes, and knowledge assessments to help trainees understand concepts and evaluate their learning progress."
+    },
+    {
+        q: "Will I receive a certificate after completing my training?",
+        a: "Trainees who successfully complete the required training modules and meet the course completion criteria may receive a training completion certificate from Aquaris Engineering Pvt. Ltd."
+    }
 ];
+
 
 const FAQSection = () => {
     const [openIdx, setOpenIdx] = useState(0);
@@ -148,13 +157,14 @@ const FAQSection = () => {
     <div className="relative hidden min-h-[500px] items-center justify-center lg:flex">
 
         {/* Decorative Japanese Text */}
-        <div className="absolute right-5 top-5 select-none text-[110px] font-black leading-none text-[#0B1E39]/[0.035]">
-          日本語
-        </div>
+       {/* Decorative Aquaris Engineering Text */}
+<div className="absolute right-5 top-5 select-none text-[110px] font-black leading-none text-[#173b57]/[0.035]">
+  AQUARIS
+</div>
 
-        <div className="absolute bottom-8 left-8 select-none text-[80px] font-black text-[#C41E2E]/[0.06]">
-          学ぶ
-        </div>
+<div className="absolute bottom-8 left-8 select-none text-[80px] font-black text-[#a9832f]/[0.06]">
+  ENGINEERING
+</div>
 
         {/* Main Image */}
         <div className="relative">
@@ -180,7 +190,7 @@ const FAQSection = () => {
 
           {/* Small Japanese Text */}
           <div className="absolute -right-8 top-16 flex h-20 w-20 items-center justify-center rounded-full bg-[#C41E2E] text-2xl font-bold text-white shadow-xl">
-            学
+           AQ
           </div>
 
           <div className="absolute -bottom-5 left-0 rounded-full bg-[#0B1E39] px-6 py-3 text-sm font-bold text-white shadow-xl">
@@ -192,7 +202,7 @@ const FAQSection = () => {
         {/* Vertical Text */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 [writing-mode:vertical-rl]">
           <span className="text-sm font-bold tracking-[0.3em] text-[#0B1E39]/40">
-            JAPANESE LANGUAGE
+            TrainSphere
           </span>
         </div>
 

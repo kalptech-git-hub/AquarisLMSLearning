@@ -10,8 +10,8 @@ const steps = [
         <FiLogIn className="text-lg" />
       </div>
     ),
-    title: "Create Your Account",
-    desc: "Sign up and create your personalized learning profile in just a few simple steps.",
+    title: "Register as a Trainee",
+    desc: "Create your account and register with Aquaris Engineering to start your professional training journey.",
   },
   {
     num: "02",
@@ -21,8 +21,8 @@ const steps = [
         <FiSearch className="text-lg" />
       </div>
     ),
-    title: "Choose Your Course",
-    desc: "Explore courses, learning materials, videos, assignments, and assessments based on your learning goals.",
+    title: "Get Enrolled in a Course",
+    desc: "Explore available engineering courses and get enrolled in a training program based on your technical interests.",
   },
   {
     num: "03",
@@ -32,8 +32,8 @@ const steps = [
         <FiCheckSquare className="text-lg" />
       </div>
     ),
-    title: "Complete Course",
-    desc: "Take quizzes, assignments, and tests to evaluate your knowledge and track your progress.",
+    title: "Learn & Gain Practical Skills",
+    desc: "Attend training sessions, complete technical assignments, work on practical projects, and track your learning progress.",
   },
   {
     num: "04",
@@ -43,8 +43,8 @@ const steps = [
         <FiAward className="text-lg" />
       </div>
     ),
-    title: "Complete & Get Certified",
-    desc: "Complete your course and earn your certificate upon successful completion.",
+    title: "Complete Training & Get Certified",
+    desc: "Successfully complete your training program, demonstrate your technical skills, and receive your course completion certificate.",
   },
 ];
 
@@ -57,8 +57,8 @@ const HowItWorks = () => {
       <div className="relative z-10 max-w-[1240px] xl:max-w-[1300px] mx-auto">
         {/* Section Heading */}
         <div className="mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-[42px] font-extrabold text-[#111827] tracking-tight">
-            How Our LMS Works
+          <h2 className="text-3xl sm:text-4xl md:text-[38px] font-extrabold text-[#111827] tracking-tight">
+           How Our Training Platform Works
           </h2>
         </div>
 

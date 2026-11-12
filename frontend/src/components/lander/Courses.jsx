@@ -893,14 +893,14 @@ const Courses = () => {
                             {/* Pill Badge */}
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 border border-red-200/80 shadow-xs text-xs sm:text-sm font-semibold text-[#C41E2E] mb-4">
                                 <span className="flex h-2 w-2 rounded-full bg-[#C41E2E] animate-pulse" />
-                                <span className="tracking-wide">日本語コース • Structured Japanese Curriculum</span>
+                                <span className="tracking-wide">  Aquaris Engineering • Technical Training & Skill Development</span>
                             </div>
 
                             {/* Main Heading with Red / Gradient Accent */}
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1E39] tracking-tight leading-tight">
-                                Explore Our Japanese Language
+                               Explore Our Technical Training
                                 <span className="block mt-1 bg-gradient-to-r from-[#C41E2E] via-[#E63946] to-[#7B3B5C] bg-clip-text text-transparent">
-                                    Courses
+                                     Programs
                                 </span>
                             </h2>
 

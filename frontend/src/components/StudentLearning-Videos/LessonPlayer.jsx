@@ -19,6 +19,7 @@ import {
     FiExternalLink,
     FiMaximize2,
     FiMinimize2,
+    FiLock,
 } from "react-icons/fi";
 import ResourceLesson from "./ResourceLesson";
 import QuizPlayer from "./QuizPlayer";
@@ -56,7 +57,73 @@ const LessonPlayer = ({
 
     const videoRef = useRef(null);
     const videoPlayerContainerRef = useRef(null);
+    const [isBlur, setIsBlur] = useState(false);
     const [isVideoFullscreen, setIsVideoFullscreen] = useState(false);
+
+    /* VIDEO PRIVACY PROTECTION */
+    // useEffect(() => {
+    //     const handleBlur = () => {
+    //         setIsBlur(true);
+
+    //         // Pause native video when browser loses focus
+    //         if (videoRef.current) {
+    //             videoRef.current.pause();
+    //         }
+    //     };
+
+    //     const handleFocus = () => {
+    //         setIsBlur(false);
+    //     };
+
+    //     window.addEventListener("blur", handleBlur);
+    //     window.addEventListener("focus", handleFocus);
+
+    //     return () => {
+    //         window.removeEventListener("blur", handleBlur);
+    //         window.removeEventListener("focus", handleFocus);
+    //     };
+    // }, []);
+
+    /* VIDEO PRIVACY PROTECTION */
+useEffect(() => {
+    const hideVideo = () => {
+        setIsBlur(true);
+
+        if (videoRef.current) {
+            videoRef.current.pause();
+        }
+    };
+
+    const showVideo = () => {
+        setIsBlur(false);
+    };
+
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            hideVideo();
+        } else {
+            showVideo();
+        }
+    };
+
+    window.addEventListener("blur", hideVideo);
+    window.addEventListener("focus", showVideo);
+
+    document.addEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+    );
+
+    return () => {
+        window.removeEventListener("blur", hideVideo);
+        window.removeEventListener("focus", showVideo);
+
+        document.removeEventListener(
+            "visibilitychange",
+            handleVisibilityChange
+        );
+    };
+}, []);
 
     const toggleVideoFullscreen = async () => {
         try {
@@ -794,8 +861,36 @@ const LessonPlayer = ({
                                                 }, 1000);
                                             }}
                                             playsInline
-                                            className="w-full h-full object-contain"
+                                            // className="w-full h-full object-contain"
+
+                                            // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
+                                            //     }`}
+
+                                            className={`absolute inset-0 w-full h-full object-contain block ${
+        isBlur ? "blur-xl" : "blur-none"
+    }`}
+
                                         />
+
+                                        {isBlur && (
+                                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
+                                                <div>
+                                                    <FiLock size={36} className="mx-auto mb-4 text-red-400" />
+
+                                                    <h3 className="text-lg font-bold mb-2">
+                                                        Video Temporarily Hidden
+                                                    </h3>
+
+                                                    <p className="text-sm text-slate-300">
+                                                        Video playback has been paused because the browser window lost focus.
+                                                    </p>
+
+                                                    <p className="text-xs text-slate-400 mt-2">
+                                                        Return to the learning window to continue.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
 
 
                                         {/* {isPlaying ? (
@@ -1164,211 +1259,3 @@ const LessonPlayer = ({
 
 export default LessonPlayer;
 
-
-// {
-//     selectedLesson ? (
-//         selectedLesson.lesson_video_url ? (
-//             <>
-//                 {/* Floating Overlay Counter */}
-//                 <div className="absolute top-4 right-4 z-20 bg-slate-900/80 backdrop-blur-md opacity-0 group-hover:opacity-100 px-3 py-1.5 rounded-full text-xs font-medium text-slate-200 border border-white/10 transition">
-//                     Lesson {currentIndex + 1} of {allLessons.length}
-//                 </div>
-
-//                 {/* Video Hover Nav Arrows */}
-//                 {previousLesson && (
-//                     <button
-//                         onClick={() => onLessonSelect(previousLesson)}
-//                         // className="absolute left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-purple-600 transition cursor-pointer border border-white/10 shadow-lg"
-//                         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-purple-700 transition cursor-pointer border border-white/10 shadow-lg"
-//                         title="Previous Lesson"
-//                     >
-//                         <FiChevronLeft size={24} />
-//                     </button>
-//                 )}
-
-//                 {nextLesson && (
-//                     <button
-//                         // onClick={() => onLessonSelect(nextLesson)}
-//                         onClick={() => {
-//                             if (
-//                                 completedLessons[
-//                                 selectedLesson.lesson_id
-//                                 ]
-//                             ) {
-//                                 onLessonSelect(nextLesson);
-//                             }
-//                         }}
-//                         // className="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-purple-700 transition cursor-pointer border border-white/10 shadow-lg"
-//                         className={`absolute right-4 top-1/2 -translate-y-1/2 z-20
-//                                             w-11 h-11 rounded-full backdrop-blur-md flex items-center justify-center
-//                                             border border-white/10 shadow-lg transition
-//                                             ${completedLessons[selectedLesson.lesson_id]
-//                                 ? "opacity-100 group-hover:opacity-100 cursor-pointer bg-slate-900/80 hover:bg-purple-700"
-//                                 : "opacity-40 cursor-not-allowed bg-slate-900/40"
-//                             }`}
-//                         title="Next Lesson"
-//                     >
-//                         <FiChevronRight size={24} />
-//                     </button>
-//                 )}
-
-//                 {/* <video
-//                                     ref={videoRef}
-//                                     key={selectedLesson.lesson_id}
-//                                     src={selectedLesson.lesson_video_url}
-//                                     controls
-//                                     onTimeUpdate={handleTimeUpdate}
-//                                     onEnded={handleVideoEnded}
-//                                     autoPlay
-//                                     playsInline
-//                                     className="w-full h-full object-contain"
-//                                 /> */}
-
-//                 {isYoutubeVideo(selectedLesson.lesson_video_url) ? (
-//                     <iframe
-//                         key={selectedLesson.lesson_id}
-//                         src={getYoutubeEmbedUrl(
-//                             selectedLesson.lesson_video_url
-//                         )}
-//                         title={selectedLesson.lesson_title}
-//                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-//                         allowFullScreen
-//                         className="w-full h-full"
-//                     />
-//                 ) : (
-//                     <video
-//                         ref={videoRef}
-//                         key={selectedLesson.lesson_id}
-//                         src={selectedLesson.lesson_video_url}
-//                         controls
-//                         onTimeUpdate={handleTimeUpdate}
-//                         onEnded={handleVideoEnded}
-//                         autoPlay
-//                         playsInline
-//                         className="w-full h-full object-contain"
-//                     />
-//                 )}
-//             </>
-//         ) : (
-//             <div className="text-center p-8">
-//                 <FiVideo className="text-4xl text-slate-600 mx-auto mb-2" />
-//                 <h3 className="text-lg font-semibold text-slate-300">No Video Stream Available</h3>
-//                 <p className="text-xs text-slate-500 mt-1">This lesson contains text or reading materials below.</p>
-//             </div>
-//         )
-//     ) : (
-//         <div className="text-center p-8">
-//             <h3 className="text-xl font-semibold text-slate-400">
-//                 Select a lesson from the curriculum to begin
-//             </h3>
-//         </div>
-//     )
-// }
-
-/* */
-
-// {
-//     selectedLesson ? (
-//         selectedLesson.lesson_content_type === "text" ? (
-
-//             <ResourceLesson
-//                 resourceData={resourceData}
-//             />
-
-//         ) : selectedLesson.lesson_video_url ? (
-//             <>
-//                 {/* Floating Overlay Counter */}
-//                 <div className="absolute top-4 right-4 z-20 bg-slate-900/80 backdrop-blur-md opacity-0 group-hover:opacity-100 px-3 py-1.5 rounded-full text-xs font-medium text-slate-200 border border-white/10 transition">
-//                     Lesson {currentIndex + 1} of {allLessons.length}
-//                 </div>
-
-//                 {/* Video Hover Nav Arrows */}
-//                 {previousLesson && (
-//                     <button
-//                         onClick={() => onLessonSelect(previousLesson)}
-//                         // className="absolute left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-purple-600 transition cursor-pointer border border-white/10 shadow-lg"
-//                         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-purple-700 transition cursor-pointer border border-white/10 shadow-lg"
-//                         title="Previous Lesson"
-//                     >
-//                         <FiChevronLeft size={24} />
-//                     </button>
-//                 )}
-
-//                 {nextLesson && (
-//                     <button
-//                         // onClick={() => onLessonSelect(nextLesson)}
-//                         onClick={() => {
-//                             if (
-//                                 completedLessons[
-//                                 selectedLesson.lesson_id
-//                                 ]
-//                             ) {
-//                                 onLessonSelect(nextLesson);
-//                             }
-//                         }}
-//                         // className="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-purple-700 transition cursor-pointer border border-white/10 shadow-lg"
-//                         className={`absolute right-4 top-1/2 -translate-y-1/2 z-20
-//                                             w-11 h-11 rounded-full backdrop-blur-md flex items-center justify-center
-//                                             border border-white/10 shadow-lg transition
-//                                             ${completedLessons[selectedLesson.lesson_id]
-//                                 ? "opacity-100 group-hover:opacity-100 cursor-pointer bg-slate-900/80 hover:bg-purple-700"
-//                                 : "opacity-40 cursor-not-allowed bg-slate-900/40"
-//                             }`}
-//                         title="Next Lesson"
-//                     >
-//                         <FiChevronRight size={24} />
-//                     </button>
-//                 )}
-
-//                 {/* <video
-//                                     ref={videoRef}
-//                                     key={selectedLesson.lesson_id}
-//                                     src={selectedLesson.lesson_video_url}
-//                                     controls
-//                                     onTimeUpdate={handleTimeUpdate}
-//                                     onEnded={handleVideoEnded}
-//                                     autoPlay
-//                                     playsInline
-//                                     className="w-full h-full object-contain"
-//                                 /> */}
-
-//                 {isYoutubeVideo(selectedLesson.lesson_video_url) ? (
-//                     <iframe
-//                         key={selectedLesson.lesson_id}
-//                         src={getYoutubeEmbedUrl(
-//                             selectedLesson.lesson_video_url
-//                         )}
-//                         title={selectedLesson.lesson_title}
-//                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-//                         allowFullScreen
-//                         className="w-full h-full"
-//                     />
-//                 ) : (
-//                     <video
-//                         ref={videoRef}
-//                         key={selectedLesson.lesson_id}
-//                         src={selectedLesson.lesson_video_url}
-//                         controls
-//                         onTimeUpdate={handleTimeUpdate}
-//                         onEnded={handleVideoEnded}
-//                         autoPlay
-//                         playsInline
-//                         className="w-full h-full object-contain"
-//                     />
-//                 )}
-//             </>
-//         ) : (
-//             <div className="text-center p-8">
-//                 <FiVideo className="text-4xl text-slate-600 mx-auto mb-2" />
-//                 <h3 className="text-lg font-semibold text-slate-300">No Video Stream Available</h3>
-//                 <p className="text-xs text-slate-500 mt-1">This lesson contains text or reading materials below.</p>
-//             </div>
-//         )
-//     ) : (
-//         <div className="text-center p-8">
-//             <h3 className="text-xl font-semibold text-slate-400">
-//                 Select a lesson from the curriculum to begin
-//             </h3>
-//         </div>
-//     )
-// }

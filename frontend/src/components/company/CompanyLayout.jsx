@@ -591,7 +591,7 @@ const CompanyLayout = () => {
             </div>
 
             <div
-              onClick={handleProfileClick}
+              // onClick={handleProfileClick}
               onMouseEnter={() => setShowProfileMessage(true)}
               onMouseLeave={() => setShowProfileMessage(false)}
               // was: className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-red-100 cursor-pointer hover:bg-red-50 transition-colors"

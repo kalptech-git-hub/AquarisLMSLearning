@@ -3,7 +3,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 import {
     ArrowLeft, ArrowRight, Maximize2,
-    Minimize2
+    Minimize2, Lock
 } from "lucide-react";
 
 // import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
@@ -26,6 +26,7 @@ const ResourceLesson = ({
 
     const completionTriggeredRef = useRef(false);
     const timerRef = useRef(null);
+    const [isBlur, setIsBlur] = useState(false);
 
     const [pdf, setPdf] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,6 +36,24 @@ const ResourceLesson = ({
     const [rendering, setRendering] = useState(false);
     const [error, setError] = useState(null);
 
+    /*Temporarily lock PDF when browser window loses focus */
+    useEffect(() => {
+        const handleWindowBlur = () => {
+            setIsBlur(true);
+        };
+
+        const handleWindowFocus = () => {
+            setIsBlur(false);
+        };
+
+        window.addEventListener("blur", handleWindowBlur);
+        window.addEventListener("focus", handleWindowFocus);
+
+        return () => {
+            window.removeEventListener("blur", handleWindowBlur);
+            window.removeEventListener("focus", handleWindowFocus);
+        };
+    }, []);
 
     /*
      * Reset completion when lesson changes
@@ -412,153 +431,126 @@ const ResourceLesson = ({
         <div
             ref={viewerRef}
             onContextMenu={(e) => e.preventDefault()}
-            className={`w-full bg-slate-100 ${isFullscreen
+            // className={`w-full bg-slate-100 ${isFullscreen
+            //     ? "flex flex-col h-screen overflow-hidden"
+            //     : ""
+            //     }`}
+
+            className={`relative w-full bg-slate-100 ${isFullscreen
                 ? "flex flex-col h-screen overflow-hidden"
                 : ""
                 }`}
         >
 
-
-            {/* PDF */}
-            {/* <div className="w-full overflow-hidden flex justify-center"> */}
             <div
-                className={`w-full flex justify-center ${isFullscreen
-                    ? "flex-1 overflow-y-auto overflow-x-hidden"
-                    : "overflow-hidden"
+                className={`w-full flex flex-col flex-1 min-h-0 ${isBlur
+                    ? "blur-md pointer-events-none select-none"
+                    : ""
                     }`}
             >
 
-                <div className="w-full bg-white">
-                    <canvas
-                        ref={canvasRef}
-                        onContextMenu={(e) => e.preventDefault()}
-                        className="block w-full h-auto"
-                    />
-                </div>
 
-            </div>
+                {/* PDF */}
+                {/* <div className="w-full overflow-hidden flex justify-center"> */}
+                <div
+                    className={`w-full flex justify-center ${isFullscreen
+                        ? "flex-1 overflow-y-auto overflow-x-hidden"
+                        : "overflow-hidden"
+                        }`}
+                >
 
-
-            {/* Controls */}
-            {/* <div className="sticky bottom-0 bg-white border-t border-slate-200 px-4 py-3"> */}
-            {/* <div
-                className={`bg-white border-t border-slate-200 px-4 py-3 shrink-0 ${isFullscreen
-                    ? "relative"
-                    : "sticky bottom-0"
-                    }`}
-            >
-
-                <div className="flex items-center justify-center gap-4">
-
-
-                    <button
-                        type="button"
-                        onClick={previousPage}
-                        disabled={
-                            currentPage === 1 ||
-                            rendering
-                        }
-                        className="px-4 py-2 rounded-lg bg-slate-800 disabled:opacity-40"
-                        // className="px-4 py-2 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 text-white disabled:opacity-40"
-                    >
-                        <ArrowLeft size={16} />
-                    </button>
-
-
-                    <span className="text-sm font-medium text-slate-700">
-                        {currentPage} / {numPages}
-                    </span>
-
-
-                    <button
-                        type="button"
-                        onClick={nextPage}
-                        disabled={
-                            currentPage === numPages ||
-                            rendering
-                        }
-                        className="px-4 py-2 rounded-lg bg-slate-800 disabled:opacity-40"
-                        // className="px-4 py-2 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 text-white disabled:opacity-40"
-                    >
-                        <ArrowRight size={16} />
-                    </button>
-
-
-                    <button
-                        type="button"
-                        onClick={toggleFullscreen}
-                        // className="px-4 py-2 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 text-white"
-                        className="w-9 h-9 rounded-full bg-slate-800 text-white"
-                        title={isFullscreen ? "Exit Fullscreen (Esc)" : "Full Screen"}
-                    >
-                        {isFullscreen ? (
-                            <Minimize2 size={16} />
-                        ) : (
-                            <Maximize2 size={16} />
-                        )}
-                    </button>
+                    <div className="w-full bg-white">
+                        <canvas
+                            ref={canvasRef}
+                            onContextMenu={(e) => e.preventDefault()}
+                            className="block w-full h-auto"
+                        />
+                    </div>
 
                 </div>
 
-            </div> */}
 
 
-                        {/* was: isFullscreen ? "relative" — no extra bottom clearance in fullscreen,
+                {/* was: isFullscreen ? "relative" — no extra bottom clearance in fullscreen,
                 so the controls bar (prev/next, page counter, exit-fullscreen button) sat
                 flush against the very bottom edge of the screen on phone, with nothing
                 to separate it from Chrome's own native "exit fullscreen" hint banner that
                 briefly overlaps the bottom edge right after entering fullscreen. Added
                 pb-8 on phone only in the fullscreen case, clearing that space; sm: and
                 the non-fullscreen (sticky bottom-0) case are unchanged. */}
-            <div
-                className={`bg-white border-t border-slate-200 px-4 py-3 shrink-0 ${isFullscreen
-                    ? "relative pb-8 sm:pb-3"
-                    : "sticky bottom-0"
-                    }`}
-            >
-                <div className="relative flex items-center justify-center">
+                <div
+                    className={`bg-white border-t border-slate-200 px-4 py-3 shrink-0 ${isFullscreen
+                        ? "relative pb-8 sm:pb-3"
+                        : "sticky bottom-0"
+                        }`}
+                >
+                    <div className="relative flex items-center justify-center">
 
-                    {/* Previous / Page / Next - CENTER */}
-                    <div className="flex items-center justify-center gap-4">
+                        {/* Previous / Page / Next - CENTER */}
+                        <div className="flex items-center justify-center gap-4">
+                            <button
+                                type="button"
+                                onClick={previousPage}
+                                disabled={currentPage === 1 || rendering}
+                                className="px-4 py-2 rounded-lg bg-slate-800 text-white disabled:opacity-40 cursor-pointer"
+                            >
+                                <ArrowLeft size={16} />
+                            </button>
+
+                            <span className="text-sm font-medium text-slate-700">
+                                {currentPage} / {numPages}
+                            </span>
+
+                            <button
+                                type="button"
+                                onClick={nextPage}
+                                disabled={currentPage === numPages || rendering}
+                                className="px-4 py-2 rounded-lg bg-slate-800 text-white disabled:opacity-40 cursor-pointer"
+                            >
+                                <ArrowRight size={16} />
+                            </button>
+                        </div>
+
+                        {/* Maximize / Minimize - RIGHT CORNER */}
                         <button
                             type="button"
-                            onClick={previousPage}
-                            disabled={currentPage === 1 || rendering}
-                            className="px-4 py-2 rounded-lg bg-slate-800 text-white disabled:opacity-40 cursor-pointer"
+                            onClick={toggleFullscreen}
+                            className={`absolute ${isFullscreen ? "right-0" : "right-3 sm:right-5"} w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer shadow-md`}
+                            title={isFullscreen ? "Exit Fullscreen (Esc)" : "Full Screen"}
                         >
-                            <ArrowLeft size={16} />
+                            {isFullscreen ? (
+                                <Minimize2 size={16} />
+                            ) : (
+                                <Maximize2 size={16} />
+                            )}
                         </button>
 
-                        <span className="text-sm font-medium text-slate-700">
-                            {currentPage} / {numPages}
-                        </span>
-
-                        <button
-                            type="button"
-                            onClick={nextPage}
-                            disabled={currentPage === numPages || rendering}
-                            className="px-4 py-2 rounded-lg bg-slate-800 text-white disabled:opacity-40 cursor-pointer"
-                        >
-                            <ArrowRight size={16} />
-                        </button>
                     </div>
-
-                    {/* Maximize / Minimize - RIGHT CORNER */}
-                    <button
-                        type="button"
-                        onClick={toggleFullscreen}
-                        className={`absolute ${isFullscreen ? "right-0" : "right-3 sm:right-5"} w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer shadow-md`}
-                        title={isFullscreen ? "Exit Fullscreen (Esc)" : "Full Screen"}
-                    >
-                        {isFullscreen ? (
-                            <Minimize2 size={16} />
-                        ) : (
-                            <Maximize2 size={16} />
-                        )}
-                    </button>
-
                 </div>
             </div>
+
+            {/* Temporary Lock Overlay - ADD AFTER THE WRAPPER */}
+            {isBlur && (
+                // <div className="absolute inset-0 z-[9999] flex items-center justify-center bg-black/90 text-white text-center p-6">
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 text-white text-center p-6">
+                    <div>
+                        <Lock
+                            size={36}
+                            className="mx-auto mb-4 text-red-400"
+                        />
+                        <h3 className="text-lg font-bold mb-2">
+                            Resource Temporarily Hidden
+                        </h3>
+                        <p className="text-sm text-slate-300">
+                            This resource has been temporarily hidden because
+                            the browser window lost focus.
+                        </p>
+                        <p className="text-xs text-slate-400 mt-2">
+                            Return to the learning window to continue.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
 
     );

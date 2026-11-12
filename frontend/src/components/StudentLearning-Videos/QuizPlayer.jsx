@@ -16,7 +16,8 @@ import {
   FiList,
   FiCalendar,
   FiMaximize2,
-  FiMinimize2
+  FiMinimize2,
+  FiLock
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { TbListCheck } from "react-icons/tb";
@@ -43,7 +44,7 @@ const QuizPlayer = ({
   const [attemptNumber, setAttemptNumber] = useState(1);
   const [questions, setQuestions] = useState([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
-  
+
   // Selected answers: { [question_id]: [option_id, ...] }
   const [selectedAnswers, setSelectedAnswers] = useState({});
 
@@ -61,6 +62,27 @@ const QuizPlayer = ({
   // Fullscreen Container & State
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isBlur, setIsBlur] = useState(false);
+
+
+  // Temporarily lock quiz when browser window loses focus
+  useEffect(() => {
+    const handleWindowBlur = () => {
+      setIsBlur(true);
+    };
+
+    const handleWindowFocus = () => {
+      setIsBlur(false);
+    };
+
+    window.addEventListener("blur", handleWindowBlur);
+    window.addEventListener("focus", handleWindowFocus);
+
+    return () => {
+      window.removeEventListener("blur", handleWindowBlur);
+      window.removeEventListener("focus", handleWindowFocus);
+    };
+  }, []);
 
   const toggleFullscreen = async () => {
     try {
@@ -439,7 +461,7 @@ const QuizPlayer = ({
           }
         ).then(hRes => {
           setAttemptHistory(hRes.data?.attempts || []);
-        }).catch(() => {});
+        }).catch(() => { });
       }
 
       setViewState("result");
@@ -543,7 +565,7 @@ const QuizPlayer = ({
       return (
         <div className="flex-1 w-full h-full overflow-y-auto bg-white p-5 sm:p-7 lg:p-8 flex flex-col justify-between">
           <div className="space-y-5">
-            
+
             {/* Header Badge, Title & Instructions + Corner Fullscreen Button */}
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2 flex-1 min-w-0">
@@ -571,7 +593,7 @@ const QuizPlayer = ({
                 <h1 className="text-xl sm:text-2xl font-semibold text-[#1e1b4b] tracking-tight">
                   {quizData?.quiz_title || "Lesson Quiz Assessment"}
                 </h1>
-                
+
                 <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed mt-1">
                   {quizData?.quiz_instructions || "Basic greetings used in daily conversation. Answer all questions to unlock the next lesson."}
                 </p>
@@ -600,7 +622,7 @@ const QuizPlayer = ({
 
             {/* 4 Stats Overview Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-              
+
               {/* Time Limit */}
               <div className="bg-[#FAFAFE] border border-purple-100/70 rounded-xl p-3.5 flex flex-col justify-center">
                 <span className="text-[11px] text-slate-400 font-normal block mb-1">Time limit</span>
@@ -649,11 +671,10 @@ const QuizPlayer = ({
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${
-                              isPassed
-                                ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
-                                : "bg-rose-100 text-rose-700 border border-rose-300"
-                            }`}
+                            className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${isPassed
+                              ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
+                              : "bg-rose-100 text-rose-700 border border-rose-300"
+                              }`}
                           >
                             #{att.attempt_number || idx + 1}
                           </div>
@@ -670,11 +691,10 @@ const QuizPlayer = ({
                         </div>
 
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            isPassed
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-rose-50 text-rose-700 border border-rose-200"
-                          }`}
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isPassed
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-rose-50 text-rose-700 border border-rose-200"
+                            }`}
                         >
                           {isPassed ? "Passed" : "Not Passed"}
                         </span>
@@ -740,10 +760,10 @@ const QuizPlayer = ({
 
       return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 text-slate-900">
-          
+
           {/* Top Header Bar: Progress, Timer, Submit & Fullscreen Option */}
           <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-white border-b border-slate-200 flex items-center justify-between shrink-0 shadow-xs">
-            
+
             {/* Left: Question Counter & Progress */}
             <div className="flex items-center gap-4 min-w-0">
               <div>
@@ -768,11 +788,10 @@ const QuizPlayer = ({
             <div className="flex items-center gap-2 sm:gap-3">
               {secondsRemaining !== null && (
                 <div
-                  className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 text-xs font-bold transition-all ${
-                    isTimerUrgent
-                      ? "bg-rose-50 border-rose-300 text-rose-700 animate-pulse shadow-xs"
-                      : "bg-slate-100 border-slate-200 text-slate-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 text-xs font-bold transition-all ${isTimerUrgent
+                    ? "bg-rose-50 border-rose-300 text-rose-700 animate-pulse shadow-xs"
+                    : "bg-slate-100 border-slate-200 text-slate-700"
+                    }`}
                 >
                   <FiClock size={14} className={isTimerUrgent ? "text-rose-600" : "text-[#35175a]"} />
                   <span>{formatTime(secondsRemaining)} left</span>
@@ -820,7 +839,7 @@ const QuizPlayer = ({
           {/* Main Question Body Area (Clean White Center Card) */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex flex-col items-center">
             <div className="w-full max-w-2xl space-y-6 my-auto bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm">
-              
+
               {/* Question Header & Prompt */}
               <div className="space-y-3 pb-2 border-b border-slate-100">
                 <div className="flex items-center justify-between gap-2">
@@ -847,30 +866,27 @@ const QuizPlayer = ({
                     <div
                       key={optId || oIdx}
                       onClick={() => handleSelectOption(currentQ.question_id, optId, qType)}
-                      className={`group relative p-4 rounded-xl border transition-all duration-150 flex items-center gap-3.5 cursor-pointer select-none ${
-                        isSelected
-                          ? "bg-purple-50/70 border-2 border-[#35175a] text-[#35175a] shadow-xs"
-                          : "bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20 text-slate-800"
-                      }`}
+                      className={`group relative p-4 rounded-xl border transition-all duration-150 flex items-center gap-3.5 cursor-pointer select-none ${isSelected
+                        ? "bg-purple-50/70 border-2 border-[#35175a] text-[#35175a] shadow-xs"
+                        : "bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20 text-slate-800"
+                        }`}
                     >
                       {/* Option Selector Icon */}
                       {isMultiChoice ? (
                         <div
-                          className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all ${
-                            isSelected
-                              ? "bg-[#35175a] border-[#35175a] text-white"
-                              : "border-slate-400 group-hover:border-purple-500 bg-white"
-                          }`}
+                          className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all ${isSelected
+                            ? "bg-[#35175a] border-[#35175a] text-white"
+                            : "border-slate-400 group-hover:border-purple-500 bg-white"
+                            }`}
                         >
                           {isSelected && <FiCheck size={13} />}
                         </div>
                       ) : (
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                            isSelected
-                              ? "border-[#35175a] bg-purple-50"
-                              : "border-slate-400 group-hover:border-purple-500 bg-white"
-                          }`}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${isSelected
+                            ? "border-[#35175a] bg-purple-50"
+                            : "border-slate-400 group-hover:border-purple-500 bg-white"
+                            }`}
                         >
                           {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#35175a]" />}
                         </div>
@@ -890,17 +906,16 @@ const QuizPlayer = ({
 
           {/* Bottom Navigation & Question Jump Palette */}
           <div className="px-6 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0 shadow-xs">
-            
+
             {/* Previous Button */}
             <button
               type="button"
               disabled={currentQIndex === 0}
               onClick={() => setCurrentQIndex(prev => Math.max(0, prev - 1))}
-              className={`px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition ${
-                currentQIndex === 0
-                  ? "border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed"
-                  : "border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
-              }`}
+              className={`px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition ${currentQIndex === 0
+                ? "border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed"
+                : "border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                }`}
             >
               <FiChevronLeft size={16} /> Previous
             </button>
@@ -916,13 +931,12 @@ const QuizPlayer = ({
                     key={q.question_id || idx}
                     type="button"
                     onClick={() => setCurrentQIndex(idx)}
-                    className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
-                      isCurrent
-                        ? "bg-[#35175a] text-white ring-2 ring-purple-300 shadow-sm"
-                        : isAnswered
-                          ? "bg-purple-100 text-[#35175a] border border-purple-300 hover:bg-purple-200"
-                          : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
-                    }`}
+                    className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${isCurrent
+                      ? "bg-[#35175a] text-white ring-2 ring-purple-300 shadow-sm"
+                      : isAnswered
+                        ? "bg-purple-100 text-[#35175a] border border-purple-300 hover:bg-purple-200"
+                        : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
+                      }`}
                     title={`Question ${idx + 1} (${isAnswered ? "Answered" : "Unanswered"})`}
                   >
                     {idx + 1}
@@ -1010,7 +1024,7 @@ const QuizPlayer = ({
 
       return (
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex flex-col items-center bg-slate-50 relative">
-          
+
           {/* Corner Fullscreen Button on Result Screen */}
           <div className="w-full max-w-2xl flex justify-end mb-3">
             <button
@@ -1034,14 +1048,13 @@ const QuizPlayer = ({
           </div>
 
           <div className="w-full max-w-2xl space-y-6 my-auto">
-            
+
             {/* Result Banner Card (Clean White with Green/Red Accents) */}
             <div
-              className={`relative overflow-hidden rounded-2xl border p-6 sm:p-8 text-center space-y-6 shadow-sm bg-white ${
-                isPassed
-                  ? "border-emerald-300 bg-gradient-to-b from-emerald-50/40 to-white"
-                  : "border-rose-300 bg-gradient-to-b from-rose-50/40 to-white"
-              }`}
+              className={`relative overflow-hidden rounded-2xl border p-6 sm:p-8 text-center space-y-6 shadow-sm bg-white ${isPassed
+                ? "border-emerald-300 bg-gradient-to-b from-emerald-50/40 to-white"
+                : "border-rose-300 bg-gradient-to-b from-rose-50/40 to-white"
+                }`}
             >
               {/* Circular Percentage Ring */}
               <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
@@ -1164,13 +1177,46 @@ const QuizPlayer = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full bg-white flex flex-col ${
-        isFullscreen
-          ? "fixed inset-0 z-[9999] h-screen w-screen overflow-hidden"
-          : "flex-1 w-full h-full relative"
-      }`}
+      className={`w-full bg-white flex flex-col ${isFullscreen
+        ? "fixed inset-0 z-[9999] h-screen w-screen overflow-hidden"
+        : "flex-1 w-full h-full relative"
+        }`}
     >
-      {renderContent()}
+      {/* {renderContent()} */}
+      {/* Quiz Content */}
+      <div
+        className={`flex flex-col flex-1 min-h-0 w-full ${isBlur
+          ? "blur-md pointer-events-none select-none"
+          : ""
+          }`}
+      >
+        {renderContent()}
+      </div>
+
+      {/* Temporary Lock Overlay */}
+      {isBlur && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/90 text-white text-center p-6">
+          <div>
+            <FiLock
+              size={36}
+              className="mx-auto mb-4 text-red-400"
+            />
+
+            <h3 className="text-lg font-bold mb-2">
+              Quiz Temporarily Locked
+            </h3>
+
+            <p className="text-sm text-slate-300">
+              The quiz has been temporarily locked because
+              the browser window lost focus.
+            </p>
+
+            <p className="text-xs text-slate-400 mt-2">
+              Return to the learning window to continue.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -116,8 +116,8 @@ import { FiChevronDown, FiHelpCircle } from "react-icons/fi";
 
 const faqs = [
     {
-        q: "What is Aquaris Engineering Pvt. Ltd. training platform?",
-        a: "Aquaris Engineering Pvt. Ltd. provides a structured training platform designed to help trainees develop technical knowledge, practical skills, and industry-relevant expertise through organized learning programs."
+        q: "What is TrainSphere training platform?",
+        a: "TrainSphere provides a structured training platform designed to help trainees develop technical knowledge, practical skills, and industry-relevant expertise through organized learning programs."
     },
     {
         q: "How can I register and enroll in a training course?",
@@ -137,7 +137,7 @@ const faqs = [
     },
     {
         q: "Will I receive a certificate after completing my training?",
-        a: "Trainees who successfully complete the required training modules and meet the course completion criteria may receive a training completion certificate from Aquaris Engineering Pvt. Ltd."
+        a: "Trainees who successfully complete the required training modules and meet the course completion criteria may receive a training completion certificate from TrainSphere."
     }
 ];
 
@@ -173,21 +173,20 @@ const FAQSection = () => {
 
           <div className="absolute -inset-12 rounded-full border border-[#0B1E39]/5" />
 
-          <img
-            src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?q=80&w=1000&auto=format&fit=crop"
-            alt="Japanese culture and learning"
-            className="
-              relative
-              h-[390px]
-              w-[390px]
-              rounded-full
-              object-cover
-              shadow-2xl
-              ring-8
-              ring-white
-            "
-          />
-
+       <img
+  src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop"
+  alt="Indian Students Attending English Training Program"
+  className="
+    relative
+    h-[390px]
+    w-[390px]
+    rounded-full
+    object-cover
+    shadow-2xl
+    ring-8
+    ring-white
+  "
+/>
           {/* Small Japanese Text */}
           <div className="absolute -right-8 top-16 flex h-20 w-20 items-center justify-center rounded-full bg-[#C41E2E] text-2xl font-bold text-white shadow-xl">
            AQ

@@ -11,7 +11,7 @@ const steps = [
       </div>
     ),
     title: "Register as a Trainee",
-    desc: "Create your account and register with Aquaris Engineering to start your professional training journey.",
+    desc: "Create your account and register with TrainSphere to start your professional training journey.",
   },
   {
     num: "02",

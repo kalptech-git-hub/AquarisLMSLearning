@@ -1551,7 +1551,7 @@ const Register = () => {
                             />
 
                            <h3 className="text-4xl font-bold mt-8 mb-8">
-    Learn & Grow with Aquaris
+    Learn & Grow with TrainSphere
 </h3>
 
 <p className="text-lg text-red-100 leading-relaxed max-w-md mt-4">

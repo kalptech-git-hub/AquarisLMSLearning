@@ -893,7 +893,7 @@ const Courses = () => {
                             {/* Pill Badge */}
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 border border-red-200/80 shadow-xs text-xs sm:text-sm font-semibold text-[#C41E2E] mb-4">
                                 <span className="flex h-2 w-2 rounded-full bg-[#C41E2E] animate-pulse" />
-                                <span className="tracking-wide">  Aquaris Engineering • Technical Training & Skill Development</span>
+                                <span className="tracking-wide">  TrainSphere • Technical Training & Skill Development</span>
                             </div>
 
                             {/* Main Heading with Red / Gradient Accent */}

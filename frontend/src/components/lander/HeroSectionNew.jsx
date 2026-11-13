@@ -262,7 +262,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiPlay, FiX, FiArrowRight, FiUsers, FiStar, FiAward } from "react-icons/fi";
+import {
+  FiPlay,
+  FiX,
+  FiArrowRight,
+  FiUsers,
+  FiStar,
+  FiAward,
+} from "react-icons/fi";
 import { getCurrentUser } from "../../utils/auth";
 
 const HeroSectionNew = () => {
@@ -312,152 +319,159 @@ const HeroSectionNew = () => {
   // };
 
   const handleViewCourses = () => {
-  navigate("/courses");
-};
+    navigate("/courses");
+  };
 
   const parallaxOffset = scrollY * 0.15;
   const mouseParallaxX = (mousePos.x - window.innerWidth / 2) * 0.008;
   const mouseParallaxY = (mousePos.y - window.innerHeight / 2) * 0.008;
 
   return (
-    <section
-      className="relative w-full overflow-hidden text-white"
-      style={{
-        background:
-          "radial-gradient(circle at 0% 0%, rgba(145, 48, 80, 0.9) 0%, rgba(145, 48, 80, 0) 38%), radial-gradient(circle at 100% 0%, rgba(135, 36, 55, 0.9) 0%, rgba(135, 36, 55, 0) 38%), linear-gradient(180deg, #374760 0%, #3a4a67 45%, #3a4a67 100%)",
-      }}
-    >
-
-      {/* ================= HERO CONTENT ================= */}
-      {/* <div className="relative z-10 max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 md:pt-14 pb-14 sm:pb-20 lg:pb-24"> */}
-      <div className="relative z-10 max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 md:pt-36 lg:pt-40 pb-14 sm:pb-20 lg:pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-end">
-          {/* LEFT COLUMN: Headings, CTAs, Social Proof */}
-          <div className="lg:col-span-7 text-left pb-2 lg:pb-6">
-            {/* Main Headline */}
-            <h1 className="text-3xl sm:text-[42px] md:text-[48px] lg:text-[54px] font-[Poppins] font-bold text-white tracking-tight leading-[1.18] sm:leading-[1.16]">
-              Empowering Future <br />
-              Engineers Through <br />
-              Industry-Focused Training
-            </h1>
-
-            {/* Subtitle */}
-            <p className="mt-4 sm:mt-5 text-sm md:text-[16px] text-slate-200/90 max-w-xl leading-[1.6] font-normal">
-              Welcome to Aquaris Engineering Pvt. Ltd., a professional learning and training platform designed to develop technical skills and industry-ready talent.
-
-Explore specialized engineering courses, gain practical knowledge, enhance your professional skills, and build a successful career with structured training programs.  </p>
-
-            {/* Action Buttons Row */}
-            <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-5 sm:gap-6">
-              {/* View Courses Pill */}
-              <button
-                type="button"
-                onClick={handleViewCourses}
-                className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white text-slate-900 font-bold text-sm sm:text-base shadow-xl shadow-black/20 hover:bg-slate-100 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-200 cursor-pointer"
-              >
-                View Courses
-              </button>
-
-             {/* Join as Trainee Button */}
-<button
-  type="button"
   
-  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full  text-[#fff] font-semibold text-sm sm:text-base shadow-lg  hover:text-white hover:-translate-y-1 active:scale-95 transition-all duration-300 cursor-pointer"
+<section
+  className="relative w-full overflow-hidden text-white"
+  style={{
+    background:
+      "radial-gradient(circle at 0% 0%, rgba(145, 48, 80, 0.9) 0%, rgba(145, 48, 80, 0) 38%), radial-gradient(circle at 100% 0%, rgba(135, 36, 55, 0.9) 0%, rgba(135, 36, 55, 0) 38%), linear-gradient(180deg, #374760 0%, #3a4a67 45%, #3a4a67 100%)",
+  }}
 >
-  Join as Trainee
-  <FiArrowRight className="text-lg transition-transform duration-300 group-hover:translate-x-1" />
-</button>
-            </div>
-          </div>
+  {/* ================= HERO CONTENT ================= */}
+  <div className="relative z-10 max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-12 sm:pb-14 lg:pb-16">
 
-          {/* RIGHT COLUMN: Two Joyful Students Photo */}
-          <div className="lg:col-span-5 relative flex items-end justify-center lg:justify-end self-end">
-            <div className="relative w-full max-w-[480px] sm:max-w-[520px] lg:max-w-[560px] xl:max-w-[600px] lg:translate-x-4 xl:translate-x-6">
-              <img
-                src="/hero_students_reference_cutout.png"
-                alt="Two excited students learning Japanese"
-                className="relative z-10 w-full h-auto object-contain object-center select-none pointer-events-none block origin-bottom-right lg:scale-x-[1.04] xl:scale-x-[1.08] lg:scale-y-[1.12] xl:scale-y-[1.2]"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center mt-12">
 
-      {/* ================= SMOOTH BOTTOM WAVE TRANSITION ================= */}
-      <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-20 pointer-events-none">
-        <svg
-          viewBox="0 0 1440 90"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-10 sm:h-14 md:h-18 lg:h-22 block"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,45 C280,85 520,80 780,42 C1040,0 1260,45 1440,35 L1440,90 L0,90 Z"
-            fill="#ffffff"
-          />
-        </svg>
-      </div>
+      {/* LEFT COLUMN */}
+      <div className="lg:col-span-7 text-left">
 
-      {/* ================= VIDEO MODAL ================= */}
-      {isVideoOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setIsVideoOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-4xl bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
-            onClick={(e) => e.stopPropagation()}
+        <h1 className="text-3xl sm:text-[42px] md:text-[48px] lg:text-[54px] font-[Poppins] font-bold text-white tracking-tight leading-[1.18] sm:leading-[1.16]">
+          Empowering Future Engineers
+        </h1>
+
+        <p className="mt-4 sm:mt-5 text-sm md:text-[16px] text-slate-200/90 max-w-xl leading-[1.6] font-normal">
+          Welcome to TrainSphere, a professional learning and training
+          platform designed to develop technical skills and industry-ready
+          talent. Explore specialized engineering courses, gain practical
+          knowledge, enhance your professional skills, and build a
+          successful career with structured training programs.
+        </p>
+
+        {/* ACTION BUTTONS */}
+        <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-5 sm:gap-6">
+
+          <button
+            type="button"
+            onClick={handleViewCourses}
+            className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white text-slate-900 font-bold text-sm sm:text-base shadow-xl shadow-black/20 hover:bg-slate-100 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-200 cursor-pointer"
           >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-slate-800/80 border-b border-slate-700">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#c52d3f] animate-pulse" />
-                <h3 className="text-base font-bold text-white">Nihongo LMS — Platform Overview &amp; Learning Journey</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsVideoOpen(false)}
-                className="p-1.5 rounded-full bg-slate-700 text-slate-300 hover:text-white hover:bg-slate-600 transition cursor-pointer"
-                aria-label="Close video"
-              >
-                <FiX size={20} />
-              </button>
-            </div>
+            View Courses
+          </button>
 
-            {/* Video Container */}
-            <div className="relative aspect-video w-full bg-black">
-              <iframe
-                src="https://www.youtube-nocookie.com/embed/s6DKRPmsu_k?autoplay=1&rel=0"
-                title="Japanese Language Learning Overview"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full border-0"
-              />
-            </div>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-white font-semibold text-sm sm:text-base shadow-lg hover:text-white hover:-translate-y-1 active:scale-95 transition-all duration-300 cursor-pointer"
+          >
+            Join as Trainee
+            <FiArrowRight className="text-lg transition-transform duration-300 group-hover:translate-x-1" />
+          </button>
 
-            {/* Modal Footer */}
-            <div className="px-6 py-4 bg-slate-800/90 flex flex-wrap items-center justify-between gap-4">
-              <p className="text-xs sm:text-sm text-slate-300">
-                Ready to accelerate your fluency? Join thousands of students mastering Japanese today.
-              </p>
-              {/* Explore Courses button commented out as requested */}
-              {/* <button
-                type="button"
-                onClick={() => {
-                  setIsVideoOpen(false);
-                  navigate("/courses");
-                }}
-                className="px-5 py-2 rounded-full bg-[#c52d3f] text-white text-xs sm:text-sm font-semibold hover:bg-[#a01825] transition cursor-pointer flex items-center gap-2"
-              >
-                <span>Explore Courses</span>
-                <FiArrowRight size={14} />
-              </button> */}
-            </div>
-          </div>
         </div>
-      )}
-    </section>
+      </div>
+
+      {/* RIGHT COLUMN - STUDENTS IMAGE */}
+      <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end self-center">
+
+        <div className="relative w-full max-w-[480px] sm:max-w-[520px] lg:max-w-[560px] xl:max-w-[600px] lg:translate-x-4 xl:translate-x-6">
+
+          <img
+            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop"
+            alt="Students Participating in English Communication and Computer Training"
+            className="relative z-10 w-full h-[350px] sm:h-[400px] lg:h-[420px] mx-auto object-cover object-center rounded-2xl select-none pointer-events-none block mb-8"
+          />
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {/* ================= BOTTOM WHITE CURVE ================= */}
+  <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-20 pointer-events-none">
+
+    <svg
+      viewBox="0 0 1440 90"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-full h-12 sm:h-14 md:h-16 lg:h-20 block"
+      preserveAspectRatio="none"
+    >
+      <path
+        d="M0,35 C260,80 480,85 720,50 C980,10 1190,5 1440,40 L1440,90 L0,90 Z"
+        fill="#ffffff"
+      />
+    </svg>
+
+  </div>
+
+  {/* ================= VIDEO MODAL ================= */}
+  {isVideoOpen && (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={() => setIsVideoOpen(false)}
+    >
+      <div
+        className="relative w-full max-w-4xl bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
+        onClick={(e) => e.stopPropagation()}
+      >
+
+        {/* MODAL HEADER */}
+        <div className="flex items-center justify-between px-6 py-4 bg-slate-800/80 border-b border-slate-700">
+
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#c52d3f] animate-pulse" />
+
+            <h3 className="text-base font-bold text-white">
+              TrainSphere — Training Programs Overview
+            </h3>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsVideoOpen(false)}
+            className="p-1.5 rounded-full bg-slate-700 text-slate-300 hover:text-white hover:bg-slate-600 transition cursor-pointer"
+            aria-label="Close video"
+          >
+            <FiX size={20} />
+          </button>
+
+        </div>
+
+        {/* VIDEO CONTAINER */}
+        <div className="relative aspect-video w-full bg-black">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/s6DKRPmsu_k?autoplay=1&rel=0"
+            title="TrainSphere Training Programs Overview"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full border-0"
+          />
+        </div>
+
+        {/* MODAL FOOTER */}
+        <div className="px-6 py-4 bg-slate-800/90 flex flex-wrap items-center justify-between gap-4">
+
+          <p className="text-xs sm:text-sm text-slate-300">
+            Enhance your technical skills and build a successful career
+            with TrainSphere professional training programs.
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+  )}
+
+</section>
+
   );
 };
 

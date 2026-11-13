@@ -272,8 +272,7 @@ const CourseSection = () => {
           </h2>
 
           <p className="mt-2 text-slate-500 max-w-2xl mx-auto">
-            Master Japanese with structured JLPT-focused courses designed by experienced instructors and industry professionals.
-          </p>
+           TrainSphere offers industry-focused training programs designed by experienced instructors and professionals to enhance your skills and build a successful career.</p>
         </div>
 
         {/* CATEGORY TABS */}

@@ -1082,17 +1082,17 @@ useEffect(() => {
                                     {/* was: text-xs */}
                                     <p className="text-[13px] text-slate-700 leading-relaxed">
                                         {selectedLesson?.lesson_description ||
-                                            `In this lesson "${selectedLesson?.lesson_title || 'Hiragana Basics'}", you will learn foundational concepts essential for mastering Japanese N5. Practice listening carefully to pronunciation cues and reviewing example exercises.`}
+                                            `In this lesson "${selectedLesson?.lesson_title || 'IT & Engineering Fundamentals'}", you will learn essential concepts to build a strong foundation in IT and engineering. Explore practical examples, understand key technical concepts, and strengthen your skills through hands-on exercises and real-world applications.`}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 shadow-sm">
                                         <h4 className="text-[14px] font-bold uppercase tracking-wider text-[#35175a] mb-1">
-                                            Japanese Quick Tip 💡
+                                            training platform Tip 💡
                                         </h4>
                                         <p className="text-[13px] text-purple-700/70">
-                                            Pay attention to stroke order (hitsujun) when writing Hiragana. Strokes always flow from top to bottom, left to right!
+                                           Explore our IT & Engineering courses to develop technical expertise, enhance practical skills, and gain industry-relevant knowledge. Learn programming, software development, web technologies, networking, and engineering fundamentals through structured training programs!
                                         </p>
                                     </div>
 

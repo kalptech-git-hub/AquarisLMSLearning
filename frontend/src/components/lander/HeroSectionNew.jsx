@@ -366,13 +366,13 @@ const HeroSectionNew = () => {
             View Courses
           </button>
 
-          <button
+          {/* <button
             type="button"
             className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-white font-semibold text-sm sm:text-base shadow-lg hover:text-white hover:-translate-y-1 active:scale-95 transition-all duration-300 cursor-pointer"
           >
             Join as Trainee
             <FiArrowRight className="text-lg transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
+          </button> */}
 
         </div>
       </div>

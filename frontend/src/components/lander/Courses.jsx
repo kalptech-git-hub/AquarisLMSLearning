@@ -911,8 +911,8 @@ const Courses = () => {
                         </div>
 
                         {/* Interactive Filter & Search Controls from Image 2 */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 sm:mb-10 pb-6 border-b border-slate-200/80">
-                            {/* JLPT Level Filter Chips */}
+                        {/* <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 sm:mb-10 pb-6 border-b border-slate-200/80">
+                           
                             <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
                                 {levels.map((lvl) => {
                                     const isActive = selectedLevel === lvl;
@@ -932,7 +932,7 @@ const Courses = () => {
                                 })}
                             </div>
 
-                            {/* Search Input */}
+                            
                             <div className="relative w-full md:w-72">
                                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                 <input
@@ -952,7 +952,7 @@ const Courses = () => {
                                     </button>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Courses Grid */}
                         {loading ? (

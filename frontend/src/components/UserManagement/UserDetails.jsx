@@ -144,7 +144,7 @@ const UserDetails = ({ user, setViewingUser, handleEdit }) => {
                         </button> */}
 
                         <button
-                            onClick={() => setViewingUser(false)}
+                            onClicck={() => setViewingUser(false)}
                             // was: className="p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition"
                             className="p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition"
                         >

@@ -40,6 +40,8 @@ import StudentCourseLearn from "./pages/Dashboard/student/StudentCourseLearn";
 import CompanyDashboard from "./pages/Dashboard/company/CompanyDashboard.jsx";
 import CompanyLayout from "./components/company/CompanyLayout.jsx";
 import CompanyEmployeesManagement from "./pages/Dashboard/company/CompanyEmployeesManagement.jsx";
+import CompanyManagement from "./pages/Dashboard/admin/CompanyManagement.jsx";
+import CompanyProfile from "./components/company/CompanyProfile.jsx";
 
 const AppContent = ({ toastPosition }) => {
   const location = useLocation();
@@ -85,6 +87,7 @@ const AppContent = ({ toastPosition }) => {
           <Route path="admincourses" element={<AdminCourses />} />
           <Route path="enrollments" element={<StudentEnrollments />} />
           <Route path="profile" element={<AdminProfile />} />
+          <Route path="companies" element={<CompanyManagement />} />
         </Route>
 
         <Route
@@ -117,7 +120,8 @@ const AppContent = ({ toastPosition }) => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<CompanyDashboard />} />
-          <Route path="employees" element={<CompanyEmployeesManagement />} />
+          <Route path="profile" element={<CompanyProfile />} />
+          <Route path="trainees" element={<CompanyEmployeesManagement />} />
         </Route>
 
         <Route

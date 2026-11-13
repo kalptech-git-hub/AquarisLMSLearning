@@ -3,6 +3,7 @@ const companyAdminMiddleware = (req, res, next) => {
 
     // console.log("Authenticated user:", req.user);
     // console.log("Company ID:", req.user?.company_id);
+    // console.log("Company name:", req.user?.company_name);
 
 
     if (!req.user) {

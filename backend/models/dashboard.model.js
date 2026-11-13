@@ -13,6 +13,7 @@ exports.getDashboardStatsModel = async () => {
     [[studentCount]],
     [[enrollmentCount]],
     [[instructorCount]],
+    [[companyCount]],
   ] = await Promise.all([
     db.query(`
       SELECT COUNT(*) AS totalCourses
@@ -72,6 +73,11 @@ exports.getDashboardStatsModel = async () => {
       WHERE CAST(i.is_active AS UNSIGNED) = 1
         AND CAST(u.is_active AS UNSIGNED) = 1
     `),
+
+    db.query(`
+      SELECT COUNT(*) AS totalCompanies
+      FROM tbl_companies
+    `),
   ]);
 
   return {
@@ -86,6 +92,7 @@ exports.getDashboardStatsModel = async () => {
     totalStudents: studentCount.totalStudents,
     totalEnrollments: enrollmentCount.totalEnrollments,
     totalInstructors: instructorCount.totalInstructors,
+    totalCompanies: companyCount.totalCompanies,
   };
 };
 

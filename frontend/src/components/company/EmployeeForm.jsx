@@ -107,8 +107,8 @@ const EmployeeForm = ({
           }
         }
       } catch (err) {
-        console.error("Error loading employee details:", err);
-        toast.error("Failed to load employee details.");
+        console.error("Error loading Trainee details:", err);
+        toast.error("Failed to load Trainee details.");
 
         if (onCancel) onCancel();
       } finally {
@@ -376,19 +376,19 @@ const EmployeeForm = ({
         toast.success(
           response.data.message ||
           (isEditing
-            ? "Employee updated successfully!"
-            : "Employee created successfully!")
+            ? "Trainee updated successfully!"
+            : "Trainee created successfully!")
         );
 
         if (onSuccess) onSuccess();
       }
     } catch (error) {
-      console.error("API error saving employee:", error);
+      console.error("API error saving Trainee:", error);
 
       const errMsg =
         error.response?.data?.error ||
         error.response?.data?.message ||
-        "Failed to save employee.";
+        "Failed to save Trainee.";
 
       toast.error(errMsg);
 
@@ -426,7 +426,7 @@ const EmployeeForm = ({
       <div className="flex justify-center items-center py-20">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600" />
         <span className="ml-3 text-gray-600 font-medium">
-          Loading employee data...
+          Loading trainee data...
         </span>
       </div>
     );
@@ -443,17 +443,17 @@ const EmployeeForm = ({
             onClick={onCancel}
             disabled={loading}
             className="p-2 hover:bg-gray-200 rounded-full transition text-gray-600 cursor-pointer"
-            title="Back to Employees"
+            title="Back to Trainees"
           >
             <FiArrowLeft size={20} />
           </button>
 
           <div>
             <h2 className="text-xl font-bold text-gray-800">
-              {isEditing ? "Edit Employee" : "Add New Employee"}
+              {isEditing ? "Edit Trainee" : "Add New Trainee"}
             </h2>
             <p className="text-xs text-gray-500">
-              Create employee login credentials and professional details
+              Create Trainee login credentials and professional details
             </p>
           </div>
         </div>
@@ -514,7 +514,7 @@ const EmployeeForm = ({
 
           <div className="text-center sm:text-left">
             <h4 className="font-semibold text-gray-700">
-              Employee Avatar
+              Trainee Avatar
             </h4>
 
             <p className="text-xs text-gray-500 mt-1">
@@ -770,12 +770,12 @@ const EmployeeForm = ({
           </div>
         </div>
 
-        {/* Section 2: Employee Details */}
+        {/* Section 2: Trainee Details */}
 
-        {/* Section 2: Employee Profile Details */}
+        {/* Section 2: Trainee Profile Details */}
         {/* <div className="pt-4 border-t border-gray-100">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-[#0E182B] mb-4">
-            2. Employee Profile Details
+            2. Trainee Profile Details
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -819,7 +819,7 @@ const EmployeeForm = ({
                 rows={3}
                 value={formData.user_postal_address}
                 onChange={handleChange}
-                placeholder="Enter employee's postal address"
+                placeholder="Enter trainee's postal address"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 resize-y"
                 disabled={loading}
               />
@@ -839,11 +839,11 @@ const EmployeeForm = ({
 
             <div>
               <p className="text-sm font-medium text-gray-700">
-                Employee Account
+                Trainee Account
               </p>
 
               <p className="text-xs text-gray-500 mt-1">
-                Active employees are permitted to sign in and view
+                Active trainees are permitted to sign in and view
                 their assigned courses.
               </p>
             </div>

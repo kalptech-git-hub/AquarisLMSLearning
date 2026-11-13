@@ -252,6 +252,9 @@ exports.findUserByEmail = async (email) => {
       u.role_id,
       u.company_id,
       u.created_at,
+
+      c.company_name,
+
       (
         SELECT e.enroll_postal_address
         FROM tbl_enrollments e
@@ -259,23 +262,34 @@ exports.findUserByEmail = async (email) => {
         ORDER BY e.created_at DESC
         LIMIT 1
       ) AS address,
+
       (
         SELECT COUNT(*)
         FROM tbl_enrollments e
         WHERE e.user_id = u.user_id
           AND e.enroll_status = 'A'
       ) AS enrolled_count,
+
       i.ins_qualification AS qualification,
       i.ins_experience AS experience,
       i.ins_bio AS biography,
+
       r.role_code,
       r.role_name,
+
       CAST(u.is_active AS UNSIGNED) AS is_active
+
     FROM tbl_users u
+
     INNER JOIN tbl_roles r
       ON u.role_id = r.role_id
+
     LEFT JOIN tbl_instructors i
       ON i.user_id = u.user_id
+    
+    LEFT JOIN tbl_companies c
+      ON u.company_id = c.company_id
+
     WHERE u.user_email = ?
     LIMIT 1
   `;

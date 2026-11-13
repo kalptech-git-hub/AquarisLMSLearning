@@ -18,10 +18,15 @@ const menuItems = [
         icon: LayoutDashboard,
         path: "/admin/dashboard",
     },
+    // {
+    //     name: "Instructors",
+    //     icon: User,
+    //     path: "/admin/instructors",
+    // },
     {
-        name: "Instructors",
+        name: "Companies",
         icon: User,
-        path: "/admin/instructors",
+        path: "/admin/companies",
     },
     {
         name: "Course Categories",
@@ -33,11 +38,11 @@ const menuItems = [
         icon: FileText,
         path: "/admin/add-course",  //was add-training
     },
-    {
-        name: "Student Enrollments",
-        icon: UserCheck,
-        path: "/admin/enrollments",
-    },
+    // {
+    //     name: "Student Enrollments",
+    //     icon: UserCheck,
+    //     path: "/admin/enrollments",
+    // },
 ];
 
 // isOpen / onClose control the phone/tablet drawer state (< md). On desktop (md+) the
@@ -77,7 +82,7 @@ const AdminSidebar = ({ isOpen = false, onClose = () => {} }) => {
 
                 <div>
                     <h1 className="text-3xl font-bold text-slate-800">
-                        Admin
+                        Aquaris
                     </h1>
                     <p className="text-sm text-slate-500">
                         Panel

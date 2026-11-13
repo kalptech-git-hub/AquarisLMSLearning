@@ -22,6 +22,7 @@ const getTrainingStatus = (course) => {
     }
     return course.is_active === 1 ? "active" : "inactive";
 };
+
 const formatFee = (fee) => {
     if (fee === null || fee === undefined || fee === "") return "—";
     const num = Number(fee);

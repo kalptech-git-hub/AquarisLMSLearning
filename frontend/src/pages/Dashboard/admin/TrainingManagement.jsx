@@ -46,43 +46,7 @@ const TrainingManagement = ({ }) => {
     const [loadingTopics, setLoadingTopics] = useState(true);
 
 
-    /* PREVIOUS WHICH WAS GIVING DOUBLE TOAST. */
-    // const fetchCourses = async () => {
-    //     try {
-    //         setLoading(true);
-
-    //         const token = sessionStorage.getItem('token');
-
-    //         const response = await axios.get(
-    //             `${import.meta.env.VITE_API_BASE_URL}/api/courses/`,
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             }
-    //         );
-
-    //         if (response.data.success) {
-    //             setCourses(response.data.courses);
-    //         }
-
-    //         // console.log(response.data);
-
-    //     } catch (error) {
-    //         console.error(error);
-
-    //         toast.error(
-    //             error.response?.data?.message || "Failed to fetch courses."
-    //         );
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchCourses();
-    // }, []);
-
+    
     /* DOUBLE TOAST PREVENTED */
     /* Actually fetching training- but anyway name is changed to Courses */
     /* Training Route */
@@ -142,16 +106,6 @@ const TrainingManagement = ({ }) => {
         setShowDetails(true);
     };
 
-    // const handleEdit = (course) => {
-    //     console.log(course);
-    // };
-
-    // const handleEdit = (course) => {
-    //     setSelectedCourse(course);
-    //     setEditingCourseId(course.training_id);
-    //     setShowForm(true);
-    // };
-
     const handleEdit = (course) => {
         setSelectedCourse(course);
         setEditingTrainingId(course.training_id);
@@ -173,11 +127,6 @@ const TrainingManagement = ({ }) => {
         setShowTopicManagement(true);
     };
 
-    // const handleEditTopic = (topic) => {
-    //     setEditingTopic(topic);
-    //     setCourseDetailsTab("topics");
-    //     setShowTopicForm(true);
-    // };
 
     const handleEditTopic = (topic) => {
         setEditingTopic(topic);
@@ -415,11 +364,3 @@ const TrainingManagement = ({ }) => {
 
 export default TrainingManagement;
 
-// showTopicForm ? (
-
-//                 <TopicForm
-//                     setShowTopicForm={setShowTopicForm}
-//                     editingTopic={editingTopic}
-//                 />
-
-//             )

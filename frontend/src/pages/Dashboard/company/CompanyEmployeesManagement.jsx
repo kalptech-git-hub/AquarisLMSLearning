@@ -84,9 +84,13 @@ const CompanyEmployeesManagement = () => {
 
   const [editingEmployeeId, setEditingEmployeeId] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  // const [employees, setEmployees] = useState([]);
-  const [employees, setEmployees] = useState(DUMMY_EMPLOYEES);
+  const [employees, setEmployees] = useState([]);
+  const [companyCourses, setCompanyCourses] = useState([]);
+  // const [employees, setEmployees] = useState(DUMMY_EMPLOYEES);
+
   const [loading, setLoading] = useState(false);
+  const [coursesLoading, setCoursesLoading] = useState(false);
+
 
   // Fetch all employees under this company
   const fetchEmployees = async (signal) => {
@@ -109,10 +113,11 @@ const CompanyEmployeesManagement = () => {
 
       if (
         response.data?.success &&
-        Array.isArray(response.data.data) &&
-        response.data.data.length > 0
+        Array.isArray(response.data.data)
       ) {
         setEmployees(response.data.data);
+      } else {
+        setEmployees([]);
       }
     } catch (error) {
       if (axios.isCancel(error)) return;
@@ -147,9 +152,136 @@ const CompanyEmployeesManagement = () => {
     }
   };
 
+  // Fetch Company Courses
+  const fetchCompanyCourses = async (signal) => {
+    setCoursesLoading(true);
+
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/company/courses`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          signal,
+        }
+      );
+
+      if (response.data?.success) {
+        setCompanyCourses(response.data.data || []);
+      } else {
+        setCompanyCourses([]);
+      }
+
+    } catch (error) {
+      if (axios.isCancel(error)) return;
+
+      console.error("Failed to fetch company courses:", error);
+      toast.error("Failed to fetch company courses.");
+      setCompanyCourses([]);
+
+    } finally {
+      if (!signal?.aborted) {
+        setCoursesLoading(false);
+      }
+    }
+  };
+
+  /*Enroll employee in selected trainings */
+  // const handleEnrollEmployee = async ({ employee_id, training_ids }) => {
+  //   try {
+  //     const token = sessionStorage.getItem("token");
+
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_API_BASE_URL}/api/company/enroll-employee`,
+  //       {
+  //         employee_id,
+  //         training_ids,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data?.success) {
+  //       toast.success(response.data.message || "Trainee enrolled successfully!");
+
+  //       await fetchEmployees();
+
+  //       return response.data;
+  //     }
+
+  //     throw new Error(response.data?.message || "Enrollment failed.");
+
+  //   } catch (error) {
+  //     console.error("Trainee enrollment error:", error);
+
+  //     toast.error(
+  //       error.response?.data?.message ||
+  //       error.message ||
+  //       "Failed to enroll trainee."
+  //     );
+
+  //     throw error;
+  //   }
+  // };
+
+ /* */
+  const handleEnrollEmployee = async ({ user_id, training_ids }) => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/company/enroll-employee`,
+        {
+          user_id,
+          training_ids
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data?.success) {
+        toast.success(
+          response.data.message || "Employee enrolled successfully!"
+        );
+
+        await fetchEmployees();
+
+        return response.data;
+      }
+
+      throw new Error(
+        response.data?.message || "Enrollment failed."
+      );
+
+    } catch (error) {
+      console.error("Employee enrollment error:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to enroll employee."
+      );
+
+      throw error;
+    }
+  };
+
+
   useEffect(() => {
     const controller = new AbortController();
+
     fetchEmployees(controller.signal);
+    fetchCompanyCourses(controller.signal);
+
     return () => controller.abort();
   }, []);
 
@@ -193,10 +325,10 @@ const CompanyEmployeesManagement = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-slate-800">
-                Company Employees
+                Company Trainees
               </h1>
               <p className="text-sm text-slate-500">
-                Manage all registered learners under your organization
+                Manage all registered trainees under your organization
               </p>
             </div>
 
@@ -209,7 +341,7 @@ const CompanyEmployeesManagement = () => {
               className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition cursor-pointer"
             >
               <FiPlus size={18} />
-              Add New Employee
+              Add New Trainees
             </button>
           </div>
 
@@ -217,8 +349,11 @@ const CompanyEmployeesManagement = () => {
           <EmployeeTable
             employees={employees}
             loading={loading}
-          // handleView={handleView}
-          // handleEdit={handleEdit}
+            handleView={handleView}
+            handleEdit={handleEdit}
+            companyCourses={companyCourses}
+            coursesLoading={coursesLoading}
+            handleEnrollEmployee={handleEnrollEmployee}
           />
         </>
       ) : showForm ? (

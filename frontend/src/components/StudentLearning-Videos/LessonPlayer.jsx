@@ -1082,7 +1082,7 @@ useEffect(() => {
                                     {/* was: text-xs */}
                                     <p className="text-[13px] text-slate-700 leading-relaxed">
                                         {selectedLesson?.lesson_description ||
-                                            `In this lesson "${selectedLesson?.lesson_title || 'IT & Engineering Fundamentals'}", you will learn essential concepts to build a strong foundation in IT and engineering. Explore practical examples, understand key technical concepts, and strengthen your skills through hands-on exercises and real-world applications.`}
+                                            `In this lesson "${selectedLesson?.lesson_title || ' Engineering Fundamentals'}", you will learn essential concepts to build a strong foundation in  engineering. Explore practical examples, understand key technical concepts, and strengthen your skills through hands-on exercises and real-world applications.`}
                                     </p>
                                 </div>
 
@@ -1092,7 +1092,7 @@ useEffect(() => {
                                             training platform Tip 💡
                                         </h4>
                                         <p className="text-[13px] text-purple-700/70">
-                                           Explore our IT & Engineering courses to develop technical expertise, enhance practical skills, and gain industry-relevant knowledge. Learn programming, software development, web technologies, networking, and engineering fundamentals through structured training programs!
+                                           Explore our Construction & Engineering courses to develop technical expertise, enhance practical skills, and gain industry-relevant knowledge. Learn building construction, civil engineering, architectural design, structural engineering, site management, and construction technologies through structured training programs!
                                         </p>
                                     </div>
 

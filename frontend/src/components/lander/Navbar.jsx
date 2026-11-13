@@ -416,7 +416,7 @@ const Navbar = ({ hideOnHero = false }) => {
                                         group-hover:scale-105
                                     "
                                 >
-                                    {/* <svg
+                                    <svg
                                         viewBox="0 0 40 40"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg"
@@ -445,7 +445,7 @@ const Navbar = ({ hideOnHero = false }) => {
                                             d="M17 32L22 23L27 34L17 32Z"
                                             fill="#7a1f44"
                                         />
-                                    </svg> */}
+                                    </svg>
 
                                     {/* <img
                                         src="/lms_logo.png"

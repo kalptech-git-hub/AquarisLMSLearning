@@ -4,7 +4,7 @@ import CourseCurriculum from "./CourseCurriculum";
 import CircularProgress from "./CircularProgress";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiSidebar } from "react-icons/fi";
-import DictionaryWidget from "./DictionaryWidget";
+// import DictionaryWidget from "./DictionaryWidget";
 import StudentNotificationBell from "../student/StudentNotificationBell";
 
 const LearningLayout = ({
@@ -46,6 +46,8 @@ const LearningLayout = ({
             if (
                 e.key === "PrintScreen" || 
                 key === "printscreen" || 
+                key === "print" ||
+                e.code === "PrintScreen" ||
                 e.keyCode === 44 || 
                 e.key === "Meta" || 
                 e.key === "Win" ||
@@ -91,14 +93,14 @@ const LearningLayout = ({
 
         container.addEventListener("contextmenu", handleContextMenu);
         window.addEventListener("keydown", handleKeyDown, true);
-       
+       window.addEventListener("keyup", handleKeyDown, true);
         window.addEventListener("blur", handleBlur);
         document.addEventListener("visibilitychange", handleVisibilityChange);
 
         return () => {
             container.removeEventListener("contextmenu", handleContextMenu);
             window.removeEventListener("keydown", handleKeyDown, true);
-            window.removeEventListener("keyup", handleKeyUp, true);
+            window.removeEventListener("keyup", handleKeyDown, true);
             window.removeEventListener("blur", handleBlur);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
@@ -175,14 +177,14 @@ const LearningLayout = ({
 
                     <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate("/")}>
                         <div className="w-7 h-7 sm:w-8 sm:h-8 relative transition-transform duration-200 group-hover:scale-105">
-                            <img
+                            {/* <img
                                 src="/lms_logo.png"
                                 alt="AFJ Logo"
                                 className="relative z-10 w-full h-auto object-contain object-center select-none pointer-events-none block origin-bottom-right"
-                            />
+                            /> */}
                         </div>
                         <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent hidden xl:block">
-                            Nihongo LMS
+                            TrainSphere
                         </h1>
                     </div>
 
@@ -240,7 +242,7 @@ const LearningLayout = ({
                         toggleLessonCompletion={markLessonCompleted}
                         resourceData={resourceData}
                     />
-                    <DictionaryWidget />
+                    {/* <DictionaryWidget /> */}
                 </div>
 
                 <CourseCurriculum

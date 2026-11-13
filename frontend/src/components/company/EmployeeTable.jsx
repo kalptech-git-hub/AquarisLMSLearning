@@ -12,6 +12,8 @@ import {
 import { selectStyles } from "../../utils/selectStyles.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
+import { MdHowToReg } from "react-icons/md";
+import { FaUserPlus } from "react-icons/fa";
 
 // Columns pinned on the left on phone widths while the rest scroll horizontally
 const STICKY_COLUMN_IDS = ["index", "user_full_name"];
@@ -215,7 +217,9 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
                hover:text-emerald-800 cursor-pointer"
               title="Enroll Trainee"
             >
-              <BookOpen size={18} />
+              {/* <BookOpen size={18} /> */}
+              <MdHowToReg size={20} />
+              {/* <FaUserPlus size={20} /> */}
             </button>
 
           </div>

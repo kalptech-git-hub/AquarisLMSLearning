@@ -20,9 +20,9 @@ const menuItems = [
     path: "/company/dashboard",
   },
   {
-    name: "Employees",
+    name: "Trainees",
     icon: Users,
-    path: "/company/employees",
+    path: "/company/trainees",
   },
   // {
   //   name: "Assigned Courses",
@@ -63,25 +63,36 @@ const CompanySidebar = ({ isOpen = false, onClose = () => { } }) => {
       </button>
 
       {/* Brand Header */}
-      <div className="flex items-center gap-3 mb-10">
+      {/* <div className="flex items-center gap-3 mb-10">
         <div className="bg-red-600 p-3 rounded-xl shadow-md text-white">
           <Building2 size={24} />
         </div>
-        {/* <div className="overflow-hidden">
-          <h1 className="text-xl font-bold text-slate-800 truncate" title={companyName}>
-            {companyName}
-          </h1>
-          <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">
-            Company Admin
-          </p>
-        </div> */}
+         
 
         <div className="overflow-hidden">
           <h1 className="text-3xl font-bold text-slate-800">
-            Company
+            {currentUser?.company_name || "Client Portal"}
           </h1>
           <p className="text-sm text-slate-500">
             Panel
+          </p>
+        </div>
+      </div> */}
+
+      <div className="flex items-center gap-3 mb-10">
+        <div className="bg-red-600 p-3 rounded-xl shadow-md text-white flex-shrink-0">
+          <Building2 size={24} />
+        </div>
+
+        <div className="overflow-hidden min-w-0 flex-1">
+          <h1
+            className="text-lg font-bold text-slate-800 truncate"
+            title={companyName}
+          >
+            {companyName}
+          </h1>
+          <p className="text-xs text-slate-500 font-medium">
+            Company Panel
           </p>
         </div>
       </div>

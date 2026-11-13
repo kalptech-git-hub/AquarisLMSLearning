@@ -331,7 +331,7 @@ const CompanyLayout = () => {
 
   };
 
-  const isOnProfile = location.pathname === "/copmany/profile";
+  const isOnProfile = location.pathname === "/company/profile";
 
   const notificationRef = useRef(null);
 
@@ -381,9 +381,9 @@ const CompanyLayout = () => {
   const handleProfileClick = () => {
 
     if (isOnProfile) {
-      navigate(location.state?.from || "/admin/dashboard");
+      navigate(location.state?.from || "/company/dashboard");
     } else {
-      navigate("/admin/profile", {
+      navigate("/company/profile", {
         state: {
           from: location.pathname
         }
@@ -428,12 +428,12 @@ const CompanyLayout = () => {
             </button>
 
             {/* Company Name - LEFT CORNER */}
-            <div className="hidden sm:flex items-center justify-start gap-2">
+            {/* <div className="hidden sm:flex items-center justify-start gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">
                 <Building2 size={14} />
                 {user?.company_name || "Client Portal"}
               </span>
-            </div>
+            </div> */}
 
           </div>
           {/* <button
@@ -591,7 +591,7 @@ const CompanyLayout = () => {
             </div>
 
             <div
-              // onClick={handleProfileClick}
+              onClick={handleProfileClick}
               onMouseEnter={() => setShowProfileMessage(true)}
               onMouseLeave={() => setShowProfileMessage(false)}
               // was: className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-red-100 cursor-pointer hover:bg-red-50 transition-colors"

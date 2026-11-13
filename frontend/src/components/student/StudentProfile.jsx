@@ -111,7 +111,7 @@ const StudentProfile = () => {
                     <div>
                       <p className="text-sm text-gray-500">Role</p>
                       <p className="font-semibold">
-                        Student
+                        Trainee
                       </p>
                     </div>
                   </div>

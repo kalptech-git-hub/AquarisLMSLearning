@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, BookOpen, X } from "lucide-react";
 import { FiEdit, FiEdit2, FiEye } from "react-icons/fi";
 import {
   useReactTable,
@@ -12,11 +12,20 @@ import {
 import { selectStyles } from "../../utils/selectStyles.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
+import { MdHowToReg } from "react-icons/md";
+import { FaUserPlus } from "react-icons/fa";
 
 // Columns pinned on the left on phone widths while the rest scroll horizontally
 const STICKY_COLUMN_IDS = ["index", "user_full_name"];
 
-const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
+const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, companyCourses = [], coursesLoading,
+  handleEnrollEmployee }) => {
+
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedTrainings, setSelectedTrainings] = useState([]);
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -60,6 +69,39 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
     }));
   };
 
+  const openEnrollModal = (employee) => {
+    setSelectedEmployee(employee);
+    setSelectedTrainings([]);
+    setShowEnrollModal(true);
+  };
+
+  const closeEnrollModal = () => {
+    setShowEnrollModal(false);
+    setSelectedEmployee(null);
+    setSelectedTrainings([]);
+  };
+
+  const submitEnrollment = async () => {
+    if (!selectedTrainings.length || !selectedEmployee) return;
+
+    try {
+      setEnrolling(true);
+
+      await handleEnrollEmployee({
+        user_id: selectedEmployee.user_id,
+        training_ids: selectedTrainings.map(
+          training => training.value
+        )
+      });
+
+      closeEnrollModal();
+
+    } catch (error) {
+      console.error("Enrollment failed:", error);
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   const statusOptions = [
     { value: "all", label: "All Statuses" },
@@ -149,7 +191,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
 
           <div className="flex items-center justify-center gap-1">
 
-            <button
+            {/* <button
               onClick={() =>
                 handleView(row.original)
               }
@@ -157,9 +199,9 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
               title="View Instructor"
             >
               <FiEye className="text-lg" />
-            </button>
+            </button> */}
 
-            <button
+            {/* <button
               onClick={() =>
                 handleEdit(row.original)
               }
@@ -167,6 +209,17 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
               title="Edit Instructor"
             >
               <FiEdit className="text-lg" />
+            </button> */}
+
+            <button
+              onClick={() => openEnrollModal(row.original)}
+              className="flex items-center gap-1 text-emerald-600
+               hover:text-emerald-800 cursor-pointer"
+              title="Enroll Trainee"
+            >
+              {/* <BookOpen size={18} /> */}
+              <MdHowToReg size={20} />
+              {/* <FaUserPlus size={20} /> */}
             </button>
 
           </div>
@@ -203,7 +256,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
 
       <div className="flex justify-center items-center py-20">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600"></div>
-        <span className="ml-3 text-gray-600 font-medium">Loading employees table...</span>
+        <span className="ml-3 text-gray-600 font-medium">Loading trainees table...</span>
       </div>
     );
   }
@@ -214,7 +267,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
   // Left offset for the second sticky column (Name) = width of the Sr. No column (56px, set via min-w below)
   const stickyLeftOffset = (colId) => (colId === "user_full_name" ? "56px" : "0px");
 
-  return (    
+  return (
     <div className="space-y-4">
 
       <button
@@ -245,7 +298,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
 
         <div className="flex items-center gap-2 px-4 py-2 rounded-lg shadow-sm border border-slate-200 bg-white">
           <span className="text-sm font-semibold text-slate-600">
-            Total Employees:
+            Total Trainees:
           </span>
 
           <span className="text-base font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full">
@@ -272,6 +325,8 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
           menuPortalTarget={document.body}
           menuPosition="fixed"
         />
+
+
       </div>
 
 
@@ -402,9 +457,9 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
                         // was: className="px-6 py-4 text-sm"
                         className={`px-4 sm:px-6 py-4 text-sm
                                ${sticky
-                              ? "sticky z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.15)] bg-white group-hover:bg-gray-50"
-                              : ""
-                            
+                            ? "sticky z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.15)] bg-white group-hover:bg-gray-50"
+                            : ""
+
                           }
                                                     ${cell.column.id === "index"
                             ? "min-w-[56px]"
@@ -440,7 +495,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
                   colSpan={columns.length}
                   className="text-center py-6 text-gray-500"
                 >
-                  No employees found.
+                  No trainees found.
                 </td>
 
               </tr>
@@ -613,6 +668,132 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit }) => {
         </div>
 
       </div>
+
+      {/* Enroll Trainee Modal */}
+      {showEnrollModal && (
+        <div className="fixed inset-0 z-[1000] flex items-center
+                    justify-center bg-black/50 p-4">
+
+          <div className="bg-white rounded-2xl shadow-2xl
+                        w-full max-w-xl overflow-hidden">
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between
+                            px-6 py-5 bg-slate-900 text-white">
+
+              <div>
+                <h2 className="text-xl font-semibold">
+                  Enroll Trainee
+                </h2>
+
+                <p className="text-sm text-slate-300 mt-1">
+                  Select courses for this trainee.
+                </p>
+              </div>
+
+              <button
+                onClick={closeEnrollModal}
+                className="text-slate-300 hover:text-white cursor-pointer"
+              >
+                <X size={22} />
+              </button>
+
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5">
+
+              {/* Trainee Details */}
+              <div className="bg-slate-50 border border-slate-200
+                                rounded-lg p-4">
+
+                <p className="text-xs text-slate-500 font-medium">
+                  TRAINEE
+                </p>
+
+                <p className="font-semibold text-slate-800 mt-1">
+                  {selectedEmployee?.user_full_name}
+                </p>
+
+                <p className="text-sm text-slate-500">
+                  {selectedEmployee?.user_email}
+                </p>
+
+              </div>
+
+              {/* Course Selection */}
+              <div>
+
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Select courses
+                </label>
+
+                <Select
+                  isMulti
+                  isLoading={coursesLoading}
+                  isDisabled={coursesLoading || companyCourses.length === 0}
+                  options={companyCourses.map(course => ({
+                    value: course.training_id,
+                    label: course.training_title,
+                    ...course
+                  }))}
+                  value={selectedTrainings}
+                  onChange={(selected) => setSelectedTrainings(selected || [])}
+                  placeholder="Search and select courses..."
+                  noOptionsMessage={() => "No active courses available for this company"}
+                  styles={{
+                    ...selectStyles,
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 1100
+                    })
+                  }}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                />
+
+                <p className="text-xs text-slate-500 mt-2">
+                  {selectedTrainings.length} course(s) selected
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 px-6 py-4
+                            bg-slate-50 border-t border-slate-200">
+
+              <button
+                onClick={closeEnrollModal}
+                className="px-5 py-2 rounded-lg border
+                               border-slate-300 text-slate-700
+                               hover:bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={submitEnrollment}
+                disabled={
+                  selectedTrainings.length === 0 || enrolling
+                }
+                className="px-5 py-2 rounded-lg bg-red-600
+                               text-white font-medium
+                               hover:bg-red-700
+                               disabled:opacity-50
+                               disabled:cursor-not-allowed
+                               cursor-pointer"
+              >
+                {enrolling ? "Enrolling..." : "Enroll Selected"}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
     </div>
 

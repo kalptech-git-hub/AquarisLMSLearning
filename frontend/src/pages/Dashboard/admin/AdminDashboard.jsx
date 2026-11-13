@@ -254,12 +254,21 @@ const AdminDashboard = () => {
             gradient: "linear-gradient(135deg, #F9C9C9 0%, #D7DFE9 100%)",
             path: "/admin/enrollments",
         },
+        // {
+        //     label: "Instructors",
+        //     value: stats.totalInstructors,
+        //     icon: FaChalkboardTeacher,
+        //     gradient: "linear-gradient(135deg, #D7DFE9 0%, #F9C9C9 100%)",
+        //     path: "/admin/instructors",
+
+        // },
+        
         {
-            label: "Instructors",
-            value: stats.totalInstructors,
+            label: "Companies",
+            value: stats.totalCompanies,
             icon: FaChalkboardTeacher,
             gradient: "linear-gradient(135deg, #D7DFE9 0%, #F9C9C9 100%)",
-            path: "/admin/instructors",
+            path: "/admin/companies",
 
         },
     ];

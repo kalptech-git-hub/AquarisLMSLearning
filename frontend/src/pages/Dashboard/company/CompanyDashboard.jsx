@@ -215,7 +215,7 @@ const CourseProgressList = ({ courses = [] }) => {
           </div>
 
           <p className="text-xs text-gray-400 mt-1">
-            {course.enrolledCount} employees enrolled
+            {course.enrolledCount} trainees enrolled
           </p>
         </div>
       ))}
@@ -342,11 +342,11 @@ const CompanyDashboard = () => {
 
   const statCards = [
     {
-      label: "Total Employees",
+      label: "Total Trainees",
       value: stats.totalEmployees,
       icon: Users,
       gradient: "linear-gradient(135deg, #D7DFE9 0%, #F1F3F6 100%)",
-      path: "/company/employees",
+      path: "/company/trainees",
     },
     {
       label: "Assigned Courses",
@@ -466,7 +466,7 @@ const CompanyDashboard = () => {
             className="text-sm font-medium mb-6"
             style={{ color: NAVY }}
           >
-            Employees enrolled per course
+            Trainees enrolled per course
           </p>
 
           <EmployeesPerCourseChart courses={assignedCourses} />

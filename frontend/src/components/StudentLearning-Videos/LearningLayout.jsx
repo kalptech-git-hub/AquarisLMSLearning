@@ -182,6 +182,37 @@ const LearningLayout = ({
                                 alt="AFJ Logo"
                                 className="relative z-10 w-full h-auto object-contain object-center select-none pointer-events-none block origin-bottom-right"
                             /> */}
+
+                             <svg
+                                        viewBox="0 0 40 40"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="
+                                            w-full
+                                            h-full
+                                            drop-shadow-xs
+                                        "
+                                    >
+                                        <path
+                                            d="M6 16L20 6L17 32L6 16Z"
+                                            fill="#0b2341"
+                                        />
+
+                                        <path
+                                            d="M20 6L34 12L22 23L20 6Z"
+                                            fill="#c52d3f"
+                                        />
+
+                                        <path
+                                            d="M34 12L36 21L22 23L34 12Z"
+                                            fill="#e63946"
+                                        />
+
+                                        <path
+                                            d="M17 32L22 23L27 34L17 32Z"
+                                            fill="#7a1f44"
+                                        />
+                                    </svg>
                         </div>
                         <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent hidden xl:block">
                             TrainSphere

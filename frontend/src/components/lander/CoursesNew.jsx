@@ -403,7 +403,7 @@ const CourseSection = () => {
                               {String(lessons).toLowerCase().replace(/^1 lessons$/, "1 lesson")}
                             </span>
 
-                            {course.enroll_status === "A" ? (
+                            {/* {course.enroll_status === "A" ? (
                               <span className="inline-flex items-center whitespace-nowrap rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
                                 Enrolled
                               </span>
@@ -428,7 +428,7 @@ const CourseSection = () => {
                                 Enroll Now
                                 <FiArrowRight size={13} />
                               </button>
-                            )}
+                            )} */}
                           </div>
 
                           <button

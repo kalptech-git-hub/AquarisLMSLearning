@@ -62,7 +62,7 @@ const AppContent = ({ toastPosition }) => {
         <Route path="/home" element={<Landing />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/course/:id" element={<LandingCourseDetails />} />
-        <Route path="/enroll/:id" element={<EnrollPage />} />
+        {/* <Route path="/enroll/:id" element={<EnrollPage />} /> */}
 
         {/* <Route path="" element={<Register />} /> */}
         {/* <Route path="/?tab=register" element={<Landing />} /> */}

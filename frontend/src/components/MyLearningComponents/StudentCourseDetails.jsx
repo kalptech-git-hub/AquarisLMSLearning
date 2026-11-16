@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation  } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
     FiBook,
@@ -291,12 +291,12 @@ const StudentCourseDetails = () => {
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                                        <button
-                                            onClick={() => navigate(backTo)}
-                                            className="w-auto px-3.5 py-2 bg-white border border-slate-200/80 text-slate-700 hover:text-[#0E182B] hover:border-slate-400 hover:bg-slate-50 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                                        >
-                                            <FiArrowLeft size={14} /> Back
-                                        </button>
+                                    <button
+                                        onClick={() => navigate(backTo)}
+                                        className="w-auto px-3.5 py-2 bg-white border border-slate-200/80 text-slate-700 hover:text-[#0E182B] hover:border-slate-400 hover:bg-slate-50 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <FiArrowLeft size={14} /> Back
+                                    </button>
                                 </div>
                             </>
                         ) : (
@@ -516,11 +516,11 @@ const StudentCourseDetails = () => {
             <Navbar />
             <div className="min-h-[100dvh] shrink-0 px-4 pb-32 pt-24 sm:px-6 sm:pb-20">
                 <div className="mx-auto w-full max-w-7xl">
-                {/* Breadcrumb */}
+                    {/* Breadcrumb */}
 
-                <div className="flex items-center gap-2 text-xs sm:text-sm mb-2.5 sm:mb-3">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm mb-2.5 sm:mb-3">
 
-                    {/* <Link
+                        {/* <Link
                         to="/my-learning"
                         className="text-slate-500 hover:text-[#271042] transition-colors"
                     >
@@ -532,178 +532,184 @@ const StudentCourseDetails = () => {
                     <span className="text-[#271042] font-semibold truncate">
                         {training.training_title}
                     </span> */}
-                    <button
-                         onClick={() => navigate(backTo)}
-                        className="w-auto self-start px-3.5 py-2 sm:px-4 sm:py-2.5 bg-white border border-slate-200/80 text-slate-700 hover:text-[#0E182B] hover:border-slate-400 hover:bg-slate-50 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
-                    >
-                        <FiArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Back
-                    </button>
+                        <button
+                            onClick={() => navigate(backTo)}
+                            className="w-auto self-start px-3.5 py-2 sm:px-4 sm:py-2.5 bg-white border border-slate-200/80 text-slate-700 hover:text-[#0E182B] hover:border-slate-400 hover:bg-slate-50 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
+                        >
+                            <FiArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Back
+                        </button>
 
-                </div>
+                    </div>
 
 
-                {/* Course Hero Banner */}
-                <div className="bg-[#1B2340] rounded-2xl sm:rounded-3xl p-5 md:p-7 flex flex-col md:flex-row gap-5 md:gap-6 items-center justify-between mb-3 sm:mb-3.5 shadow-xl border border-slate-700/30">
-                    {/* Left: Course Info & Details */}
-                    <div className="flex-1 space-y-2.5 sm:space-y-3 w-full">
-                        {/* Level Badge */}
-                        <span className="inline-block px-3.5 py-1 rounded-full bg-red-500 text-white text-xs font-semibold">
-                            {training.course_level}
-                        </span>
+                    {/* Course Hero Banner */}
+                    <div className="bg-[#1B2340] rounded-2xl sm:rounded-3xl p-5 md:p-7 flex flex-col md:flex-row gap-5 md:gap-6 items-center justify-between mb-3 sm:mb-3.5 shadow-xl border border-slate-700/30">
+                        {/* Left: Course Info & Details */}
+                        <div className="flex-1 space-y-2.5 sm:space-y-3 w-full">
+                            {/* Level Badge */}
+                            <span className="inline-block px-3.5 py-1 rounded-full bg-red-500 text-white text-xs font-semibold">
+                                {/* {training.course_level} */}
+                                {training.training_title
+                                    .trim()
+                                    .split(/\s+/)
+                                    .map((word) => word[0])
+                                    .join("")
+                                    .toUpperCase()}
+                            </span>
 
-                        {/* Course Title */}
-                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-tight">
-                            {training.training_title}
-                        </h1>
+                            {/* Course Title */}
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-tight">
+                                {training.training_title}
+                            </h1>
 
-                        {/* Course Description */}
-                        <div className="text-white/90 text-sm max-w-2xl">
-                            <ExpandableDescription
-                                html={training?.training_description || "No description provided"}
-                                limit={200}
+                            {/* Course Description */}
+                            <div className="text-white/90 text-sm max-w-2xl">
+                                <ExpandableDescription
+                                    html={training?.training_description || "No description provided"}
+                                    limit={200}
+                                />
+                            </div>
+
+                            {/* Metadata Row: Instructors, Duration, Modules, Dates */}
+                            <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 text-sm text-white/90 pt-2 sm:pt-2.5">
+                                {training.instructor_names && (
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <FiUser size={16} />
+                                        <span>{training.instructor_names}</span>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                    <FiClock size={16} />
+                                    <span>{training.training_duration_hours} Hours</span>
+                                </div>
+
+                                <div>
+                                    <span>{training.topics?.length || 0} Modules</span>
+                                </div>
+
+                                {((training.training_start_date || training.start_date) || (training.training_end_date || training.end_date)) && (
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <FiCalendar size={16} className="text-red-400 shrink-0" />
+                                        <span className="flex flex-wrap items-center gap-1.5">
+                                            {(training.training_start_date || training.start_date) && (
+                                                <span>Start: <strong className="text-white font-semibold">{formatDate(training.training_start_date || training.start_date)}</strong></span>
+                                            )}
+                                            {(training.training_start_date || training.start_date) && (training.training_end_date || training.end_date) && (
+                                                <span className="text-white/40 mx-0.5">•</span>
+                                            )}
+                                            {(training.training_end_date || training.end_date) && (
+                                                <span>End: <strong className="text-white font-semibold">{formatDate(training.training_end_date || training.end_date)}</strong></span>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right: Standalone Thumbnail Card */}
+                        <div className="order-first md:order-none w-full md:w-80 lg:w-96 h-40 sm:h-44 md:h-48 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-800 shadow-lg border border-white/10 relative">
+                            <CourseThumbnail
+                                seed={training.training_id}
+                                src={getThumbnailSrc(training.training_thumbnail)}
+                                alt={training.training_title}
                             />
                         </div>
+                    </div>
 
-                        {/* Metadata Row: Instructors, Duration, Modules, Dates */}
-                        <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 text-sm text-white/90 pt-2 sm:pt-2.5">
-                            {training.instructor_names && (
-                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                    <FiUser size={16} />
-                                    <span>{training.instructor_names}</span>
-                                </div>
-                            )}
+                    {/* 3 Stats Cards (Modules, Lessons, Duration) */}
+                    <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 mb-3.5 sm:mb-4">
 
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                <FiClock size={16} />
-                                <span>{training.training_duration_hours} Hours</span>
-                            </div>
-
-                            <div>
-                                <span>{training.topics?.length || 0} Modules</span>
-                            </div>
-
-                            {((training.training_start_date || training.start_date) || (training.training_end_date || training.end_date)) && (
-                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                    <FiCalendar size={16} className="text-red-400 shrink-0" />
-                                    <span className="flex flex-wrap items-center gap-1.5">
-                                        {(training.training_start_date || training.start_date) && (
-                                            <span>Start: <strong className="text-white font-semibold">{formatDate(training.training_start_date || training.start_date)}</strong></span>
-                                        )}
-                                        {(training.training_start_date || training.start_date) && (training.training_end_date || training.end_date) && (
-                                            <span className="text-white/40 mx-0.5">•</span>
-                                        )}
-                                        {(training.training_end_date || training.end_date) && (
-                                            <span>End: <strong className="text-white font-semibold">{formatDate(training.training_end_date || training.end_date)}</strong></span>
-                                        )}
-                                    </span>
-                                </div>
-                            )}
+                        <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 px-3 sm:px-4 border border-gray-200 shadow-xs">
+                            <p className="text-gray-500 text-[11px] sm:text-xs font-medium">Modules</p>
+                            <h3 className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
+                                {training.topics?.length || 0}
+                            </h3>
                         </div>
-                    </div>
 
-                    {/* Right: Standalone Thumbnail Card */}
-                    <div className="order-first md:order-none w-full md:w-80 lg:w-96 h-40 sm:h-44 md:h-48 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-800 shadow-lg border border-white/10 relative">
-                        <CourseThumbnail
-                            seed={training.training_id}
-                            src={getThumbnailSrc(training.training_thumbnail)}
-                            alt={training.training_title}
-                        />
-                    </div>
-                </div>
-
-                {/* 3 Stats Cards (Modules, Lessons, Duration) */}
-                <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 mb-3.5 sm:mb-4">
-
-                    <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 px-3 sm:px-4 border border-gray-200 shadow-xs">
-                        <p className="text-gray-500 text-[11px] sm:text-xs font-medium">Modules</p>
-                        <h3 className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
-                            {training.topics?.length || 0}
-                        </h3>
-                    </div>
-
-                    <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 px-3 sm:px-4 border border-gray-200 shadow-xs">
-                        <p className="text-gray-500 text-[11px] sm:text-xs font-medium">Lessons</p>
-                        <h3 className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
-                            {training.topics?.reduce(
-                                (total, topic) =>
-                                    total + (topic.lessons?.length || 0),
-                                0
-                            )}
-                        </h3>
-                    </div>
-
-                    <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 px-3 sm:px-4 border border-gray-200 shadow-xs">
-                        <p className="text-gray-500 text-[11px] sm:text-xs font-medium">Duration</p>
-                        <h3 className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
-                            {training.training_duration_hours} hrs
-                        </h3>
-                    </div>
-
-                </div>
-
-
-                {/* Content */}
-
-                <div className="grid lg:grid-cols-3 gap-6">
-
-                    {/* Left */}
-
-                    <div className="lg:col-span-2 space-y-4 mb-6">
-                        <h3 className="font-semibold">Course Content</h3>
-                        {training.topics?.map((topic, index) => {
-
-                            const visibleLessons = (topic.lessons || []).filter(
-                                lesson => lesson.lesson_content_type !== "live"
-                            );
-
-                            const totalLessons = visibleLessons.length;
-
-                            const topicCompletedCount =
-                                visibleLessons.filter(
-                                    lesson =>
-                                        completedLessons[lesson.lesson_id]
-                                ).length;
-
-
-                            // Previous
-                            // const totalDuration =
-                            //     topic.lessons?.reduce(
-                            //         (sum, lesson) => sum + (Number(lesson.lesson_duration) || 0),
-                            //         0
-                            //     ) || 0;
-
-                            // New added - to calculate the hardcoded File/Quiz duration
-                            const totalDuration =
-                                visibleLessons.reduce(
-                                    (sum, lesson) =>
-                                        sum + getLessonDurationInSeconds(lesson),
+                        <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 px-3 sm:px-4 border border-gray-200 shadow-xs">
+                            <p className="text-gray-500 text-[11px] sm:text-xs font-medium">Lessons</p>
+                            <h3 className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
+                                {training.topics?.reduce(
+                                    (total, topic) =>
+                                        total + (topic.lessons?.length || 0),
                                     0
+                                )}
+                            </h3>
+                        </div>
+
+                        <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 px-3 sm:px-4 border border-gray-200 shadow-xs">
+                            <p className="text-gray-500 text-[11px] sm:text-xs font-medium">Duration</p>
+                            <h3 className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
+                                {training.training_duration_hours} hrs
+                            </h3>
+                        </div>
+
+                    </div>
+
+
+                    {/* Content */}
+
+                    <div className="grid lg:grid-cols-3 gap-6">
+
+                        {/* Left */}
+
+                        <div className="lg:col-span-2 space-y-4 mb-6">
+                            <h3 className="font-semibold">Course Content</h3>
+                            {training.topics?.map((topic, index) => {
+
+                                const visibleLessons = (topic.lessons || []).filter(
+                                    lesson => lesson.lesson_content_type !== "live"
                                 );
 
-                            return (
+                                const totalLessons = visibleLessons.length;
 
-                                <div
-                                    key={topic.topic_id}
-                                    className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition"
-                                >
+                                const topicCompletedCount =
+                                    visibleLessons.filter(
+                                        lesson =>
+                                            completedLessons[lesson.lesson_id]
+                                    ).length;
 
-                                    {/* was: className="... flex justify-between items-center" — with no wrap, the title and the lessons/duration/completed meta group sat side by side and fought for space at 375px: the title wrapped to two lines while the meta text got squeezed into the remaining sliver instead of dropping below it (visible overlap in phone screenshots). Switched to flex-col on phone (title, then meta, stacked with gap-2) reverting to the original flex-row/justify-between/items-center from sm: up, where there's enough width for both on one line as before. */}
-                                    <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-gray-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
 
-                                        <div className="min-w-0">
-                                            <h3 className="font-bold text-lg text-slate-800">
-                                                Module {index + 1}: {topic.topic_title}
-                                            </h3>
-                                            {/* <p className="text-sm text-gray-600">
+                                // Previous
+                                // const totalDuration =
+                                //     topic.lessons?.reduce(
+                                //         (sum, lesson) => sum + (Number(lesson.lesson_duration) || 0),
+                                //         0
+                                //     ) || 0;
+
+                                // New added - to calculate the hardcoded File/Quiz duration
+                                const totalDuration =
+                                    visibleLessons.reduce(
+                                        (sum, lesson) =>
+                                            sum + getLessonDurationInSeconds(lesson),
+                                        0
+                                    );
+
+                                return (
+
+                                    <div
+                                        key={topic.topic_id}
+                                        className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition"
+                                    >
+
+                                        {/* was: className="... flex justify-between items-center" — with no wrap, the title and the lessons/duration/completed meta group sat side by side and fought for space at 375px: the title wrapped to two lines while the meta text got squeezed into the remaining sliver instead of dropping below it (visible overlap in phone screenshots). Switched to flex-col on phone (title, then meta, stacked with gap-2) reverting to the original flex-row/justify-between/items-center from sm: up, where there's enough width for both on one line as before. */}
+                                        <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-gray-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+
+                                            <div className="min-w-0">
+                                                <h3 className="font-bold text-lg text-slate-800">
+                                                    Module {index + 1}: {topic.topic_title}
+                                                </h3>
+                                                {/* <p className="text-sm text-gray-600">
                                         {topic.topic_title}
                                     </p> */}
-                                        </div>
+                                            </div>
 
-                                        {/* <span className="text-sm text-gray-500">
+                                            {/* <span className="text-sm text-gray-500">
                                         {topic.lessons?.length || 0} Lessons
                                     </span> */}
 
-                                        {/* <div className="text-right">
+                                            {/* <div className="text-right">
                                         <div className="text-sm text-gray-500">
                                             {topic.lessons?.length || 0} Lessons
                                         </div>
@@ -713,79 +719,79 @@ const StudentCourseDetails = () => {
                                         </div>
                                     </div> */}
 
-                                        {/* was: className="flex items-center gap-2 mt-1.5 text-xs text-slate-400" — mt-1.5 was spacing this row below the title when both sat in the same flex-row. Now that the parent stacks with its own gap-2 on phone, mt-1.5 there would double up the spacing, so it's dropped to mt-0 on phone and kept at mt-1.5 from sm: up (unchanged desktop spacing). flex-wrap added so the three lesson/duration/completed badges can wrap onto a second line on very narrow screens instead of overflowing, with gap-x-2 gap-y-1 replacing the single gap-2 to keep both directions tidy. */}
-                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0 sm:mt-1.5 text-xs text-slate-400">
+                                            {/* was: className="flex items-center gap-2 mt-1.5 text-xs text-slate-400" — mt-1.5 was spacing this row below the title when both sat in the same flex-row. Now that the parent stacks with its own gap-2 on phone, mt-1.5 there would double up the spacing, so it's dropped to mt-0 on phone and kept at mt-1.5 from sm: up (unchanged desktop spacing). flex-wrap added so the three lesson/duration/completed badges can wrap onto a second line on very narrow screens instead of overflowing, with gap-x-2 gap-y-1 replacing the single gap-2 to keep both directions tidy. */}
+                                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0 sm:mt-1.5 text-xs text-slate-400">
 
-                                            <span>
-                                                {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}
-                                            </span>
-                                            <span>•</span>
+                                                <span>
+                                                    {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}
+                                                </span>
+                                                <span>•</span>
 
-                                            <span className="flex items-center gap-1">
-                                                <FiClock className="text-[10px]" />
-                                                {formatDuration(totalDuration)}
-                                            </span>
+                                                <span className="flex items-center gap-1">
+                                                    <FiClock className="text-[10px]" />
+                                                    {formatDuration(totalDuration)}
+                                                </span>
 
-                                            <span>•</span>
+                                                <span>•</span>
 
-                                            <span className="text-emerald-600 font-medium">
-                                                {topicCompletedCount}/{totalLessons} completed
-                                            </span>
+                                                <span className="text-emerald-600 font-medium">
+                                                    {topicCompletedCount}/{totalLessons} completed
+                                                </span>
+
+                                            </div>
 
                                         </div>
 
-                                    </div>
+                                        {visibleLessons.length > 0 ? (
+                                            visibleLessons.map((lesson) => (
+                                                // <div
+                                                //     key={lesson.lesson_id}
+                                                //     // New line added
+                                                //     onClick={() =>
+                                                //         navigate(
+                                                //             `/student/course/${training.training_id}/learn?lessonId=${lesson.lesson_id}`
+                                                //         )
+                                                //     }
+                                                //     className="flex items-center justify-between px-6 py-4 border-t border-gray-300 hover:bg-blue-50 transition"
+                                                // >
 
-                                    {visibleLessons.length > 0 ? (
-                                        visibleLessons.map((lesson) => (
-                                            // <div
-                                            //     key={lesson.lesson_id}
-                                            //     // New line added
-                                            //     onClick={() =>
-                                            //         navigate(
-                                            //             `/student/course/${training.training_id}/learn?lessonId=${lesson.lesson_id}`
-                                            //         )
-                                            //     }
-                                            //     className="flex items-center justify-between px-6 py-4 border-t border-gray-300 hover:bg-blue-50 transition"
-                                            // >
+                                                <div
+                                                    key={lesson.lesson_id}
+                                                    onClick={() => {
+                                                        if (isLessonLocked(lesson)) {
+                                                            return;
+                                                        }
 
-                                            <div
-                                                key={lesson.lesson_id}
-                                                onClick={() => {
-                                                    if (isLessonLocked(lesson)) {
-                                                        return;
-                                                    }
-
-                                                    navigate(
-                                                        `/student/course/${training.training_id}/learn?lessonId=${lesson.lesson_id}`
-                                                    );
-                                                }}
-                                                className={`flex items-center justify-between px-6 py-4 border-t border-gray-300 transition
+                                                        navigate(
+                                                            `/student/course/${training.training_id}/learn?lessonId=${lesson.lesson_id}`
+                                                        );
+                                                    }}
+                                                    className={`flex items-center justify-between px-6 py-4 border-t border-gray-300 transition
                                                 ${isLessonLocked(lesson)
-                                                        ? "opacity-50 cursor-not-allowed bg-gray-50"
-                                                        : "hover:bg-blue-50 cursor-pointer"
-                                                    }
+                                                            ? "opacity-50 cursor-not-allowed bg-gray-50"
+                                                            : "hover:bg-blue-50 cursor-pointer"
+                                                        }
                                             `}
-                                            >
+                                                >
 
-                                                <div className="flex items-center gap-3">
+                                                    <div className="flex items-center gap-3">
 
-                                                    {/* <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        {/* <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                                                     <FiPlayCircle
                                                         size={18}
                                                         className="text-blue-600"
                                                     />
                                                 </div> */}
 
-                                                    <div
-                                                        className={`w-10 h-10 rounded-full flex items-center justify-center 
+                                                        <div
+                                                            className={`w-10 h-10 rounded-full flex items-center justify-center 
                                                         ${completedLessons[lesson.lesson_id]
-                                                                ? "bg-emerald-100"
-                                                                : "bg-blue-100"
-                                                            }
+                                                                    ? "bg-emerald-100"
+                                                                    : "bg-blue-100"
+                                                                }
                                                     `}
-                                                    >
-                                                        {/* {completedLessons[lesson.lesson_id] ? (
+                                                        >
+                                                            {/* {completedLessons[lesson.lesson_id] ? (
                                                         <FiCheckCircle
                                                             size={18}
                                                             className="text-emerald-600"
@@ -799,79 +805,79 @@ const StudentCourseDetails = () => {
 
                                                     )} */}
 
-                                                        {/* Display Lock */}
-                                                        {isLessonLocked(lesson) ? (
-                                                            <FiLock
-                                                                size={18}
-                                                                className="text-slate-400"
-                                                            />
-                                                        ) : completedLessons[lesson.lesson_id] ? (
-                                                            <FiCheckCircle
-                                                                size={18}
-                                                                className="text-emerald-600"
-                                                            />
-                                                        ) : (
-                                                            getLessonIcon(lesson.lesson_content_type)
-                                                        )}
-                                                    </div>
+                                                            {/* Display Lock */}
+                                                            {isLessonLocked(lesson) ? (
+                                                                <FiLock
+                                                                    size={18}
+                                                                    className="text-slate-400"
+                                                                />
+                                                            ) : completedLessons[lesson.lesson_id] ? (
+                                                                <FiCheckCircle
+                                                                    size={18}
+                                                                    className="text-emerald-600"
+                                                                />
+                                                            ) : (
+                                                                getLessonIcon(lesson.lesson_content_type)
+                                                            )}
+                                                        </div>
 
-                                                    <div>
-                                                        {/* <p className="font-medium">
+                                                        <div>
+                                                            {/* <p className="font-medium">
                                                         {lesson.lesson_title}
                                                     </p> */}
 
-                                                        <p
-                                                            className={`font-medium ${isLessonLocked(lesson)
-                                                                ? "text-gray-400"
-                                                                : "text-gray-900"
-                                                                }`}
-                                                        >
-                                                            {lesson.lesson_title}
-                                                        </p>
+                                                            <p
+                                                                className={`font-medium ${isLessonLocked(lesson)
+                                                                    ? "text-gray-400"
+                                                                    : "text-gray-900"
+                                                                    }`}
+                                                            >
+                                                                {lesson.lesson_title}
+                                                            </p>
 
-                                                        {/* <p className="text-xs text-gray-500">
+                                                            {/* <p className="text-xs text-gray-500">
                                                         Video Lesson
                                                     </p> */}
 
-                                                        <p className="text-xs text-gray-500 capitalize">
-                                                            {/* {lesson.lesson_content_type} */}
-                                                            {getLessonTypeLabel(lesson.lesson_content_type)}
+                                                            <p className="text-xs text-gray-500 capitalize">
+                                                                {/* {lesson.lesson_content_type} */}
+                                                                {getLessonTypeLabel(lesson.lesson_content_type)}
 
-                                                            {isLessonLocked(lesson) && (
-                                                                <span className="ml-2 text-amber-600 font-medium">
-                                                                    • Locked
-                                                                </span>
-                                                            )}
-                                                        </p>
+                                                                {isLessonLocked(lesson) && (
+                                                                    <span className="ml-2 text-amber-600 font-medium">
+                                                                        • Locked
+                                                                    </span>
+                                                                )}
+                                                            </p>
+                                                        </div>
+
                                                     </div>
 
+                                                    <span className="text-sm text-gray-500">
+                                                        {/* {formatDuration(lesson.lesson_duration)} */}
+                                                        {getLessonDuration(lesson)}
+
+                                                    </span>
+
                                                 </div>
-
-                                                <span className="text-sm text-gray-500">
-                                                    {/* {formatDuration(lesson.lesson_duration)} */}
-                                                    {getLessonDuration(lesson)}
-
-                                                </span>
-
+                                            ))
+                                        ) : (
+                                            <div className="px-6 py-5 text-gray-500">
+                                                No lessons available
                                             </div>
-                                        ))
-                                    ) : (
-                                        <div className="px-6 py-5 text-gray-500">
-                                            No lessons available
-                                        </div>
-                                    )}
+                                        )}
 
-                                </div>
-                            );
-                        })}
+                                    </div>
+                                );
+                            })}
 
-                    </div>
+                        </div>
 
-                    {/* Right */}
+                        {/* Right */}
 
-                    <div className="space-y-6">
+                        <div className="space-y-6">
 
-                        {/* <div className="bg-white border border-gray-300 rounded-3xl p-6">
+                            {/* <div className="bg-white border border-gray-300 rounded-3xl p-6">
 
                         <h3 className="text-gray-500 mb-3">
                             Your Progress
@@ -898,56 +904,56 @@ const StudentCourseDetails = () => {
 
                     </div> */}
 
-                        <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
+                            <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
 
-                            <h3 className="font-semibold text-gray-700 mb-4">
-                                Course Progress
-                            </h3>
+                                <h3 className="font-semibold text-gray-700 mb-4">
+                                    Course Progress
+                                </h3>
 
-                            <div className="text-center mb-6">
+                                <div className="text-center mb-6">
 
-                                <h2 className="text-5xl font-black text-[#271042]">
-                                    {training.progress_percent || 0}%
-                                </h2>
+                                    <h2 className="text-5xl font-black text-[#271042]">
+                                        {training.progress_percent || 0}%
+                                    </h2>
 
-                                {/* <p className="text-gray-500 text-sm">
+                                    {/* <p className="text-gray-500 text-sm">
                                 Completed
                             </p> */}
 
-                                <p className="text-sm text-emerald-600 font-semibold mt-2">
-                                    {completedCount}/{allLessons.length} Completed
-                                </p>
+                                    <p className="text-sm text-emerald-600 font-semibold mt-2">
+                                        {completedCount}/{allLessons.length} Completed
+                                    </p>
 
-                            </div>
+                                </div>
 
-                            <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
 
-                                <div
-                                    className="h-full bg-gradient-to-r from-red-500 to-pink-500"
-                                    style={{
-                                        width: `${training.progress_percent || 0}%`
+                                    <div
+                                        className="h-full bg-gradient-to-r from-red-500 to-pink-500"
+                                        style={{
+                                            width: `${training.progress_percent || 0}%`
+                                        }}
+                                    />
+
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        // Continue learning route
+                                        // navigate(`/student/course/${training.training_id}/learn?tab=speaking`);
+                                        navigate(`/student/course/${training.training_id}/learn`);
                                     }}
-                                />
+                                    className="mt-6 w-full bg-[#271042] hover:bg-[#35175a]
+                                text-white py-3 rounded-xl font-semibold transition cursor-pointer"
+                                >
+                                    {/* Continue Learning */}
+                                    {getCourseActionLabel()}
 
+                                </button>
                             </div>
 
-                            <button
-                                onClick={() => {
-                                    // Continue learning route
-                                    // navigate(`/student/course/${training.training_id}/learn?tab=speaking`);
-                                    navigate(`/student/course/${training.training_id}/learn`);
-                                }}
-                                className="mt-6 w-full bg-[#271042] hover:bg-[#35175a]
-                                text-white py-3 rounded-xl font-semibold transition cursor-pointer"
-                            >
-                                {/* Continue Learning */}
-                                {getCourseActionLabel()}
 
-                            </button>
-                        </div>
-
-
-                        {/* ---- PRONUNCIATION CARD ----
+                            {/* ---- PRONUNCIATION CARD ----
                     <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
@@ -973,7 +979,7 @@ const StudentCourseDetails = () => {
                         </button>
                     </div> */}
 
-                        {/*
+                            {/*
 
                     <div className="bg-white border border-gray-300 rounded-3xl p-6">
 
@@ -988,12 +994,12 @@ const StudentCourseDetails = () => {
                     </div>
                                         */}
 
+                        </div>
+
                     </div>
 
-                </div>
-
-                {/* bottom spacer so the last card never sits under mobile bars */}
-                <div className="h-24 sm:h-0" style={{ paddingBottom: "env(safe-area-inset-bottom)" }} />
+                    {/* bottom spacer so the last card never sits under mobile bars */}
+                    <div className="h-24 sm:h-0" style={{ paddingBottom: "env(safe-area-inset-bottom)" }} />
                 </div>
             </div>
         </>

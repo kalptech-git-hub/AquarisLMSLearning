@@ -240,8 +240,8 @@ const CompanyDashboard = () => {
   // });
 
   const [stats, setStats] = useState({
-    totalEmployees: 50,
-    assignedCourses: 4,
+    totalEmployees: 5,
+    assignedCourses: 3,
     enrolledLearners: 28,
     averageCompletionRate: 68,
 
@@ -342,33 +342,33 @@ const CompanyDashboard = () => {
 
   const statCards = [
     {
+      label: "Courses",
+      value: stats.assignedCourses,
+      icon: BookOpen,
+      gradient: "linear-gradient(135deg, #D7DFE9 0%, #F1F3F6 100%)",
+      path: "/company/courses",
+    },
+    {
       label: "Total Trainees",
       value: stats.totalEmployees,
       icon: Users,
       gradient: "linear-gradient(135deg, #D7DFE9 0%, #F1F3F6 100%)",
       path: "/company/trainees",
     },
-    {
-      label: "Assigned Courses",
-      value: stats.assignedCourses,
-      icon: BookOpen,
-      gradient: "linear-gradient(135deg, #D7DFE9 0%, #F1F3F6 100%)",
-      // path: "/company/courses",
-    },
-    {
-      label: "Enrollments",
-      value: stats.enrolledLearners,
-      icon: UserCheck,
-      gradient: "linear-gradient(135deg, #F9C9C9 0%, #D7DFE9 100%)",
-      // path: "/company/enrollments",
-    },
-    {
-      label: "Avg. Completion",
-      value: `${stats.averageCompletionRate}%`,
-      icon: TrendingUp,
-      gradient: "linear-gradient(135deg, #D7DFE9 0%, #F9C9C9 100%)",
-      // path: "/company/enrollments",
-    },
+    // {
+    //   label: "Enrollments",
+    //   value: stats.enrolledLearners,
+    //   icon: UserCheck,
+    //   gradient: "linear-gradient(135deg, #F9C9C9 0%, #D7DFE9 100%)",
+    //   // path: "/company/enrollments",
+    // },
+    // {
+    //   label: "Avg. Completion",
+    //   value: `${stats.averageCompletionRate}%`,
+    //   icon: TrendingUp,
+    //   gradient: "linear-gradient(135deg, #D7DFE9 0%, #F9C9C9 100%)",
+    //   // path: "/company/enrollments",
+    // },
   ];
 
   return (

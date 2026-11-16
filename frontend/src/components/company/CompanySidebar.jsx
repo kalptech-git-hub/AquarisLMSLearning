@@ -20,15 +20,15 @@ const menuItems = [
     path: "/company/dashboard",
   },
   {
+    name: "Courses",
+    icon: BookOpen,
+    path: "/company/courses",
+  },
+  {
     name: "Trainees",
     icon: Users,
     path: "/company/trainees",
   },
-  // {
-  //   name: "Assigned Courses",
-  //   icon: BookOpen,
-  //   path: "/company/courses",
-  // },
   // {
   //   name: "Course Enrollment",
   //   icon: UserCheck,
@@ -84,7 +84,7 @@ const CompanySidebar = ({ isOpen = false, onClose = () => { } }) => {
           <Building2 size={24} />
         </div>
 
-        <div className="overflow-hidden min-w-0 flex-1">
+        {/* <div className="overflow-hidden min-w-0 flex-1">
           <h1
             className="text-lg font-bold text-slate-800 truncate"
             title={companyName}
@@ -94,6 +94,15 @@ const CompanySidebar = ({ isOpen = false, onClose = () => { } }) => {
           <p className="text-xs text-slate-500 font-medium">
             Company Panel
           </p>
+        </div> */}
+
+        <div className="overflow-hidden min-w-0 flex-1">
+          <h1
+            className="text-lg font-bold text-slate-800 break-words"
+            title={companyName}
+          >
+            {companyName}
+          </h1>
         </div>
       </div>
 

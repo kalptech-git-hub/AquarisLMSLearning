@@ -407,25 +407,81 @@ exports.InsertEmployee = async (connection, employeeData) => {
 };
 
 
+// exports.getCompanyCourses = async (companyId, connection = db) => {
+//     const [rows] = await connection.query(
+//         `
+//     SELECT
+//     ct.company_trainings_id,
+//         ct.company_id,
+//         ct.training_id,
+//         ct.training_users_limit,
+//         ct.training_expiry_on,
+//         CAST(ct.is_active AS UNSIGNED) AS assignment_is_active,
+
+//             t.course_id,
+//             t.training_title,
+//             t.training_description,
+//             t.training_start_date,
+//             t.training_end_date,
+//             t.training_status,
+//             t.publish_status,
+//             t.enrollment_status,
+//             t.publish_at,
+//             t.enrollment_closed_at,
+
+//             CAST(t.is_active AS UNSIGNED) AS is_active
+
+//         FROM tbl_company_trainings ct
+
+//         INNER JOIN tbl_trainings t
+//             ON t.training_id = ct.training_id
+
+//         INNER JOIN tbl_courses c
+//             ON c.course_id = t.course_id
+
+//     WHERE
+//     ct.company_id = ?
+//         AND ct.is_active = b'1'
+//             AND ct.training_expiry_on > NOW()
+//             AND t.is_active = b'1'
+//             AND t.publish_status = 'PUBLISHED'
+//             AND t.training_status = 'ACTIVE'
+
+//         ORDER BY t.training_id DESC
+//         `,
+//         [companyId]
+//     );
+
+//     return rows;
+// };
+
+
+/* Updated - version  */
+
 exports.getCompanyCourses = async (companyId, connection = db) => {
     const [rows] = await connection.query(
         `
-    SELECT
-    ct.company_trainings_id,
-        ct.company_id,
-        ct.training_id,
-        ct.training_users_limit,
-        ct.training_expiry_on,
-        CAST(ct.is_active AS UNSIGNED) AS assignment_is_active,
+        SELECT
+            ct.company_trainings_id,
+            ct.company_id,
+            ct.training_id,
+            ct.training_users_limit,
+            ct.training_expiry_on,
+            CAST(ct.is_active AS UNSIGNED) AS assignment_is_active,
 
             t.course_id,
             t.training_title,
             t.training_description,
+            t.training_thumbnail,
+            t.training_duration_hours,
+            t.training_mode,
+
             t.training_start_date,
             t.training_end_date,
             t.training_status,
             t.publish_status,
             t.enrollment_status,
+
             t.publish_at,
             t.enrollment_closed_at,
 
@@ -439,9 +495,9 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
         INNER JOIN tbl_courses c
             ON c.course_id = t.course_id
 
-    WHERE
-    ct.company_id = ?
-        AND ct.is_active = b'1'
+        WHERE
+            ct.company_id = ?
+            AND ct.is_active = b'1'
             AND ct.training_expiry_on > NOW()
             AND t.is_active = b'1'
             AND t.publish_status = 'PUBLISHED'
@@ -454,8 +510,7 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
 
     return rows;
 };
-
-
+ /** */
 // exports.enrollEmployeeInTrainings = async (
 //     connection,
 //     {

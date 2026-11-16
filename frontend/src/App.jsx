@@ -42,6 +42,7 @@ import CompanyLayout from "./components/company/CompanyLayout.jsx";
 import CompanyEmployeesManagement from "./pages/Dashboard/company/CompanyEmployeesManagement.jsx";
 import CompanyManagement from "./pages/Dashboard/admin/CompanyManagement.jsx";
 import CompanyProfile from "./components/company/CompanyProfile.jsx";
+import CompanyCoursesManagement from "./pages/Dashboard/company/CompanyCoursesManagement.jsx";
 
 const AppContent = ({ toastPosition }) => {
   const location = useLocation();
@@ -122,6 +123,7 @@ const AppContent = ({ toastPosition }) => {
           <Route path="dashboard" element={<CompanyDashboard />} />
           <Route path="profile" element={<CompanyProfile />} />
           <Route path="trainees" element={<CompanyEmployeesManagement />} />
+          <Route path="courses" element={<CompanyCoursesManagement />} />
         </Route>
 
         <Route

@@ -816,9 +816,9 @@ const Courses = () => {
     };
 
     const isEnrollmentClosed = (course) =>
-    course?.enrollment_status === "CLOSED" ||
-    (Boolean(course?.training_start_date) &&
-        new Date(course.training_start_date) <= new Date());
+        course?.enrollment_status === "CLOSED" ||
+        (Boolean(course?.training_start_date) &&
+            new Date(course.training_start_date) <= new Date());
 
     const handleEnrollClick = (course) => {
         const courseId = course.training_id || course.course_id;
@@ -840,11 +840,11 @@ const Courses = () => {
     const levels = ["ALL", "N5", "N4", "N3", "N2", "N1"];
 
     const formatFee = (fee) => {
-    if (fee === null || fee === undefined || fee === "") return "Cost";
-    const num = Number(fee);
-    if (isNaN(num)) return fee;
-    return num.toLocaleString("en-IN");
-};
+        if (fee === null || fee === undefined || fee === "") return "Cost";
+        const num = Number(fee);
+        if (isNaN(num)) return fee;
+        return num.toLocaleString("en-IN");
+    };
 
     // Filter courses by level and search query
     const filteredCourses = useMemo(() => {
@@ -885,7 +885,7 @@ const Courses = () => {
                     <div className="absolute top-1/3 left-0 -translate-y-1/2 -translate-x-12 w-80 h-80 bg-blue-100/30 rounded-full blur-3xl pointer-events-none" />
                     <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none" />
 
-                    
+
 
                     <div className="max-w-7xl mx-auto relative z-10">
                         {/* Heading matching Image 2 */}
@@ -898,9 +898,9 @@ const Courses = () => {
 
                             {/* Main Heading with Red / Gradient Accent */}
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1E39] tracking-tight leading-tight">
-                               Explore Our Technical Training
+                                Explore Our Technical Training
                                 <span className="block mt-1 bg-gradient-to-r from-[#C41E2E] via-[#E63946] to-[#7B3B5C] bg-clip-text text-transparent">
-                                     Programs
+                                    Programs
                                 </span>
                             </h2>
 
@@ -980,9 +980,9 @@ const Courses = () => {
                                 </button>
                             </div>
                         ) : (
-                                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                                 {filteredCourses.map((course, index) => (
-                                    
+
                                     <div
                                         key={course.training_id || course.course_id}
                                         onClick={(e) => {
@@ -997,9 +997,9 @@ const Courses = () => {
                                     >
                                         {/* COURSE DETAILS */}
                                         <div className="flex w-full sm:w-[46%] min-w-0 flex-col px-5 py-4">
-                                            
+
                                             {/* LEVEL */}
-                                            {/* <div>
+                                            <div>
                                                 <span
                                                     className="inline-flex rounded-lg px-3 py-1 text-xs font-medium"
                                                     style={{
@@ -1007,9 +1007,17 @@ const Courses = () => {
                                                         color: "#0B1E39",
                                                     }}
                                                 >
-                                                    Level: {course.course_level || "N5"}
+                                                    {/* IT JUST A TEMPRORARY FIX */}
+
+                                                    {/* Level: {course.course_level || "N5"} */}
+                                                    {course.training_title
+                                                        .trim()
+                                                        .split(/\s+/)
+                                                        .map((word) => word[0])
+                                                        .join("")
+                                                        .toUpperCase()}
                                                 </span>
-                                            </div> */}
+                                            </div>
 
                                             {/* TITLE */}
                                             <div className="mt-2">
@@ -1028,7 +1036,7 @@ const Courses = () => {
                                                         course.instructor ||
                                                         (course.instructors?.length
                                                             ? course.instructors[0]?.name ||
-                                                              course.instructors[0]?.instructor_name
+                                                            course.instructors[0]?.instructor_name
                                                             : null) ||
                                                         "Instructor name"}
                                                 </p>
@@ -1051,7 +1059,7 @@ const Courses = () => {
                                                 <div>
                                                     ₹{formatFee(course.training_fee)}
                                                 </div>
-                                                                                                {/* Start / End */}
+                                                {/* Start / End */}
                                                 <div className="truncate">
                                                     Starts:{" "}
                                                     {course.training_start_date
@@ -1065,11 +1073,11 @@ const Courses = () => {
                                                         : "—"}
                                                 </div>
 
-                                                                                                {/* Enrollment Deadline */}
+                                                {/* Enrollment Deadline */}
                                                 <div className="truncate">
                                                     {isEnrollmentClosed(course) ? (
                                                         course.enrollment_status === "CLOSED" &&
-                                                        new Date(course.training_start_date) > new Date() ? (
+                                                            new Date(course.training_start_date) > new Date() ? (
                                                             "Enrollment is currently closed."
                                                         ) : (
                                                             "Enrollment closed — course started."

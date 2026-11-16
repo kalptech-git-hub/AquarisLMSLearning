@@ -209,6 +209,8 @@ export default function MyCourses() {
                       {imageSrc && <div className="absolute inset-0 bg-black/10" />}
                       <span className="relative self-start rounded-md bg-white px-2 py-1 text-[10px] font-bold text-[#272247]">
                         {/* {course.course_level || "Course"} */}
+                                              {/* IT JUST A TEMPRORARY FIX */}
+
                         {
                           course.training_title
                             .trim()

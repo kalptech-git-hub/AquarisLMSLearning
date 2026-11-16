@@ -272,7 +272,7 @@ const CourseSection = () => {
           </h2>
 
           <p className="mt-2 text-slate-500 max-w-2xl mx-auto">
-           TrainSphere offers industry-focused training programs designed by experienced instructors and professionals to enhance your skills and build a successful career.</p>
+            TrainSphere offers industry-focused training programs designed by experienced instructors and professionals to enhance your skills and build a successful career.</p>
         </div>
 
         {/* CATEGORY TABS */}
@@ -370,9 +370,16 @@ const CourseSection = () => {
                         className="h-full w-full objecct-cover transition duration-500 hover:scale-105"
                       />
 
-                      {/* <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#c52d3f] shadow">
-                        {levelBadge}
-                      </span> */}
+                      {/* IT JUST A TEMPRORARY FIX */}
+                      <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#c52d3f] shadow">
+                        {/* {levelBadge} */}
+                        {course.training_title
+                          .trim()
+                          .split(/\s+/)
+                          .map((word) => word[0])
+                          .join("")
+                          .toUpperCase()}
+                      </span>
                     </div>
 
                     {/* CONTENT */}

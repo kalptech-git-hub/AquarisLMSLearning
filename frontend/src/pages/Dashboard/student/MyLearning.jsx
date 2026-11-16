@@ -261,6 +261,8 @@ const ContinueLearningCard = ({ course, idx, onContinue, onOpen }) => {
 
         {course.training_title && (
           <span className="absolute top-2 left-2 bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md">
+            {/* IT JUST A TEMPRORARY FIX */}
+
             {course.training_title
               .trim()
               .split(/\s+/)

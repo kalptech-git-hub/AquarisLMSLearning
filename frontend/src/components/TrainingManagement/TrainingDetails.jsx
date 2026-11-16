@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FiBook, FiBookOpen, FiClock, FiEdit2, FiAward, FiBriefcase, FiFacebook, FiFileText, FiFolder, FiInfo, FiLayers, FiTrash2, FiUser, FiUsers, FiVideo, FiX } from "react-icons/fi";
+import { FiBook, FiBookOpen, FiClock, FiEdit2, FiAward, FiBriefcase, FiFacebook, FiFileText, FiFolder, FiInfo, FiLayers, FiTrash2, FiUser, FiUsers, FiVideo, FiX, FiCalendar } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const INSTRUCTOR_TABLE_ROUTE = "/admin/instructors";
@@ -165,27 +165,27 @@ const TrainingDetails = ({ course, setViewingCourse, handleEdit, handleEditTopic
     };
 
     const getInitials = (name = "") =>
-    name
-        .split(" ")
-        .filter(Boolean)
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase() || "?";
+        name
+            .split(" ")
+            .filter(Boolean)
+            .map((n) => n[0])
+            .slice(0, 2)
+            .join("")
+            .toUpperCase() || "?";
 
-const AVATAR_COLORS = [
-    "from-red-500 to-rose-600",
-    "from-indigo-500 to-blue-600",
-    "from-emerald-500 to-teal-600",
-    "from-amber-500 to-orange-600",
-];
+    const AVATAR_COLORS = [
+        "from-red-500 to-rose-600",
+        "from-indigo-500 to-blue-600",
+        "from-emerald-500 to-teal-600",
+        "from-amber-500 to-orange-600",
+    ];
 
-const getPhotoUrl = (photo) =>
-    !photo
-        ? null
-        : /^https?:\/\//i.test(photo)
-            ? photo
-            : `${import.meta.env.VITE_API_BASE_URL}${photo}`;
+    const getPhotoUrl = (photo) =>
+        !photo
+            ? null
+            : /^https?:\/\//i.test(photo)
+                ? photo
+                : `${import.meta.env.VITE_API_BASE_URL}${photo}`;
 
     const formatDate = (dateStr) => {
         if (!dateStr) return "-";
@@ -236,7 +236,7 @@ const getPhotoUrl = (photo) =>
                             className="w-full h-40 sm:w-44 sm:h-28 object-cover rounded-xl border shadow-sm"
                         />
 
-                                                <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                 <h1 className="text-xl sm:text-3xl font-bold text-gray-800">
                                     {course.training_title}
@@ -282,18 +282,18 @@ const getPhotoUrl = (photo) =>
                                     {/* Training Status: Active / Inactive / Completed */}
                                     <span
                                         className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 ${getTrainingStatusLabel(course) === "COMPLETED"
-                                                ? "bg-violet-100 text-violet-700"
-                                                : getTrainingStatusLabel(course) === "ACTIVE"
-                                                    ? "bg-emerald-100 text-emerald-700"
-                                                    : "bg-red-100 text-red-700"
+                                            ? "bg-violet-100 text-violet-700"
+                                            : getTrainingStatusLabel(course) === "ACTIVE"
+                                                ? "bg-emerald-100 text-emerald-700"
+                                                : "bg-red-100 text-red-700"
                                             }`}
                                     >
                                         <span
                                             className={`w-1.5 h-1.5 rounded-full ${getTrainingStatusLabel(course) === "COMPLETED"
-                                                    ? "bg-violet-500"
-                                                    : getTrainingStatusLabel(course) === "ACTIVE"
-                                                        ? "bg-emerald-500"
-                                                        : "bg-red-500"
+                                                ? "bg-violet-500"
+                                                : getTrainingStatusLabel(course) === "ACTIVE"
+                                                    ? "bg-emerald-500"
+                                                    : "bg-red-500"
                                                 }`}
                                         />
 
@@ -489,7 +489,8 @@ const getPhotoUrl = (photo) =>
                             }`}
                     >
                         <FiUsers className="text-base sm:text-lg" />
-                        <span className="text-[10px] sm:text-base leading-none truncate">Instructors</span>
+                        {/* <span className="text-[10px] sm:text-base leading-none truncate">Instructors</span> */}
+                        <span className="text-[10px] sm:text-base leading-none truncate">Companies</span>
                     </button>
 
                     <button
@@ -536,7 +537,7 @@ const getPhotoUrl = (photo) =>
                         {/* Course Metadata */}
 
 
-                                                {/* Category Name / Category Code — removed from Course Details, now shown as a pill next to the title
+                        {/* Category Name / Category Code — removed from Course Details, now shown as a pill next to the title
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-slate-50 p-4 rounded-lg">
                                 <p className="text-sm font-medium text-gray-500 mb-2">
@@ -633,84 +634,89 @@ const getPhotoUrl = (photo) =>
                 )}
 
                 {activeTab === "instructors" && (
-    <div className="space-y-5">
+                    <div className="space-y-5">
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-gray-100">
-            <div>
-                <h3 className="text-lg font-bold text-gray-800">
-                    Assigned Instructors
-                </h3>
-                <p className="text-sm text-gray-500 mt-0.5">
-                    Instructors assigned to this course
-                </p>
-            </div>
-
-            <span className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full bg-red-50 text-red-700 text-sm font-semibold border border-red-100">
-                <FiUsers size={15} />
-                {course?.instructors?.length || 0}{" "}
-                {(course?.instructors?.length || 0) === 1 ? "Instructor" : "Instructors"}
-            </span>
-        </div>
-
-        {/* Instructor list */}
-        {course?.instructors?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                {course.instructors.map((instructor, index) => {
-                    const name = instructor.instructor_name || "Unnamed Instructor";
-                    const photo = getPhotoUrl(instructor.user_profile_photo);
-
-                    return (
-                        <div
-                            key={instructor.instructor_id}
-                            role="button"
-                            tabIndex={0}
-                            title="View this instructor in the instructor table"
-                            onClick={() => goToInstructor(instructor)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault();
-                                    goToInstructor(instructor);
-                                }
-                            }}
-                            className="group relative flex items-start gap-4 p-5 bg-slate-50 rounded-2xl hover:shadow-md transition-all duration-200 min-w-0 cursor-pointer"
-                        >
-                            {/* Avatar */}
-                            <div
-                                className={`w-14 h-14 rounded-full shrink-0 overflow-hidden flex items-center justify-center text-white font-bold text-lg shadow-sm bg-gradient-to-br ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`}
-                            >
-                                {photo ? (
-                                    <img
-                                        src={photo}
-                                        alt={name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    getInitials(name)
-                                )}
+                        {/* Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-gray-100">
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-800">
+                                    {/* Assigned Instructors */}
+                                    Assigned Companies
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-0.5">
+                                    {/* Instructors assigned to this course */}
+                                    Companies assigned to this course
+                                </p>
                             </div>
 
-                            {/* Details */}
-                            <div className="min-w-0 flex-1 ">
-                                <div className="flex items-start justify-between gap-2">
-                                    <div className="min-w-0">
-                                        <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wider">
-                                            Instructor {index + 1}
-                                        </p>
-                                        <p className="text-base font-bold text-gray-800 mt-0.5 break-words">
-                                            {name}
-                                        </p>
-                                    </div>
+                            <span className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full bg-red-50 text-red-700 text-sm font-semibold border border-red-100">
+                                <FiUsers size={15} />
+                                {course?.instructors?.length || 0}{" "}
+                                {/* {(course?.instructors?.length || 0) === 1 ? "Instructor" : "Instructors"} */}
+                                {(course?.instructors?.length || 0) === 1 ? "Company" : "Companies"}
+                            </span>
+                        </div>
 
-                                    <span className="inline-flex items-center gap-1.5 shrink-0 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                        Assigned
-                                    </span>
-                                </div>
+                        {/* Instructor list */}
+                        {course?.instructors?.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                                {/* Optional chips: only render when the data exists */}
-                                {(instructor.ins_qualification || instructor.ins_experience) && (
+                                {course.instructors.map((instructor, index) => {
+                                    const name = instructor.instructor_name || "Unnamed Instructor";
+                                    const photo = getPhotoUrl(instructor.user_profile_photo);
+
+                                    return (
+                                        <div
+                                            key={instructor.instructor_id}
+                                            role="button"
+                                            tabIndex={0}
+                                            // title="View this instructor in the instructor table"
+                                            // onClick={() => goToInstructor(instructor)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter" || e.key === " ") {
+                                                    e.preventDefault();
+                                                    goToInstructor(instructor);
+                                                }
+                                            }}
+                                            className="group relative flex items-start gap-4 p-5 bg-slate-50 rounded-2xl hover:shadow-md transition-all duration-200 min-w-0 cursor-pointer"
+                                        >
+                                            {/* Avatar */}
+                                            <div
+                                                className={`w-14 h-14 rounded-full shrink-0 overflow-hidden flex items-center justify-center text-white font-bold text-lg shadow-sm bg-gradient-to-br ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`}
+                                            >
+                                                {photo ? (
+                                                    <img
+                                                        src={photo}
+                                                        alt={name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    getInitials(name)
+                                                )}
+                                            </div>
+
+                                            {/* Details */}
+                                            <div className="min-w-0 flex-1 ">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0">
+                                                        <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wider">
+                                                            {/* Instructor {index + 1} */}
+                                                            Company {index + 1}
+                                                        </p>
+                                                        <p className="text-base font-bold text-gray-800 mt-0.5 break-words">
+                                                            {/* {name} */}
+                                                            Lucky Readymix Concrete
+                                                        </p>
+                                                    </div>
+
+                                                    <span className="inline-flex items-center gap-1.5 shrink-0 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                        Assigned
+                                                    </span>
+                                                </div>
+
+                                                {/* Optional chips: only render when the data exists */}
+                                                {/* {(instructor.ins_qualification || instructor.ins_experience) && (
                                     <div className="flex flex-wrap gap-2 mt-3">
                                         {instructor.ins_qualification && (
                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-700 text-xs font-medium">
@@ -725,31 +731,51 @@ const getPhotoUrl = (photo) =>
                                             </span>
                                         )}
                                     </div>
-                                )}
+                                )} */}
+
+                                                {/* Company Information */}
+                                                <div className="flex flex-wrap gap-2 mt-3">
+
+
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-700 text-xs font-medium">
+                                                        <FiUser size={12} className="shrink-0" />
+                                                        Admin: Lucky Readymix Admin
+                                                    </span>
+
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-700 text-xs font-medium">
+                                                        <FiUsers size={12} className="shrink-0" />
+                                                        User Limit: 100
+                                                    </span>
+
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-700 text-xs font-medium">
+                                                        <FiCalendar size={12} className="shrink-0" />
+                                                        Expires: 31 Dec 2026
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
                             </div>
-                        </div>
-                    );
-                })}
+                        ) : (
+                            <div className="flex flex-col items-center justify-center text-center py-14 px-4 bg-gradient-to-b from-gray-50 to-white border border-dashed border-gray-300 rounded-2xl">
+                                <div className="w-16 h-16 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mb-4">
+                                    <FiUsers size={28} />
+                                </div>
 
-            </div>
-        ) : (
-            <div className="flex flex-col items-center justify-center text-center py-14 px-4 bg-gradient-to-b from-gray-50 to-white border border-dashed border-gray-300 rounded-2xl">
-                <div className="w-16 h-16 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mb-4">
-                    <FiUsers size={28} />
-                </div>
+                                <h4 className="text-base font-semibold text-gray-700">
+                                    No instructors assigned
+                                </h4>
 
-                <h4 className="text-base font-semibold text-gray-700">
-                    No instructors assigned
-                </h4>
+                                <p className="text-sm text-gray-500 mt-1 max-w-sm">
+                                    No instructors have been assigned to this training yet. Edit the training to assign one.
+                                </p>
+                            </div>
+                        )}
 
-                <p className="text-sm text-gray-500 mt-1 max-w-sm">
-                    No instructors have been assigned to this training yet. Edit the training to assign one.
-                </p>
-            </div>
-        )}
-
-    </div>
-)}
+                    </div>
+                )}
 
                 {activeTab === "books" && (
                     <div className="space-y-4">

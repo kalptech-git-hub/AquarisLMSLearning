@@ -2045,7 +2045,8 @@ const TopicManagement = ({
           className="text-slate-500 hover:text-slate-800 transition-colors cursor-pointer font-medium"
           title="Back to course table"
         >
-          Course Table
+          {/* Course Table */}
+          Course List
         </button>
         <span className="text-slate-300 font-light">/</span>
         <span className="text-slate-900 font-semibold">

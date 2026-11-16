@@ -255,28 +255,28 @@ const CompanyDashboard = () => {
   const [assignedCourses, setAssignedCourses] = useState([
     {
       id: 1,
-      title: "Digital Marketing Mastery",
+      title: "Concrete Recycling Plant",
       enrolledCount: 20,
       avgProgress: 75,
     },
     {
       id: 2,
-      title: "Full Stack Web Development",
+      title: "Truck Mounted Boom Pumps",
       enrolledCount: 15,
       avgProgress: 60,
     },
-    {
-      id: 3,
-      title: "Business Communication",
-      enrolledCount: 12,
-      avgProgress: 85,
-    },
-    {
-      id: 4,
-      title: "Project Management",
-      enrolledCount: 18,
-      avgProgress: 45,
-    },
+    // {
+    //   id: 3,
+    //   title: "Stationary Concrete Pumps",
+    //   enrolledCount: 12,
+    //   avgProgress: 85,
+    // },
+    // {
+    //   id: 4,
+    //   title: "Stationary Boom Placers",
+    //   enrolledCount: 18,
+    //   avgProgress: 45,
+    // },
   ]);
 
   useEffect(() => {

@@ -245,9 +245,9 @@ const CompanyDashboard = () => {
     enrolledLearners: 28,
     averageCompletionRate: 68,
 
-    activeEnrollments: 15,
-    completedEnrollments: 8,
-    inactiveEnrollments: 5,
+    activeEnrollments: 2,
+    completedEnrollments: 3,
+    inactiveEnrollments: 0,
   });
 
   // const [assignedCourses, setAssignedCourses] = useState([]);
@@ -256,14 +256,14 @@ const CompanyDashboard = () => {
     {
       id: 1,
       title: "Concrete Recycling Plant",
-      enrolledCount: 20,
-      avgProgress: 75,
+      enrolledCount: 2,
+      avgProgress: 10,
     },
     {
       id: 2,
       title: "Truck Mounted Boom Pumps",
-      enrolledCount: 15,
-      avgProgress: 60,
+      enrolledCount: 1,
+      avgProgress: 5,
     },
     // {
     //   id: 3,

@@ -72,7 +72,7 @@ const formatSessionTime = (iso) => {
 // Join button appears this long before the class starts
 const JOIN_WINDOW_MS = 15 * 60 * 1000;
 // If a session has no end_time, treat it as ending this long after it starts
-const DEFAULT_SESSION_DURATION_MS = 2*60 * 60 * 1000;
+const DEFAULT_SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
 
 const ensureUrl = (link) =>
   /^https?:\/\//i.test(link) ? link : `https://${link}`;
@@ -253,9 +253,20 @@ const ContinueLearningCard = ({ course, idx, onContinue, onOpen }) => {
           alt={course.training_title}
           seed={course.training_id}
         />
-        {course.course_level && (
+        {/* {course.course_level && (
           <span className="absolute top-2 left-2 bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md">
             {course.course_level}
+          </span>
+        )} */}
+
+        {course.training_title && (
+          <span className="absolute top-2 left-2 bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md">
+            {course.training_title
+              .trim()
+              .split(/\s+/)
+              .map((word) => word[0])
+              .join("")
+              .toUpperCase()}
           </span>
         )}
       </div>
@@ -429,7 +440,7 @@ const ComingUpCard = ({ sessions, loading }) => {
 };
 
 // const EnrolledCoursesCard = ({ courses, onViewAll }) => {
-  const EnrolledCoursesCard = ({ courses, onOpen }) => {
+const EnrolledCoursesCard = ({ courses, onOpen }) => {
   const [showAll, setShowAll] = useState(false);
   const rows = showAll ? courses : courses.slice(0, ENROLLED_PREVIEW_COUNT);
 
@@ -448,25 +459,25 @@ const ComingUpCard = ({ sessions, loading }) => {
         action={
           courses.length > 0 && (
             <button
-                onClick={() => setShowAll((prev) => !prev)}
-                className="inline-flex items-center gap-1 rounded-full bg-[#f0eef9] px-5 py-2 text-sm font-semibold text-[#29234e] hover:bg-[#e6e3f3] transition cursor-pointer"
-              >
-                {showAll ? "Show Less" : `View All (${courses.length})`}
-                <FiChevronRight
-                  size={15}
-                  className={`transition-transform ${showAll ? "-rotate-90" : "rotate-90"}`}
-                />
-              </button>
+              onClick={() => setShowAll((prev) => !prev)}
+              className="inline-flex items-center gap-1 rounded-full bg-[#f0eef9] px-5 py-2 text-sm font-semibold text-[#29234e] hover:bg-[#e6e3f3] transition cursor-pointer"
+            >
+              {showAll ? "Show Less" : `View All (${courses.length})`}
+              <FiChevronRight
+                size={15}
+                className={`transition-transform ${showAll ? "-rotate-90" : "rotate-90"}`}
+              />
+            </button>
           )
         }
-        // action={
-        //   <button
-        //     onClick={onViewAll}
-        //     className="text-xs font-semibold text-[#d62839] hover:underline cursor-pointer"
-        //   >
-        //     View all courses
-        //   </button>
-        // }
+      // action={
+      //   <button
+      //     onClick={onViewAll}
+      //     className="text-xs font-semibold text-[#d62839] hover:underline cursor-pointer"
+      //   >
+      //     View all courses
+      //   </button>
+      // }
       />
 
       {courses.length === 0 ? (
@@ -742,7 +753,7 @@ const MyLearning = () => {
       <Navbar />
 
       <div className="min-h-dvh shrink-0 px-4 sm:px-6 pb-32 sm:pb-20 pt-24">
-  
+
         <div className="w-full max-w-7xl mx-auto space-y-6">
 
           {/* ---------- Hero (OLD design with image, commented out) ----------

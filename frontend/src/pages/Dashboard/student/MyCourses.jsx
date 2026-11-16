@@ -138,27 +138,27 @@ export default function MyCourses() {
   }, []);
 
   const filtered = useMemo(() => {
-  const list = courses.filter((course) => {
-    const matchesName = (course.training_title || "").toLowerCase().includes(query.trim().toLowerCase());
-    return matchesName && (filter === "All" || courseStatus(course) === filter);
-  });
+    const list = courses.filter((course) => {
+      const matchesName = (course.training_title || "").toLowerCase().includes(query.trim().toLowerCase());
+      return matchesName && (filter === "All" || courseStatus(course) === filter);
+    });
 
-  const sorters = {
-    recent: (a, b) => (b.enrollment_id || 0) - (a.enrollment_id || 0),
-    title: (a, b) => (a.training_title || "").localeCompare(b.training_title || ""),
-    progress: (a, b) => a.progress_percent - b.progress_percent,
-    start: (a, b) =>
-      new Date(a.training_start_date || 8.64e15) - new Date(b.training_start_date || 8.64e15),
-  };
+    const sorters = {
+      recent: (a, b) => (b.enrollment_id || 0) - (a.enrollment_id || 0),
+      title: (a, b) => (a.training_title || "").localeCompare(b.training_title || ""),
+      progress: (a, b) => a.progress_percent - b.progress_percent,
+      start: (a, b) =>
+        new Date(a.training_start_date || 8.64e15) - new Date(b.training_start_date || 8.64e15),
+    };
 
-  return [...list].sort(sorters[sort]);
-}, [courses, filter, query, sort]);
+    return [...list].sort(sorters[sort]);
+  }, [courses, filter, query, sort]);
 
   return (
     <>
       <Navbar />
       <main className="min-h-dvh shrink-0 px-4 pb-32 pt-24 sm:px-6 sm:pb-20">
-  <section className="mx-auto w-full max-w-7xl rounded-[28px] border border-[#e9e7f1] bg-white p-5 shadow-sm sm:p-8">
+        <section className="mx-auto w-full max-w-7xl rounded-[28px] border border-[#e9e7f1] bg-white p-5 shadow-sm sm:p-8">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center">
             <h1 className="shrink-0 text-2xl font-bold tracking-tight text-[#211d3d] sm:text-3xl">My Courses</h1>
             <label className="flex h-12 w-full items-center gap-3 rounded-full bg-[#f5f4fa] px-5 text-[#89869c] md:max-w-xl md:flex-1">
@@ -193,21 +193,32 @@ export default function MyCourses() {
                 const imageSrc = image && (/^https?:\/\//i.test(image) ? image : `${import.meta.env.VITE_API_BASE_URL}${image}`);
                 return (
                   <article
-                  key={course.training_id || course.enrollment_id || index}
-                  onClick={() => {
-                        if (!locked) navigate(`/student/course/${course.training_id}`, { state: { from: "/my-courses" } });
-                  }}
-                  onKeyDown={(event) => {
-                    if (!locked && event.target === event.currentTarget && event.key === "Enter") {
-                      navigate(`/student/course/${course.training_id}`, { state: { from: "/my-courses" } });
-                    }
-                  }}
-                  tabIndex={locked ? -1 : 0}
-                  className={`flex min-h-[220px] overflow-hidden rounded-[24px] border border-[#e9e7f1] bg-white p-3 shadow-[0_2px_8px_rgba(31,27,69,0.05)] transition sm:min-h-[238px] sm:p-4 ${locked ? "cursor-default" : "cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(31,27,69,0.12)]"}`}
-                >
+                    key={course.training_id || course.enrollment_id || index}
+                    onClick={() => {
+                      if (!locked) navigate(`/student/course/${course.training_id}`, { state: { from: "/my-courses" } });
+                    }}
+                    onKeyDown={(event) => {
+                      if (!locked && event.target === event.currentTarget && event.key === "Enter") {
+                        navigate(`/student/course/${course.training_id}`, { state: { from: "/my-courses" } });
+                      }
+                    }}
+                    tabIndex={locked ? -1 : 0}
+                    className={`flex min-h-[220px] overflow-hidden rounded-[24px] border border-[#e9e7f1] bg-white p-3 shadow-[0_2px_8px_rgba(31,27,69,0.05)] transition sm:min-h-[238px] sm:p-4 ${locked ? "cursor-default" : "cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(31,27,69,0.12)]"}`}
+                  >
                     <div className={`relative flex w-[34%] min-w-[92px] shrink-0 flex-col justify-between overflow-hidden rounded-[16px] bg-gradient-to-br ${gradients[index % gradients.length]} bg-cover bg-center p-3`} style={imageSrc ? { backgroundImage: `url(${imageSrc})` } : undefined}>
                       {imageSrc && <div className="absolute inset-0 bg-black/10" />}
-                      <span className="relative self-start rounded-md bg-white px-2 py-1 text-[10px] font-bold text-[#272247]">{course.course_level || "Course"}</span>
+                      <span className="relative self-start rounded-md bg-white px-2 py-1 text-[10px] font-bold text-[#272247]">
+                        {/* {course.course_level || "Course"} */}
+                        {
+                          course.training_title
+                            .trim()
+                            .split(/\s+/)
+                            .map((word) => word[0])
+                            .join("")
+                            .toUpperCase()
+                        }
+                      </span>
+
                       {!imageSrc && <strong className="relative line-clamp-3 text-sm font-bold leading-tight text-white">{course.training_title || "Japanese Course"}</strong>}
                       {status === "Upcoming" && <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#211b4b]/65 px-2 text-center text-white"><FiLock size={18} className="mb-2" /><strong className="text-xs leading-tight">Course not started yet</strong><span className="mt-1 text-[10px] leading-tight">Available from {new Date(course.training_start_date).toLocaleDateString()}</span></div>}
                       {pending && <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/55 px-2 text-center text-white backdrop-blur-[2px]"><FiLock size={18} className="mb-2" /><strong className="text-xs leading-tight">Waiting for admin approval</strong><span className="mt-1 text-[10px] leading-tight text-white/90">You'll get access once your enrollment is confirmed.</span></div>}
@@ -231,7 +242,7 @@ export default function MyCourses() {
                         <button disabled={locked} onClick={(event) => {
                           event.stopPropagation();
                           navigate(`/student/course/${course.training_id}/learn`);
-                          }} className={`rounded-full px-3 py-2 text-[10px] font-semibold transition sm:px-4 sm:text-xs ${locked ? `cursor-not-allowed ${status === "Rejected" ? "border border-rose-200 bg-rose-50 text-rose-800" : "bg-[#efedf9] text-[#6b6880]"}` : "cursor-pointer bg-[#211b4b] text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#332b68] hover:shadow-lg active:translate-y-0 active:scale-95"}`}>{action}</button>
+                        }} className={`rounded-full px-3 py-2 text-[10px] font-semibold transition sm:px-4 sm:text-xs ${locked ? `cursor-not-allowed ${status === "Rejected" ? "border border-rose-200 bg-rose-50 text-rose-800" : "bg-[#efedf9] text-[#6b6880]"}` : "cursor-pointer bg-[#211b4b] text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#332b68] hover:shadow-lg active:translate-y-0 active:scale-95"}`}>{action}</button>
                       </div>
                     </div>
                   </article>

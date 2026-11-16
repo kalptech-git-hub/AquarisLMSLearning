@@ -329,7 +329,7 @@ const TopicManagement = ({
       year: "numeric",
       timeZone: "Asia/Kolkata",
     });
-};
+  };
   const [enrollmentUpdating, setEnrollmentUpdating] = useState(false);
 
   const isCoursePublished = String(publishStatus || training?.publish_status || "").toUpperCase() === "PUBLISHED";
@@ -1028,7 +1028,7 @@ const TopicManagement = ({
                 : "Training published successfully!"
             );
 
-            
+
             setPublishStatus(newPublishStatus);
             setEnrollmentStatus(isCurrentlyPublished ? "NOT_STARTED" : "OPEN");
             fetchPublishStatus();
@@ -1126,7 +1126,7 @@ const TopicManagement = ({
       setTopicDescriptionError("");
     }
 
-        if (hasError) {
+    if (hasError) {
       toast.error(COMMON_VALIDATION_MSG, { toastId: "form-validation" });
       return;
     }
@@ -1198,7 +1198,7 @@ const TopicManagement = ({
   // Add / Edit Lesson Action (API) — uses FormData for file upload
   const handleAddLessonSubmit = async (e) => {
     e.preventDefault();
-        const normalizedTitle = normalizeText(newLessonData.title);
+    const normalizedTitle = normalizeText(newLessonData.title);
     const itemLabel =
       newLessonData.type === "quiz" ? "Quiz" : newLessonData.type === "live" ? "Live session" : "Lesson";
 
@@ -1620,7 +1620,7 @@ const TopicManagement = ({
   // Add Content Action (API - correct endpoint)
   const handleAddContentSubmit = async (e) => {
     e.preventDefault();
-        const normalizedTitle = normalizeText(newContentData.title);
+    const normalizedTitle = normalizeText(newContentData.title);
 
     const titleErr = normalizedTitle ? "" : "Content title is required.";
     const fileErr = selectedFile ? "" : "Please upload a file.";
@@ -2055,10 +2055,10 @@ const TopicManagement = ({
 
       {/* Header Container (pt-10 top padding to provide vertical clearance for back button) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-4 sm:p-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-4 sm:p-6">
 
-        {/* Back Arrow in top-left corner */}
-        {/* <button
+          {/* Back Arrow in top-left corner */}
+          {/* <button
           onClick={() => setShowTopicManagement(false)}
           className="absolute top-3 left-3 w-7 h-7 rounded-full border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-50 hover:text-red-600 transition shadow-sm cursor-pointer"
           // title="Back to Dashboard"
@@ -2067,45 +2067,51 @@ const TopicManagement = ({
           <FiArrowLeft size={14} />
         </button> */}
 
-        {/* Left Side: Course Details */}
-        <div className="flex items-start gap-4 min-w-0 flex-1">
-          <div className="w-14 h-14 bg-red-50 border border-slate-200 text-red-700 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0">
-            {/* {courseSettings.code.includes("-") ? courseSettings.code.split("-")[1] : courseSettings.code || "N5"} */}
-            {courseSettings.level || training?.course_level || "N5"}
+          {/* Left Side: Course Details */}
+          <div className="flex items-start gap-4 min-w-0 flex-1">
+            <div className="w-14 h-14 bg-red-50 border border-slate-200 text-red-700 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0">
+              {/* {courseSettings.code.includes("-") ? courseSettings.code.split("-")[1] : courseSettings.code || "N5"} */}
+              {/* {courseSettings.level || training?.course_level || "N5"} */}
+              {courseSettings.title
+                ?.trim()
+                .split(/\s+/)
+                .map((word) => word[0])
+                .join("")
+                .toUpperCase() || "N/A"}
 
-          </div>
-          <div className="space-y-1 min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold text-slate-900 leading-tight break-words">
-                {courseSettings.title}
-              </h1>
+            </div>
+            <div className="space-y-1 min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl font-bold text-slate-900 leading-tight break-words">
+                  {courseSettings.title}
+                </h1>
 
-              {/*was: h-8 px-4 */}
-              {/* was: border border-green-700 */}
-              <span className={`h-6 px-3 flex items-center gap-1.5 rounded-3xl font-semibold text-sm 
+                {/*was: h-8 px-4 */}
+                {/* was: border border-green-700 */}
+                <span className={`h-6 px-3 flex items-center gap-1.5 rounded-3xl font-semibold text-sm 
               ${trainingStatus === "COMPLETED"
-                  // ? "bg-slate-200 text-slate-600"
-                  ? "bg-violet-100 text-violet-700"
-                  : isActive
-                    ? "bg-emerald-100  text-emerald-700"
-                    : "bg-red-100 text-red-700"
-                }`
-              }
-              >
-                <span className={`w-1.5 h-1.5 rounded-full 
-                ${trainingStatus === "COMPLETED"
-                    // ? "bg-slate-500"
-                    ? "bg-violet-500"
+                    // ? "bg-slate-200 text-slate-600"
+                    ? "bg-violet-100 text-violet-700"
                     : isActive
-                      ? "bg-emerald-500"
-                      : "bg-red-500"
+                      ? "bg-emerald-100  text-emerald-700"
+                      : "bg-red-100 text-red-700"
                   }`
                 }
-                />
-                {trainingStatus === "COMPLETED" ? "Completed" : isActive ? "Active" : "Inactive"}
-              </span>
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full 
+                ${trainingStatus === "COMPLETED"
+                      // ? "bg-slate-500"
+                      ? "bg-violet-500"
+                      : isActive
+                        ? "bg-emerald-500"
+                        : "bg-red-500"
+                    }`
+                  }
+                  />
+                  {trainingStatus === "COMPLETED" ? "Completed" : isActive ? "Active" : "Inactive"}
+                </span>
 
-              {/* {publishStatus === "PUBLISHED" && (
+                {/* {publishStatus === "PUBLISHED" && (
                 // was: h-8 px-5 border border-blue-700
                 // <span className="h-6 px-3 flex items-center rounded-3xl border border-green-700 bg-green-100 text-green-700 font-semibold text-sm">
                 <span className="h-6 px-3 flex items-center gap-2 rounded-3xl bg-blue-100 text-blue-700 font-semibold text-sm">
@@ -2114,44 +2120,44 @@ const TopicManagement = ({
                 </span>
               )} */}
 
-              {publishStatus === "PUBLISHED" ? (
-                <span className="h-6 px-3 flex items-center gap-2 rounded-3xl bg-blue-100 text-blue-700 font-semibold text-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  Published
-                </span>
-              ) : publishStatus === "DRAFT" ? (
-                <span className="h-6 px-3 flex items-center gap-2 rounded-3xl bg-amber-100 text-amber-700 font-semibold text-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  Draft
-                </span>
-              ) : null}
+                {publishStatus === "PUBLISHED" ? (
+                  <span className="h-6 px-3 flex items-center gap-2 rounded-3xl bg-blue-100 text-blue-700 font-semibold text-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    Published
+                  </span>
+                ) : publishStatus === "DRAFT" ? (
+                  <span className="h-6 px-3 flex items-center gap-2 rounded-3xl bg-amber-100 text-amber-700 font-semibold text-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    Draft
+                  </span>
+                ) : null}
 
-            </div>
-            <p className="text-xs text-slate-500 font-medium">
-              Course: {courseSettings.code} • {courseSettings.duration} • {courseSettings.mode}
-            </p>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">
+                Course: {courseSettings.code} • {courseSettings.duration} • {courseSettings.mode}
+              </p>
 
-            {/* Inline Stats list */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1.5 text-xs text-slate-500">
-              <span className="flex items-center gap-1">
-                {/* <FiList className="text-slate-400" /> {totalTopics} {totalTopics === 1 ? "topic" : "topics"} */}
-                <FiList className="text-slate-400" /> {totalTopics} {totalTopics === 1 ? "module" : "modules"}
-              </span>
-              <span className="flex items-center gap-1">
-                <FiFileText className="text-slate-400" /> {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}
-              </span>
-              <span className="flex items-center gap-1">
-                <FiUsers className="text-slate-400" /> {students.length} {students.length === 1 ? "student" : "students"}
-              </span>
+              {/* Inline Stats list */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1.5 text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  {/* <FiList className="text-slate-400" /> {totalTopics} {totalTopics === 1 ? "topic" : "topics"} */}
+                  <FiList className="text-slate-400" /> {totalTopics} {totalTopics === 1 ? "module" : "modules"}
+                </span>
+                <span className="flex items-center gap-1">
+                  <FiFileText className="text-slate-400" /> {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}
+                </span>
+                <span className="flex items-center gap-1">
+                  <FiUsers className="text-slate-400" /> {students.length} {students.length === 1 ? "student" : "students"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Side: Progress & Actions */}
-        <div className="flex items-center gap-3 shrink-0">
+          {/* Right Side: Progress & Actions */}
+          <div className="flex items-center gap-3 shrink-0">
 
-          {/* Circular Progress Ring */}
-          {/* <div className="flex items-center gap-3">
+            {/* Circular Progress Ring */}
+            {/* <div className="flex items-center gap-3">
             <div className="relative w-12 h-12 flex items-center justify-center">
               <svg className="w-12 h-12 transform -rotate-90">
                 <circle cx="24" cy="24" r="20" stroke="#F1F5F9" strokeWidth="4" fill="transparent" />
@@ -2165,93 +2171,93 @@ const TopicManagement = ({
             </div>
           </div> */}
 
-          {/* Add Topic Action Button */}
-          <button
-            disabled={isLockedForModules}
-            onClick={() => {
-              if (isLockedForModules) return;
-              setActiveTab("topics");
-              setIsEditingTopic(false);
-              setNewTopicData({ title: "", description: "" });
-              setTopicTitleError("");
-              setTopicDescriptionError("");
-              setShowTopicForm(true);
-            }}
-            title={
-              isLockedForModules
-                ? (trainingStatus === "COMPLETED" ? "Course is completed — modules are locked" : "Course is inactive — modules are locked")
-                : undefined
-            }
-            className={`h-10 px-4 rounded-xl font-semibold shadow-sm transition duration-200 flex items-center justify-center gap-2 text-sm ${isLockedForModules
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-[#1B357F] hover:bg-[#152B66] text-white cursor-pointer"
-              }`}
-          >
-            <FiPlus size={16} /> Module
-          </button>
+            {/* Add Topic Action Button */}
+            <button
+              disabled={isLockedForModules}
+              onClick={() => {
+                if (isLockedForModules) return;
+                setActiveTab("topics");
+                setIsEditingTopic(false);
+                setNewTopicData({ title: "", description: "" });
+                setTopicTitleError("");
+                setTopicDescriptionError("");
+                setShowTopicForm(true);
+              }}
+              title={
+                isLockedForModules
+                  ? (trainingStatus === "COMPLETED" ? "Course is completed — modules are locked" : "Course is inactive — modules are locked")
+                  : undefined
+              }
+              className={`h-10 px-4 rounded-xl font-semibold shadow-sm transition duration-200 flex items-center justify-center gap-2 text-sm ${isLockedForModules
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-[#1B357F] hover:bg-[#152B66] text-white cursor-pointer"
+                }`}
+            >
+              <FiPlus size={16} /> Module
+            </button>
 
-          <button
-            onClick={handleTogglePublish}
-            disabled={
-              publishing ||
-              !isActive ||
-              (!canPublish && publishStatus !== "PUBLISHED") ||
-              (publishStatus !== "PUBLISHED" && totalLessons === 0) ||
-              (publishStatus === "PUBLISHED" && students.length > 0) ||
-              trainingStatus === "COMPLETED"  // NEW LINE ADDED - WHEN STATUS IS COMPLETED UNPUBLISH DISABLED 
-            }
-            title={
-              !isActive
-                ? "This course is inactive and can't be published"
-                : publishStatus !== "PUBLISHED" && totalLessons === 0
-                  ? "Add at least one lesson before publishing"
-                  : publishStatus === "PUBLISHED" && students.length > 0
-                    ? `Cannot unpublish — ${students.length} student${students.length === 1 ? " is" : "s are"} already enrolled`
-                    : ""
-            }
-            className={`min-w-[110px] h-10 px-4 rounded-xl font-semibold shadow-sm transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 text-sm cursor-pointer
+            <button
+              onClick={handleTogglePublish}
+              disabled={
+                publishing ||
+                !isActive ||
+                (!canPublish && publishStatus !== "PUBLISHED") ||
+                (publishStatus !== "PUBLISHED" && totalLessons === 0) ||
+                (publishStatus === "PUBLISHED" && students.length > 0) ||
+                trainingStatus === "COMPLETED"  // NEW LINE ADDED - WHEN STATUS IS COMPLETED UNPUBLISH DISABLED 
+              }
+              title={
+                !isActive
+                  ? "This course is inactive and can't be published"
+                  : publishStatus !== "PUBLISHED" && totalLessons === 0
+                    ? "Add at least one lesson before publishing"
+                    : publishStatus === "PUBLISHED" && students.length > 0
+                      ? `Cannot unpublish — ${students.length} student${students.length === 1 ? " is" : "s are"} already enrolled`
+                      : ""
+              }
+              className={`min-w-[110px] h-10 px-4 rounded-xl font-semibold shadow-sm transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 text-sm cursor-pointer
               ${publishStatus === "PUBLISHED"
-                ? "bg-red-600 text-white hover:bg-red-700"
-                // : "bg-green-600 text-white hover:bg-green-700"
-                : "bg-emerald-600 text-white hover:bg-emerald-700"
-              }`}
-          >
-            {publishing ? (
-              "Updating..."
-            ) : publishStatus === "PUBLISHED" ? (
-              <>
-                <MdFileUploadOff className="w-5 h-5 shrink-0" />
-                Unpublish
-              </>
-            ) : (
-              <>
-                <MdFileUpload className="w-5 h-5 shrink-0" />
-                Publish
-              </>
-            )}
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  // : "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-emerald-600 text-white hover:bg-emerald-700"
+                }`}
+            >
+              {publishing ? (
+                "Updating..."
+              ) : publishStatus === "PUBLISHED" ? (
+                <>
+                  <MdFileUploadOff className="w-5 h-5 shrink-0" />
+                  Unpublish
+                </>
+              ) : (
+                <>
+                  <MdFileUpload className="w-5 h-5 shrink-0" />
+                  Publish
+                </>
+              )}
             </button>
 
           </div>
         </div>
 
-      {/* Divider + dates row */}
-      <div className="mx-4 sm:mx-6 border-t border-slate-200 py-4 flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 bg-slate-50 rounded-lg px-2.5 py-1.5 text-xs">
-          <FiCalendar className="text-slate-400" size={14} />
-          <span className="text-slate-500">Start date</span>
-          <span className="font-semibold text-slate-900">{formatCourseDate(trainingStartDate)}</span>
-        </span>
-        <span className="text-slate-300 text-xs">→</span>
-        <span className="inline-flex items-center gap-1.5 bg-slate-50 rounded-lg px-2.5 py-1.5 text-xs">
-          <FiCalendar className="text-slate-400" size={14} />
-          <span className="text-slate-500">End date</span>
-          <span className="font-semibold text-slate-900">{formatCourseDate(trainingEndDate)}</span>
-        </span>
-        {trainingStartDate && trainingEndDate && (() => {
-          const n = Math.round((new Date(trainingEndDate) - new Date(trainingStartDate)) / 86400000);
-          return n > 0 ? <span className="text-xs text-slate-400">• {n} days</span> : null;
-        })()}
-      </div>
+        {/* Divider + dates row */}
+        <div className="mx-4 sm:mx-6 border-t border-slate-200 py-4 flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 bg-slate-50 rounded-lg px-2.5 py-1.5 text-xs">
+            <FiCalendar className="text-slate-400" size={14} />
+            <span className="text-slate-500">Start date</span>
+            <span className="font-semibold text-slate-900">{formatCourseDate(trainingStartDate)}</span>
+          </span>
+          <span className="text-slate-300 text-xs">→</span>
+          <span className="inline-flex items-center gap-1.5 bg-slate-50 rounded-lg px-2.5 py-1.5 text-xs">
+            <FiCalendar className="text-slate-400" size={14} />
+            <span className="text-slate-500">End date</span>
+            <span className="font-semibold text-slate-900">{formatCourseDate(trainingEndDate)}</span>
+          </span>
+          {trainingStartDate && trainingEndDate && (() => {
+            const n = Math.round((new Date(trainingEndDate) - new Date(trainingStartDate)) / 86400000);
+            return n > 0 ? <span className="text-xs text-slate-400">• {n} days</span> : null;
+          })()}
+        </div>
       </div>
 
       {/* Navigation Tabs Bar */}
@@ -2489,7 +2495,7 @@ const TopicManagement = ({
                               setIsEditingLesson(false);
                               setNewLessonData({ title: "", status: "Published", type: "video", lessonFile: null, freePreview: false });
                               setLessonTitleError("");
-                              setLessonFileError(""); 
+                              setLessonFileError("");
                               setShowQuizValidation(false);
                               setIsViewOnlyQuiz(false);
                               setIsDirectQuizAdd(false);
@@ -2641,7 +2647,7 @@ const TopicManagement = ({
                             disabled={isCoursePublished || isLockedForModules || (topicLessons && topicLessons.length > 0) || Number(topic.topic_recording_count || 0) > 0}
                             onClick={() => {
                               if (isCoursePublished || isLockedForModules || (topicLessons && topicLessons.length > 0) || Number(topic.topic_recording_count || 0) > 0) return;
-                                                            handleDeleteTopicLocal(topic);
+                              handleDeleteTopicLocal(topic);
                             }}
                             className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition 
                               ${isCoursePublished || isLockedForModules || (topicLessons && topicLessons.length > 0) || Number(topic.topic_recording_count || 0) > 0
@@ -2972,10 +2978,10 @@ const TopicManagement = ({
                                   <label className="block text-xs font-semibold text-slate-600 mb-1">Upload File  <span className="text-red-500">*</span></label>
                                   <div
                                     className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${isDraggingVideo
-                                          ? "border-red-400 bg-red-50/40"
-                                          : lessonFileError && !newLessonData.lessonFile
-                                            ? "border-red-500 bg-red-50/30"
-                                            : "border-slate-300 bg-slate-50/50 hover:border-slate-400"
+                                      ? "border-red-400 bg-red-50/40"
+                                      : lessonFileError && !newLessonData.lessonFile
+                                        ? "border-red-500 bg-red-50/30"
+                                        : "border-slate-300 bg-slate-50/50 hover:border-slate-400"
                                       }`}
                                     onClick={() => document.getElementById(`lesson-file-upload-${topic.topic_id}`).click()}
                                     onDragOver={(e) => { e.preventDefault(); setIsDraggingVideo(true); }}
@@ -3049,7 +3055,7 @@ const TopicManagement = ({
                                         <p className="text-[10px] text-slate-400">
                                           {newLessonData.type === "video"
                                             ? "Supports MP4, WebM up to 80MB"
-                                                                                        : "Supports PDF, DOCX, TXT up to 80MB"}
+                                            : "Supports PDF, DOCX, TXT up to 80MB"}
                                         </p>
                                       </div>
                                     )}
@@ -3453,10 +3459,10 @@ const TopicManagement = ({
                                                   onBlur={(e) => setNewLessonData(prev => ({ ...prev, title: normalizeText(e.target.value) }))}
                                                   placeholder={newLessonData.type === "quiz" ? "e.g. Section 1 Quiz" : newLessonData.type === "live" ? "e.g. Live Q&A and Discussion" : "e.g. Greetings and Introductions lecture"}
                                                   className={`w-full text-sm border rounded-lg px-3 py-2 focus:outline-none transition ${newLessonData.type === "live" && (liveSessionStatus === "CANCELLED" || isLiveSessionInPast)
-                                                      ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                                      : lessonTitleError
-                                                        ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                                                        : "border-slate-200 focus:border-slate-300 focus:ring-0"
+                                                    ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                                    : lessonTitleError
+                                                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                                      : "border-slate-200 focus:border-slate-300 focus:ring-0"
                                                     }`}
                                                 />
                                               </div>
@@ -3651,8 +3657,8 @@ const TopicManagement = ({
                                                   disabled={isCancellingLiveSession || isLiveSessionInPast}
                                                   onClick={handleCancelLiveSession}
                                                   className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition shadow-xs ${isLiveSessionInPast
-                                                      ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60"
-                                                      : "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60"
+                                                    : "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                     }`}
                                                   title={
                                                     isLiveSessionInPast
@@ -3680,8 +3686,8 @@ const TopicManagement = ({
                                                 type="submit"
                                                 disabled={isSubmittingLesson || isLiveSessionInPast}
                                                 className={`flex items-center gap-2 px-4 py-2 text-white rounded-xl text-xs font-semibold shadow ${isLiveSessionInPast
-                                                    ? "bg-slate-400 cursor-not-allowed opacity-60"
-                                                    : "bg-red-600 hover:bg-red-700 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                                                  ? "bg-slate-400 cursor-not-allowed opacity-60"
+                                                  : "bg-red-600 hover:bg-red-700 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                                                   }`}
                                                 title={isLiveSessionInPast ? "Cannot edit a live session that has already started or ended" : "Save Changes"}
                                               >
@@ -4260,8 +4266,8 @@ const TopicManagement = ({
                                             />
                                             {contentTitleError && (
                                               <p className="text-xs text-red-500 mt-1">{contentTitleError}</p>
-  )}
-                                            
+                                            )}
+
                                           </div>
 
                                           <div>
@@ -4337,8 +4343,8 @@ const TopicManagement = ({
                                                 </button>
                                               </div>
                                             ) : (
-                                                <div className={`border-2 border-dashed hover:bg-slate-50/50 rounded-xl p-5 text-center transition relative group cursor-pointer ${contentFileError && !selectedFile ? "border-red-500 bg-red-50/30" : "border-slate-200"
-                                                  }`}>
+                                              <div className={`border-2 border-dashed hover:bg-slate-50/50 rounded-xl p-5 text-center transition relative group cursor-pointer ${contentFileError && !selectedFile ? "border-red-500 bg-red-50/30" : "border-slate-200"
+                                                }`}>
                                                 <input
                                                   type="file"
                                                   required
@@ -4524,7 +4530,7 @@ const TopicManagement = ({
                     <th className="py-3 px-6">Joined Date</th>
                   </tr>
                 </thead>
-                
+
 
                 <tbody className="divide-y divide-slate-100 text-sm">
                   {studentsLoading ? (

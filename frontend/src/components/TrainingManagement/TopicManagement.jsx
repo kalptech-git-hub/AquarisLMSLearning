@@ -2147,7 +2147,7 @@ const TopicManagement = ({
                   <FiFileText className="text-slate-400" /> {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}
                 </span>
                 <span className="flex items-center gap-1">
-                  <FiUsers className="text-slate-400" /> {students.length} {students.length === 1 ? "student" : "students"}
+                  <FiUsers className="text-slate-400" /> {students.length} {students.length === 1 ? "student" : "trainees"}
                 </span>
               </div>
             </div>
@@ -2266,7 +2266,7 @@ const TopicManagement = ({
           {[
             // { id: "topics", label: "Topics" },
             { id: "topics", label: "Modules" },
-            { id: "students", label: "Students" },
+            { id: "students", label: "Trainees" },
             //{ id: "settings", label: "Settings" }
           ].map(tab => (
             <button
@@ -4457,13 +4457,13 @@ const TopicManagement = ({
             <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="font-bold text-slate-800 text-base">
-                  Enrolled Students
+                  Enrolled Trainees
 
                 </h3>
 
                 <p className="text-xs text-slate-500 mt-1">
                   {/* Review student learning progress in this course. */}
-                  Review student learning progress in this course.
+                  Review trainees learning progress in this course.
                 </p>
               </div>
 
@@ -4525,7 +4525,7 @@ const TopicManagement = ({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 text-[11px] font-bold uppercase text-slate-500 border-b border-slate-100">
-                    <th className="py-3 px-6">Student Name</th>
+                    <th className="py-3 px-6">Trainees Name</th>
                     <th className="py-3 px-6">Progress</th>
                     <th className="py-3 px-6">Joined Date</th>
                   </tr>
@@ -4539,7 +4539,7 @@ const TopicManagement = ({
                         colSpan="3"
                         className="py-8 text-center text-slate-500"
                       >
-                        Loading students...
+                        Loading trainees...
                       </td>
                     </tr>
                   ) : students.length > 0 ? (
@@ -4588,7 +4588,7 @@ const TopicManagement = ({
                         colSpan="3"
                         className="py-8 text-center text-slate-500"
                       >
-                        No students enrolled yet.
+                        No trainees enrolled yet.
                       </td>
                     </tr>
                   )}

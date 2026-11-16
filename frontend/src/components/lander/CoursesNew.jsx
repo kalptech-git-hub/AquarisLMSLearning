@@ -367,12 +367,12 @@ const CourseSection = () => {
                         onError={(e) => {
                           e.target.style.display = "none";
                         }}
-                        className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                        className="h-full w-full objecct-cover transition duration-500 hover:scale-105"
                       />
 
-                      <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#c52d3f] shadow">
+                      {/* <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#c52d3f] shadow">
                         {levelBadge}
-                      </span>
+                      </span> */}
                     </div>
 
                     {/* CONTENT */}

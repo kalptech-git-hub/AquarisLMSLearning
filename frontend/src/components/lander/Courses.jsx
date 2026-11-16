@@ -999,7 +999,7 @@ const Courses = () => {
                                         <div className="flex w-full sm:w-[46%] min-w-0 flex-col px-5 py-4">
                                             
                                             {/* LEVEL */}
-                                            <div>
+                                            {/* <div>
                                                 <span
                                                     className="inline-flex rounded-lg px-3 py-1 text-xs font-medium"
                                                     style={{
@@ -1009,7 +1009,7 @@ const Courses = () => {
                                                 >
                                                     Level: {course.course_level || "N5"}
                                                 </span>
-                                            </div>
+                                            </div> */}
 
                                             {/* TITLE */}
                                             <div className="mt-2">

@@ -349,7 +349,7 @@ const CompanyDashboard = () => {
       path: "/company/courses",
     },
     {
-      label: "Total Trainees",
+      label: "Trainees",
       value: stats.totalEmployees,
       icon: Users,
       gradient: "linear-gradient(135deg, #D7DFE9 0%, #F1F3F6 100%)",

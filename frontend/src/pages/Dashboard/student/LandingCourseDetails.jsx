@@ -470,39 +470,41 @@ const LandingCourseDetails = () => {
                                             className="transition-transform duration-200 group-hover:translate-x-1"
                                         />
                                     </button>
-                                ) : course.enroll_status === "P" ? (
-                                    <button
-                                        disabled
-                                        className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white/70 rounded-full font-semibold text-sm cursor-not-allowed"
-                                    >
-                                        Approval Pending
-                                    </button>
-                                ) : course.enroll_status === "R" ? (
-                                    <button
-                                        disabled
-                                        className="flex items-center gap-2 px-6 py-3 bg-rose-200 text-red-800 rounded-full font-semibold text-sm cursor-not-allowed"
-                                    >
-                                        Enrollment Rejected
-                                    </button>
-                                ) : isEnrollmentClosed ? (
-                                    <button
-                                        disabled
-                                        className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white/50 rounded-full font-semibold text-sm cursor-not-allowed"
-                                    >
-                                        Enrollment Closed
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={handleEnrollClick}
-                                        className="group flex items-center gap-2 px-6 py-2.5 bg-[#C0432C] hover:bg-[#a8391f] text-white rounded-full font-semibold text-sm transition-all duration-300 active:scale-95 cursor-pointer"
-                                    >
-                                        Enroll Now
-                                        <FiArrowRight
-                                            size={16}
-                                            className="transition-transform duration-200 group-hover:translate-x-1"
-                                        />
-                                    </button>
-                                )
+                                ) : null
+                                
+                                // course.enroll_status === "P" ? (
+                                //     <button
+                                //         disabled
+                                //         className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white/70 rounded-full font-semibold text-sm cursor-not-allowed"
+                                //     >
+                                //         Approval Pending
+                                //     </button>
+                                // ) : course.enroll_status === "R" ? (
+                                //     <button
+                                //         disabled
+                                //         className="flex items-center gap-2 px-6 py-3 bg-rose-200 text-red-800 rounded-full font-semibold text-sm cursor-not-allowed"
+                                //     >
+                                //         Enrollment Rejected
+                                //     </button>
+                                // ) : isEnrollmentClosed ? (
+                                //     <button
+                                //         disabled
+                                //         className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white/50 rounded-full font-semibold text-sm cursor-not-allowed"
+                                //     >
+                                //         Enrollment Closed
+                                //     </button>
+                                // ) : (
+                                //     <button
+                                //         onClick={handleEnrollClick}
+                                //         className="group flex items-center gap-2 px-6 py-2.5 bg-[#C0432C] hover:bg-[#a8391f] text-white rounded-full font-semibold text-sm transition-all duration-300 active:scale-95 cursor-pointer"
+                                //     >
+                                //         Enroll Now
+                                //         <FiArrowRight
+                                //             size={16}
+                                //             className="transition-transform duration-200 group-hover:translate-x-1"
+                                //         />
+                                //     </button>
+                                // )
                             )}
                         </div>
                     </div>

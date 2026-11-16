@@ -1106,7 +1106,7 @@ const Courses = () => {
                                             </div>
 
                                             {/* ENROLLMENT */}
-                                            <div className="mt-auto pt-4 sm:pt-2">
+                                            {/* <div className="mt-auto pt-4 sm:pt-2">
                                                 {isStudentOrVisitor && (
                                                     course.enroll_status === "A" ? (
                                                         <button
@@ -1160,7 +1160,7 @@ const Courses = () => {
                                                         </button>
                                                     )
                                                 )}
-                                            </div>
+                                            </div> */}
                                         </div>
 
                                         {/* COURSE IMAGE */}

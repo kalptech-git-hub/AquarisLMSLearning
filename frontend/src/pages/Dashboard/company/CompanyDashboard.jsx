@@ -255,22 +255,23 @@ const CompanyDashboard = () => {
   const [assignedCourses, setAssignedCourses] = useState([
     {
       id: 1,
+      title: "Construction Primary Discipline",
+      enrolledCount: 3,
+      avgProgress: 5,
+    },
+    {
+      id: 2,
       title: "Concrete Recycling Plant",
       enrolledCount: 2,
       avgProgress: 10,
     },
     {
-      id: 2,
+      id: 3,
       title: "Truck Mounted Boom Pumps",
       enrolledCount: 1,
       avgProgress: 5,
     },
-    // {
-    //   id: 3,
-    //   title: "Stationary Concrete Pumps",
-    //   enrolledCount: 12,
-    //   avgProgress: 85,
-    // },
+
     // {
     //   id: 4,
     //   title: "Stationary Boom Placers",

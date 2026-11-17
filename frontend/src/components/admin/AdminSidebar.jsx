@@ -83,7 +83,8 @@ const AdminSidebar = ({ isOpen = false, onClose = () => {} }) => {
                 <div>
                     {/* was: text-3xl */}
                     <h1 className="text-lg font-bold text-slate-800 break-words">
-                        Aquaris Engineering Pvt. Ltd.
+                        Aquarius Engineering Pvt. Ltd.
+                        {/* Aquarius Engineers */}
                     </h1>
                 
                 </div>

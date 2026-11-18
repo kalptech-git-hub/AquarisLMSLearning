@@ -154,3 +154,69 @@ exports.getTrainingProgressModel = async (
 
   return rows;
 };
+
+/* SAVE VIDEO SKIP LOG */
+exports.saveVideoSkipLogModel = async (
+    userId,
+    lessonId,
+    skippedFrom,
+    skippedTo,
+    timestamp
+) => {
+
+    const connection = await db;
+
+    await connection.query(
+        `
+        INSERT INTO tbl_training_lesson_video_watch_log
+        (
+            lesson_id,
+            user_id,
+            skipped_from,
+            skipped_to,
+            \`timestamp\`
+        )
+        VALUES (?, ?, ?, ?, ?)
+        `,
+        [
+            lessonId,
+            userId,
+            skippedFrom,
+            skippedTo,
+            timestamp
+        ]
+    );
+
+};
+
+/* GET VIDEO SKIP LOGS */
+exports.getVideoSkipLogsModel = async (
+    userId,
+    lessonId
+) => {
+
+    const connection = await db;
+
+    const [rows] = await connection.query(
+        `
+        SELECT
+            lesson_id,
+            user_id,
+            skipped_from,
+            skipped_to,
+            \`timestamp\`,
+            created_at
+        FROM tbl_training_lesson_video_watch_log
+        WHERE lesson_id = ?
+          AND user_id = ?
+        ORDER BY created_at DESC
+        `,
+        [
+            lessonId,
+            userId
+        ]
+    );
+
+    return rows;
+
+};

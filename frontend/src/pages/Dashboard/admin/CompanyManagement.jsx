@@ -6,6 +6,7 @@ import CompanyDetails from "../../../components/CompanyManagement/CompanyDetails
 import CompanyForm from "../../../components/CompanyManagement/CompanyForm";
 import CompanyTable from "../../../components/CompanyManagement/CompanyTable";
 import useScrollToTop from "../../../hooks/useScrollToTop.js";
+import AssignTrainigsModal from "../../../components/CompanyManagement/AssignTrainingsModal.jsx";
 
 
 const CompanyManagement = ({ }) => {
@@ -28,6 +29,8 @@ const CompanyManagement = ({ }) => {
 
     /* To know the source of edit - table or details */
     const [editSource, setEditSource] = useState(null);
+
+    const [assignCompany, setAssignCompany] = useState(null);
 
     const fetchCompanies = async (signal) => {
         try {
@@ -107,6 +110,10 @@ const CompanyManagement = ({ }) => {
         setShowForm(true);
     };
 
+    const handleAssignCourses = (company) => {
+        setAssignCompany(company);
+    };
+
     const handleFormSuccess = async () => {
         await fetchCompanies();
 
@@ -180,6 +187,7 @@ const CompanyManagement = ({ }) => {
                         loading={loading}
                         handleView={handleView}
                         handleEdit={handleEdit}
+                        handleAssignCourses={handleAssignCourses}
                     />
                 </>
 
@@ -201,6 +209,15 @@ const CompanyManagement = ({ }) => {
 
             )}
 
+            {assignCompany && (
+                <AssignTrainigsModal
+                    company={assignCompany}
+                    onClose={() => setAssignCompany(null)}
+                    onSuccess={async () => {
+                        await fetchCompanies();
+                    }}
+                />
+            )}
         </div>
     )
 };

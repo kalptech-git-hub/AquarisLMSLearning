@@ -7,6 +7,7 @@ import {
   FiCalendar,
   FiVideo,
   FiChevronRight,
+  FiBriefcase,
 } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../../../components/lander/Navbar";
@@ -799,7 +800,16 @@ const MyLearning = () => {
 
           {/* ---------- Hero (NEW, no image) ---------- */}
           <div className="overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#3f2a5a] via-[#7b2d4f] to-[#d4343a] px-5 py-6 sm:px-8 sm:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Hello, {studentName}!</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Hello, {studentName}!</h1>
+              {/* <div className="flex items-center justify-center gap-1">
+                <FiBriefcase className="text-xs text-gray-50" />
+
+                <span className="text-xs text-gray-50">
+                  {currentUser.company_name || "Company not assigned"}
+                </span>
+              </div> */}
+            </div>
             <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-white/85">
               Pick up where you left off. A few minutes of practice today keeps your streak alive.
             </p>

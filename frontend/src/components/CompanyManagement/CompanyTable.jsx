@@ -1,4 +1,4 @@
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, FileText, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { FiBookOpen, FiEdit, FiEdit2, FiEye, FiLayers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,7 @@ import { selectStyles } from "../../utils/selectStyles.js";
 // Columns pinned on the left on phone widths while the rest scroll horizontally
 const STICKY_COLUMN_IDS = ["index", "company_name"];
 
-const CompanyTable = ({ companies, loading, handleView, handleEdit }) => {
+const CompanyTable = ({ companies, loading, handleView, handleEdit, handleAssignCourses }) => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [pagination, setPagination] = useState({
@@ -115,7 +115,7 @@ const CompanyTable = ({ companies, loading, handleView, handleEdit }) => {
                 header: "Mobile",
                 accessorKey: "company_mobile_no",
                 size: 140,
-            },     
+            },
 
             {
                 header: "Status",
@@ -153,7 +153,7 @@ const CompanyTable = ({ companies, loading, handleView, handleEdit }) => {
                             onClick={() =>
                                 handleView(row.original)
                             }
-                            title="View companye"
+                            title="View company"
                             className="text-blue-600 hover:text-blue-800 cursor-pointer"
                         >
                             <FiEye className="text-lg" />
@@ -169,6 +169,14 @@ const CompanyTable = ({ companies, loading, handleView, handleEdit }) => {
                         >
                             <FiEdit className="text-lg" />
                         </button> */}
+
+                        <button
+                            onClick={() => handleAssignCourses(row.original)}
+                            title="Assign courses"
+                            className="text-green-600 hover:text-green-800 cursor-pointer"
+                        >
+                            <FileText size={18} />
+                        </button>
                     </div>
 
                 ),
@@ -177,7 +185,7 @@ const CompanyTable = ({ companies, loading, handleView, handleEdit }) => {
             },
 
         ],
-        [handleEdit, handleView]
+        [handleEdit, handleView, handleAssignCourses]
     );
 
     const table = useReactTable({

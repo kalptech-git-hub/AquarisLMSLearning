@@ -12,17 +12,30 @@ const {
   getCourses,
   enrollEmployee,
   getAllCompanies,
+  assignTrainingsToCompany,
 } = require("../controllers/company.controller");
+
+
+// Fetch courses for dropdown for enrolling employees
+router.get("/courses", authMiddleware, companyAdminMiddleware, getCourses);
+
+// Fetch all employees for the company
+router.get("/employees", authMiddleware, companyAdminMiddleware, getEmployees);
+
 
 // Super Admin - Get all companies
 router.get("/", authMiddleware, adminMiddleware, getAllCompanies);
 
-// Employees
-router.get("/employees", authMiddleware, companyAdminMiddleware,getEmployees);
+
+// Assign trainings to company
+router.post("/:companyId/assign-trainings", authMiddleware, adminMiddleware, assignTrainingsToCompany);
+
+
+// Create employee
 router.post("/employees", authMiddleware, companyAdminMiddleware, userUpload.single("user_profile_photo"), createEmployee);
 
-// Courses
-router.get("/courses", authMiddleware, companyAdminMiddleware, getCourses);
+
+// Enroll employee in Courses
 router.post("/enroll-employee", authMiddleware, companyAdminMiddleware, enrollEmployee);
 
 module.exports = router;

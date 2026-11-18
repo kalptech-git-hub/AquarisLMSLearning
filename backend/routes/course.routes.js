@@ -37,7 +37,7 @@ router.put("/:courseId", authMiddleware, adminMiddleware, updateCourseOnly);
 // ONLY COURSE DELETE - JUST KEEPING THE ROUTE.
 // router.delete("/:id", authMiddleware, adminMiddleware, deleteCourse);
 
-// Public Routes - USED ON LANDING, TRAINING TABLE, TRAINING DETAILS
+// Public Routes - USED ON LANDING
 // This route is to fetch all the Training, name is chanaged to Courses now.
 router.get("/", optionalAuthMiddleware, getAllTrainingsForLanding);
 

@@ -61,7 +61,7 @@ const LessonPlayer = ({
     const [isBlur, setIsBlur] = useState(false);
     const [isVideoFullscreen, setIsVideoFullscreen] = useState(false);
     const marathiAudioRef = useRef(null);
-const [audioLanguage, setAudioLanguage] = useState('english');
+    const [audioLanguage, setAudioLanguage] = useState('english');
 
     /* VIDEO PRIVACY PROTECTION */
     // useEffect(() => {
@@ -88,45 +88,45 @@ const [audioLanguage, setAudioLanguage] = useState('english');
     // }, []);
 
     /* VIDEO PRIVACY PROTECTION */
-useEffect(() => {
-    const hideVideo = () => {
-        setIsBlur(true);
+    useEffect(() => {
+        const hideVideo = () => {
+            setIsBlur(true);
 
-        if (videoRef.current) {
-            videoRef.current.pause();
-        }
-    };
+            if (videoRef.current) {
+                videoRef.current.pause();
+            }
+        };
 
-    const showVideo = () => {
-        setIsBlur(false);
-    };
+        const showVideo = () => {
+            setIsBlur(false);
+        };
 
-    const handleVisibilityChange = () => {
-        if (document.hidden) {
-            hideVideo();
-        } else {
-            showVideo();
-        }
-    };
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                hideVideo();
+            } else {
+                showVideo();
+            }
+        };
 
-    window.addEventListener("blur", hideVideo);
-    window.addEventListener("focus", showVideo);
+        window.addEventListener("blur", hideVideo);
+        window.addEventListener("focus", showVideo);
 
-    document.addEventListener(
-        "visibilitychange",
-        handleVisibilityChange
-    );
-
-    return () => {
-        window.removeEventListener("blur", hideVideo);
-        window.removeEventListener("focus", showVideo);
-
-        document.removeEventListener(
+        document.addEventListener(
             "visibilitychange",
             handleVisibilityChange
         );
-    };
-}, []);
+
+        return () => {
+            window.removeEventListener("blur", hideVideo);
+            window.removeEventListener("focus", showVideo);
+
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange
+            );
+        };
+    }, []);
 
     const toggleVideoFullscreen = async () => {
         try {
@@ -193,7 +193,7 @@ useEffect(() => {
         };
     }, []);
     const lastTimeRef = useRef(0);
-const [skippedSegments, setSkippedSegments] = useState([]);
+    const [skippedSegments, setSkippedSegments] = useState([]);
 
     /* Save the last watched time */
 
@@ -205,21 +205,21 @@ const [skippedSegments, setSkippedSegments] = useState([]);
 
         if (!video) return;
         const currentTime = video.currentTime;
-    const lastTime = lastTimeRef.current;
-    const timeDiff = currentTime - lastTime;
-    if (Math.abs(timeDiff) > 1.5) {
-        const skipData = {
-            from: Math.round(lastTime),
-            to: Math.round(currentTime)
-        };
-setSkippedSegments((prev) => [...prev, skipData]);
-saveSkipToBackend(skipData);
-}
-lastTimeRef.current = currentTime;
-const floorCurrent = Math.floor(currentTime);
-    if (floorCurrent - Math.floor(lastSavedRef.current) < 15) {
-        return;
-    }
+        const lastTime = lastTimeRef.current;
+        const timeDiff = currentTime - lastTime;
+        if (Math.abs(timeDiff) > 1.5) {
+            const skipData = {
+                from: Math.round(lastTime),
+                to: Math.round(currentTime)
+            };
+            setSkippedSegments((prev) => [...prev, skipData]);
+            saveSkipToBackend(skipData);
+        }
+        lastTimeRef.current = currentTime;
+        const floorCurrent = Math.floor(currentTime);
+        if (floorCurrent - Math.floor(lastSavedRef.current) < 15) {
+            return;
+        }
         // const currentTime =
         //     Math.floor(video.currentTime);
 
@@ -313,27 +313,60 @@ const floorCurrent = Math.floor(currentTime);
             );
         }
     };
+
     const saveSkipToBackend = async (skipData) => {
-    try {
-        const token = sessionStorage.getItem("token");
-        await axios.post(
-            `${import.meta.env.VITE_API_BASE_URL}/api/lessons-progress/skip`, 
-            {
-                lesson_id: selectedLesson.lesson_id,
-                skipped_from: skipData.from,
-                skipped_to: skipData.to,
-                timestamp: new Date().toISOString()
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+        try {
+            const token = sessionStorage.getItem("token");
+            await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/api/lessons-progress/skip`,
+                {
+                    lesson_id: selectedLesson.lesson_id,
+                    skipped_from: skipData.from,
+                    skipped_to: skipData.to,
+                    timestamp: new Date().toISOString()
                 },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+        } catch (error) {
+            console.error("Failed to save skip analytics", error);
+        }
+    };
+
+    const fetchVideoSkipLogs = async () => {
+        if (!selectedLesson?.lesson_id) return;
+
+        try {
+            const token = sessionStorage.getItem("token");
+
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_BASE_URL}/api/lessons-progress/skip/${selectedLesson.lesson_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+
+
+            if (response.data.success) {
+                console.log("Video Skip Logs:", response.data.data);
             }
-        );
-    } catch (error) {
-        console.error("Failed to save skip analytics", error);
+
+        } catch (error) {
+            console.error("Failed to fetch video skip logs", error);
+        }
+    };
+
+    useEffect(() => {
+    if (selectedLesson?.lesson_id) {
+        fetchVideoSkipLogs();
     }
-};
+}, [selectedLesson?.lesson_id]);
 
     /* Working */
     // const handleVideoEnded = async () => {
@@ -756,30 +789,30 @@ const floorCurrent = Math.floor(currentTime);
         return formatDuration(lesson.lesson_duration);
     };
     const handleAudioLanguageChange = (newLang) => {
-    setAudioLanguage(newLang);
-    const video = videoRef.current;
-    const audio = marathiAudioRef.current;
+        setAudioLanguage(newLang);
+        const video = videoRef.current;
+        const audio = marathiAudioRef.current;
 
-    if (!video) return;
+        if (!video) return;
 
-    if (newLang === 'marathi') {
-        
-        video.muted = true;
-        if (audio) {
-            audio.currentTime = video.currentTime; 
-            if (!video.paused) {
-                audio.play().catch(err => console.log("Audio play error:", err));
+        if (newLang === 'marathi') {
+
+            video.muted = true;
+            if (audio) {
+                audio.currentTime = video.currentTime;
+                if (!video.paused) {
+                    audio.play().catch(err => console.log("Audio play error:", err));
+                }
             }
+        } else {
+
+            if (audio) {
+                audio.pause();
+            }
+            video.muted = false;
         }
-    } else {
-        
-        if (audio) {
-            audio.pause();
-        }
-        video.muted = false;
-    }
-};
-const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res.cloudinary.com/d1ugtqzg/video/upload/v1794990063/lesson_contents/MarathiLMS_y2rwf2.mp3";
+    };
+    const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res.cloudinary.com/d1ugtqzg/video/upload/v1794990063/lesson_contents/MarathiLMS_y2rwf2.mp3";
 
     return (
         //{/* was: no bottom padding on the scroll container — last tab-content card (e.g. Target Goal) sat flush against the bottom edge on phone, getting visually cut close by browser chrome with no breathing room below it. Added pb-20 on phone only; sm: reverts to the original (no extra bottom padding), matching desktop/tablet exactly as before. */}
@@ -917,9 +950,9 @@ const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res
                                                     setShowCenterControl(false);
                                                 }, 1000);
                                                 if (audioLanguage === 'marathi' && marathiAudioRef.current) {
-            marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-            marathiAudioRef.current.play().catch(e => console.log(e));
-        }
+                                                    marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                                    marathiAudioRef.current.play().catch(e => console.log(e));
+                                                }
                                             }}
 
                                             onPause={() => {
@@ -931,34 +964,33 @@ const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res
                                                     setShowCenterControl(false);
                                                 }, 1000);
                                                 if (marathiAudioRef.current) {
-            marathiAudioRef.current.pause();
-        }
+                                                    marathiAudioRef.current.pause();
+                                                }
                                             }}
                                             onSeeked={() => {
-       
-        if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
-            marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-        }
-    }}
-    onRateChange={() => {
-        
-        if (marathiAudioRef.current && videoRef.current) {
-            marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
-        }
-    }}
+
+                                                if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
+                                                    marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                                }
+                                            }}
+                                            onRateChange={() => {
+
+                                                if (marathiAudioRef.current && videoRef.current) {
+                                                    marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+                                                }
+                                            }}
                                             playsInline
                                             // className="w-full h-full object-contain"
 
                                             // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
                                             //     }`}
 
-                                            className={`absolute inset-0 w-full h-full object-contain block ${
-        isBlur ? "blur-xl" : "blur-none"
-    }`}
+                                            className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
+                                                }`}
 
                                         />
-                                        
-                    <audio
+
+                                        <audio
                                             ref={marathiAudioRef}
                                             src={marathiAudioSrc}
                                             preload="auto"
@@ -1097,18 +1129,18 @@ const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res
                         </h2>
                     </div>
                     {selectedLesson?.lesson_content_type === "video" && (
-            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm self-start sm:self-center">
-                <span className="text-xs font-semibold text-slate-600">Audio Track:</span>
-                <select 
-                    value={audioLanguage}
-                    onChange={(e) => handleAudioLanguageChange(e.target.value)}
-                    className="text-xs bg-transparent font-medium text-slate-900 focus:outline-none cursor-pointer"
-                >
-                    <option value="english">English</option>
-                    <option value="marathi">Marathi</option>
-                </select>
-            </div>
-        )}
+                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm self-start sm:self-center">
+                            <span className="text-xs font-semibold text-slate-600">Audio Track:</span>
+                            <select
+                                value={audioLanguage}
+                                onChange={(e) => handleAudioLanguageChange(e.target.value)}
+                                className="text-xs bg-transparent font-medium text-slate-900 focus:outline-none cursor-pointer"
+                            >
+                                <option value="english">English</option>
+                                <option value="marathi">Marathi</option>
+                            </select>
+                        </div>
+                    )}
 
                     {/* Mark as Completed Button */}
                     {selectedLesson && toggleLessonCompletion && (
@@ -1198,7 +1230,7 @@ const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res
                                             training platform Tip 💡
                                         </h4>
                                         <p className="text-[13px] text-purple-700/70">
-                                           Explore our Construction & Engineering courses to develop technical expertise, enhance practical skills, and gain industry-relevant knowledge. Learn building construction, civil engineering, architectural design, structural engineering, site management, and construction technologies through structured training programs!
+                                            Explore our Construction & Engineering courses to develop technical expertise, enhance practical skills, and gain industry-relevant knowledge. Learn building construction, civil engineering, architectural design, structural engineering, site management, and construction technologies through structured training programs!
                                         </p>
                                     </div>
 

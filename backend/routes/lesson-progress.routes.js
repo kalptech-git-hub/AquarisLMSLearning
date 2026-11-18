@@ -9,7 +9,9 @@ const {
   saveLessonProgress,
   markLessonComplete,
   getTrainingProgress,
-  getTrainingStudentsProgress
+  getTrainingStudentsProgress,
+  getVideoSkipLogs,
+  saveVideoSkipLog
 } = require("../controllers/lesson-progress.controller");
 
 /* SAVE PROGRESS */
@@ -24,6 +26,20 @@ router.post(
   "/complete",
   authMiddleware,
   markLessonComplete
+);
+
+/* SAVE VIDEO SKIP LOG */
+router.post(
+    "/skip",
+    authMiddleware,
+    saveVideoSkipLog
+);
+
+/* GET VIDEO SKIP LOGS */
+router.get(
+    "/skip/:lessonId",
+    authMiddleware,
+    getVideoSkipLogs
 );
 
 router.get(

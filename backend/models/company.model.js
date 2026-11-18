@@ -1,5 +1,7 @@
 const db = require("./db");
 
+
+
 exports.getStudentRoleId = async (connection = db) => {
     const [rows] = await connection.query(
         `
@@ -84,29 +86,6 @@ exports.checkDuplicateUser = async (
     return rows;
 };
 
-// exports.getAllCompanies = async () => {
-//     const sql = `
-//         SELECT 
-//             c.company_id,
-//             c.company_name,
-//             c.company_email,
-//             c.company_mobile_no,
-//             c.company_address,
-
-//             CAST(c.is_active AS UNSIGNED) AS is_active,
-
-//             c.created_at,
-//             c.updated_at,
-//             c.created_by,
-//             c.updated_by
-
-//         FROM tbl_companies c
-//         ORDER BY c.company_id DESC
-//     `;
-
-//     const [companies] = await db.query(sql);
-//     return companies;
-// };
 
 
 /* */
@@ -309,29 +288,85 @@ exports.getAllCompanies = async () => {
     return Array.from(companyMap.values());
 };
 
+// exports.getCompanyEmployees = async (companyId) => {
+//     const sql = `
+//     SELECT
+//     u.user_id,
+//         u.user_full_name,
+//         u.username,
+//         u.user_email,
+//         u.user_mobile_no,
+//         u.user_qualification,
+//         u.user_postal_address,
+//         u.user_profile_photo,
+
+//         r.role_name,
+
+//         u.created_at,
+//         u.updated_at,
+//         u.created_by,
+//         u.updated_by,
+
+//         cu.user_full_name AS created_by_name,
+//             uu.user_full_name AS updated_by_name,
+
+//                 CAST(u.is_active AS UNSIGNED) AS is_active
+
+//         FROM tbl_users u
+
+//         INNER JOIN tbl_roles r
+//             ON u.role_id = r.role_id
+
+//         LEFT JOIN tbl_users cu
+//             ON cu.user_id = u.created_by
+
+//         LEFT JOIN tbl_users uu
+//             ON uu.user_id = u.updated_by
+
+//         WHERE u.company_id = ?
+//         AND r.role_code = 'STD'
+
+//         ORDER BY u.user_id DESC
+//         `;
+
+//     const [rows] = await db.query(sql, [companyId]);
+//     return rows;
+// };
+
+
+
 exports.getCompanyEmployees = async (companyId) => {
     const sql = `
-    SELECT
-    u.user_id,
-        u.user_full_name,
-        u.username,
-        u.user_email,
-        u.user_mobile_no,
-        u.user_qualification,
-        u.user_postal_address,
-        u.user_profile_photo,
+        SELECT
+            u.user_id,
+            u.user_full_name,
+            u.username,
+            u.user_email,
+            u.user_mobile_no,
+            u.user_qualification,
+            u.user_postal_address,
+            u.user_profile_photo,
 
-        r.role_name,
+            r.role_name,
 
-        u.created_at,
-        u.updated_at,
-        u.created_by,
-        u.updated_by,
+            u.created_at,
+            u.updated_at,
+            u.created_by,
+            u.updated_by,
 
-        cu.user_full_name AS created_by_name,
+            cu.user_full_name AS created_by_name,
             uu.user_full_name AS updated_by_name,
 
-                CAST(u.is_active AS UNSIGNED) AS is_active
+            CAST(u.is_active AS UNSIGNED) AS is_active,
+
+            -- Enrolled training details
+            GROUP_CONCAT(
+                DISTINCT t.training_title
+                ORDER BY t.training_title
+                SEPARATOR ', '
+            ) AS training_titles,
+
+            COUNT(DISTINCT e.training_id) AS training_count
 
         FROM tbl_users u
 
@@ -344,15 +379,40 @@ exports.getCompanyEmployees = async (companyId) => {
         LEFT JOIN tbl_users uu
             ON uu.user_id = u.updated_by
 
+        LEFT JOIN tbl_enrollments e
+            ON e.user_id = u.user_id
+
+        LEFT JOIN tbl_trainings t
+            ON t.training_id = e.training_id
+
         WHERE u.company_id = ?
-        AND r.role_code = 'STD'
+            AND r.role_code = 'STD'
+
+        GROUP BY
+            u.user_id,
+            u.user_full_name,
+            u.username,
+            u.user_email,
+            u.user_mobile_no,
+            u.user_qualification,
+            u.user_postal_address,
+            u.user_profile_photo,
+            r.role_name,
+            u.created_at,
+            u.updated_at,
+            u.created_by,
+            u.updated_by,
+            cu.user_full_name,
+            uu.user_full_name,
+            u.is_active
 
         ORDER BY u.user_id DESC
-        `;
+    `;
 
     const [rows] = await db.query(sql, [companyId]);
     return rows;
 };
+
 
 /* Combine function instead of separate. */
 exports.InsertEmployee = async (connection, employeeData) => {
@@ -400,13 +460,19 @@ exports.InsertEmployee = async (connection, employeeData) => {
         employeeData.created_by
     ]);
 
-    return {
-        userId: userResult.insertId
+    // return {
+    //     userId: userResult.insertId
 
+    // };
+    return {
+        user_id: userResult.insertId
     };
 };
 
 
+
+
+/* */
 // exports.getCompanyCourses = async (companyId, connection = db) => {
 //     const [rows] = await connection.query(
 //         `
@@ -458,10 +524,150 @@ exports.InsertEmployee = async (connection, employeeData) => {
 
 /* Updated - version  */
 
+// exports.getCompanyCourses = async (companyId, connection = db) => {
+//     const [rows] = await connection.query(
+//         `
+//         SELECT
+//             ct.company_trainings_id,
+//             ct.company_id,
+//             ct.training_id,
+//             ct.training_users_limit,
+//             ct.training_expiry_on,
+//             CAST(ct.is_active AS UNSIGNED) AS assignment_is_active,
+
+//             t.course_id,
+//             t.training_title,
+//             t.training_description,
+//             t.training_thumbnail,
+//             t.training_duration_hours,
+//             t.training_mode,
+
+//             t.training_start_date,
+//             t.training_end_date,
+//             t.training_status,
+//             t.publish_status,
+//             t.enrollment_status,
+
+//             t.publish_at,
+//             t.enrollment_closed_at,
+
+//             CAST(t.is_active AS UNSIGNED) AS is_active
+
+//         FROM tbl_company_trainings ct
+
+//         INNER JOIN tbl_trainings t
+//             ON t.training_id = ct.training_id
+
+//         INNER JOIN tbl_courses c
+//             ON c.course_id = t.course_id
+
+//         WHERE
+//             ct.company_id = ?
+//             AND ct.is_active = b'1'
+//             AND ct.training_expiry_on > NOW()
+//             AND t.is_active = b'1'
+//             AND t.publish_status = 'PUBLISHED'
+//             AND t.training_status = 'ACTIVE'
+
+//         ORDER BY t.training_id DESC
+//         `,
+//         [companyId]
+//     );
+
+//     return rows;
+// };
+
+
+/* */
+// exports.getCompanyCourses = async (companyId, connection = db) => {
+
+//     const [rows] = await connection.query(
+//         `
+//         SELECT
+//             -- Company training assignment details
+//             ct.company_trainings_id,
+//             ct.company_id,
+//             ct.training_id,
+
+//             ct.training_users_limit,
+//             ct.training_expiry_on,
+
+//             CAST(ct.is_active AS UNSIGNED)
+//                 AS assignment_is_active,
+
+//             -- Assignment created information
+//             ct.created_by,
+//             createdBy.user_full_name AS created_by_name,
+//             ct.created_at,
+
+//             -- Assignment updated information
+//             ct.updated_by,
+//             updatedBy.user_full_name AS updated_by_name,
+//             ct.updated_at,
+
+//             -- Course information
+//             c.course_id,
+//             c.course_name,
+//             c.course_code,
+//             c.course_level,
+
+//             -- Training information
+//             t.training_title,
+//             t.training_description,
+//             t.training_thumbnail,
+//             t.training_duration_hours,
+//             t.training_mode,
+
+//             t.training_start_date,
+//             t.training_end_date,
+//             t.training_status,
+//             t.publish_status,
+//             t.enrollment_status,
+
+//             t.publish_at,
+//             t.enrollment_closed_at,
+
+//             CAST(t.is_active AS UNSIGNED)
+//                 AS training_is_active
+
+//         FROM tbl_company_trainings ct
+
+//         INNER JOIN tbl_trainings t
+//             ON t.training_id = ct.training_id
+
+//         INNER JOIN tbl_courses c
+//             ON c.course_id = t.course_id
+
+//         -- Super Admin who assigned the training
+//         LEFT JOIN tbl_users createdBy
+//             ON createdBy.user_id = ct.created_by
+
+//         -- Super Admin who last updated the assignment
+//         LEFT JOIN tbl_users updatedBy
+//             ON updatedBy.user_id = ct.updated_by
+
+//         WHERE
+//             ct.company_id = ?
+//             AND ct.is_active = b'1'
+//             AND ct.training_expiry_on > NOW()
+//             AND t.is_active = b'1'
+//             AND t.publish_status = 'PUBLISHED'
+//             AND t.training_status = 'ACTIVE'
+
+//         ORDER BY
+//             ct.created_at DESC
+//         `,
+//         [companyId]
+//     );
+
+//     return rows;
+// };
+
 exports.getCompanyCourses = async (companyId, connection = db) => {
     const [rows] = await connection.query(
         `
         SELECT
+            -- Assignment details
             ct.company_trainings_id,
             ct.company_id,
             ct.training_id,
@@ -469,23 +675,36 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
             ct.training_expiry_on,
             CAST(ct.is_active AS UNSIGNED) AS assignment_is_active,
 
-            t.course_id,
+            -- Assignment creator
+            ct.created_by,
+            creator.user_full_name AS created_by_name,
+            ct.created_at,
+
+            -- Assignment updater
+            ct.updated_by,
+            updater.user_full_name AS updated_by_name,
+            ct.updated_at,
+
+            -- Course details
+            c.course_id,
+            c.course_name,
+            c.course_code,
+            c.course_level,
+
+            -- Training details
             t.training_title,
             t.training_description,
             t.training_thumbnail,
             t.training_duration_hours,
             t.training_mode,
-
             t.training_start_date,
             t.training_end_date,
             t.training_status,
             t.publish_status,
             t.enrollment_status,
-
             t.publish_at,
             t.enrollment_closed_at,
-
-            CAST(t.is_active AS UNSIGNED) AS is_active
+            CAST(t.is_active AS UNSIGNED) AS training_is_active
 
         FROM tbl_company_trainings ct
 
@@ -495,6 +714,12 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
         INNER JOIN tbl_courses c
             ON c.course_id = t.course_id
 
+        LEFT JOIN tbl_users creator
+            ON creator.user_id = ct.created_by
+
+        LEFT JOIN tbl_users updater
+            ON updater.user_id = ct.updated_by
+
         WHERE
             ct.company_id = ?
             AND ct.is_active = b'1'
@@ -503,14 +728,15 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
             AND t.publish_status = 'PUBLISHED'
             AND t.training_status = 'ACTIVE'
 
-        ORDER BY t.training_id DESC
+        ORDER BY ct.created_at DESC
         `,
         [companyId]
     );
 
     return rows;
 };
- /** */
+
+/** */
 // exports.enrollEmployeeInTrainings = async (
 //     connection,
 //     {

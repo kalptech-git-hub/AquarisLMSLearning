@@ -3,7 +3,9 @@ const db = require("../models/db");
 const {
   saveLessonProgressModel,
   markLessonCompleteModel,
-  getTrainingProgressModel
+  getTrainingProgressModel,
+  saveVideoSkipLogModel,
+  getVideoSkipLogsModel
 } = require("../models/lesson-progress.model");
 
 /* SAVE PROGRESS */
@@ -53,6 +55,116 @@ exports.saveLessonProgress = async (
       message: "Failed to save progress"
     });
   }
+};
+
+/* SAVE VIDEO SKIP LOG */
+exports.saveVideoSkipLog = async (req, res) => {
+
+  console.log("Called skip")
+    try {
+
+        const userId = req.user.user_id;
+
+        const {
+            lesson_id,
+            skipped_from,
+            skipped_to,
+            timestamp
+        } = req.body;
+
+        // Basic validation
+        if (
+            !lesson_id ||
+            !Number.isFinite(Number(skipped_from)) ||
+            !Number.isFinite(Number(skipped_to)) ||
+            Number(skipped_from) < 0 ||
+            Number(skipped_to) < 0
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid video skip details"
+            });
+        }
+
+        const skipTimestamp = timestamp
+            ? new Date(timestamp)
+            : new Date();
+
+        if (Number.isNaN(skipTimestamp.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid timestamp"
+            });
+        }
+
+        await saveVideoSkipLogModel(
+            userId,
+            lesson_id,
+            Number(skipped_from),
+            Number(skipped_to),
+            skipTimestamp
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Video skip log saved successfully"
+        });
+
+    } catch (error) {
+
+        console.error(
+            "SAVE VIDEO SKIP LOG ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to save video skip log"
+        });
+
+    }
+
+};
+
+/* GET VIDEO SKIP LOGS */
+exports.getVideoSkipLogs = async (req, res) => {
+
+    try {
+
+        const userId = req.user.user_id;
+        const { lessonId } = req.params;
+
+        if (!Number.isInteger(Number(lessonId)) || Number(lessonId) <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid lesson ID"
+            });
+        }
+
+        const logs = await getVideoSkipLogsModel(
+            userId,
+            lessonId
+        );
+
+        return res.status(200).json({
+            success: true,
+            data: logs
+        });
+
+    } catch (error) {
+
+        console.error(
+            "GET VIDEO SKIP LOGS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch video skip logs"
+        });
+
+    }
+
 };
 
 /* LESSON COMPLETE */

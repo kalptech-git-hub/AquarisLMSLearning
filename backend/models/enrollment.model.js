@@ -236,6 +236,9 @@ exports.getEnrollmentsModel = async (userId) => {
     e.enroll_id,
     e.enroll_status,
 
+    co.company_id,
+    co.company_name,
+
     t.training_id,
     t.training_title,
     t.training_description,
@@ -274,6 +277,9 @@ INNER JOIN tbl_courses c
 INNER JOIN tbl_users u
     ON e.user_id = u.user_id
 
+LEFT JOIN tbl_companies co
+    ON u.company_id = co.company_id
+
 LEFT JOIN tbl_training_instructors ti
     ON t.training_id = ti.training_id
 
@@ -302,6 +308,8 @@ WHERE
 GROUP BY
     e.enroll_id,
     e.enroll_status,
+    co.company_id,
+    co.company_name,
     t.training_id,
     t.training_title,
     t.training_description,
@@ -312,8 +320,7 @@ GROUP BY
 
 ORDER BY
     e.created_at DESC
-    `
-    ;
+    `;
 
   const [rows] = await db.query(sql, [userId]);
 
@@ -910,8 +917,8 @@ exports.getStudentsByTrainingIdModel = async (trainingId) => {
 /* Get student enrollments for a specific instructor-
 also other instructors, and loggged in user as You */
 exports.getInstructorStudentEnrollmentsModel = async (instructorId) => {
-    const [rows] = await db.query(
-        `
+  const [rows] = await db.query(
+    `
         SELECT 
             e.enroll_id,
             e.enroll_status,
@@ -1013,10 +1020,10 @@ exports.getInstructorStudentEnrollmentsModel = async (instructorId) => {
 
         ORDER BY e.created_at DESC
         `,
-        [instructorId, instructorId, instructorId]
-    );
+    [instructorId, instructorId, instructorId]
+  );
 
-    return rows;
+  return rows;
 };
 
 /* ADMIN */

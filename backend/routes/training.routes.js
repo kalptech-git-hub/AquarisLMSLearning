@@ -10,7 +10,8 @@ const {
     publishTraining,
     unpublishTraining,
     startEnrollment,
-    stopEnrollment
+    stopEnrollment,
+    getTrainingsDropdown
 } = require("../controllers/training.controller");
 
 const authMiddleware = require("../middlewares/auth.moddleware");
@@ -19,8 +20,16 @@ const adminOrInstructorMiddleware = require("../middlewares/adminOrInstructor.mi
 const upload = require("../middlewares/upload.middleware");
 
 
+// Get active and published trainings for dropdown
+router.get("/dropdown",
+    authMiddleware,
+    adminMiddleware,
+    getTrainingsDropdown
+);
+
 // New for getTrainingById - for edit- preload data
 router.get("/:trainingId", authMiddleware, adminOrInstructorMiddleware, getTrainingById);
+
 
 // New for create training 
 router.post(
@@ -32,7 +41,7 @@ router.post(
 );
 
 /* This is route is to fetch all the trainings, 
-only on the training table, which is on admin dashboard */
+only on the training table, training details which is on admin dashboard */
 router.get("/", authMiddleware, adminMiddleware, getAllTrainingsForTrainingTable);
 
 

@@ -68,6 +68,38 @@ exports.getTrainingById = async (req, res) => {
 
 };
 
+
+exports.getTrainingsDropdown = async (req, res) => {
+    try {
+        const sql = `
+            SELECT
+                training_id,
+                training_title
+            FROM tbl_trainings
+            WHERE is_active = b'1'
+              AND publish_status = 'PUBLISHED'
+            ORDER BY training_title ASC
+        `;
+
+        const [trainings] = await db.query(sql);
+
+        return res.status(200).json({
+            success: true,
+            message: "Trainings fetched successfully",
+            trainings
+        });
+
+    } catch (error) {
+        console.error("Get Trainings Dropdown Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch trainings"
+        });
+    }
+};
+
+
 /* CREATE TRAINING ONLY */
 // exports.createTraining = async (req, res) => {
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+
 import {
     FiChevronLeft,
     FiChevronRight,
@@ -59,6 +60,8 @@ const LessonPlayer = ({
     const videoPlayerContainerRef = useRef(null);
     const [isBlur, setIsBlur] = useState(false);
     const [isVideoFullscreen, setIsVideoFullscreen] = useState(false);
+    const marathiAudioRef = useRef(null);
+const [audioLanguage, setAudioLanguage] = useState('english');
 
     /* VIDEO PRIVACY PROTECTION */
     // useEffect(() => {
@@ -189,8 +192,11 @@ useEffect(() => {
             document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
         };
     }, []);
+    const lastTimeRef = useRef(0);
+const [skippedSegments, setSkippedSegments] = useState([]);
 
     /* Save the last watched time */
+
     const lastSavedRef = useRef(0);
 
     const handleTimeUpdate = () => {
@@ -198,20 +204,35 @@ useEffect(() => {
         const video = videoRef.current;
 
         if (!video) return;
+        const currentTime = video.currentTime;
+    const lastTime = lastTimeRef.current;
+    const timeDiff = currentTime - lastTime;
+    if (Math.abs(timeDiff) > 1.5) {
+        const skipData = {
+            from: Math.round(lastTime),
+            to: Math.round(currentTime)
+        };
+setSkippedSegments((prev) => [...prev, skipData]);
+saveSkipToBackend(skipData);
+}
+lastTimeRef.current = currentTime;
+const floorCurrent = Math.floor(currentTime);
+    if (floorCurrent - Math.floor(lastSavedRef.current) < 15) {
+        return;
+    }
+        // const currentTime =
+        //     Math.floor(video.currentTime);
 
-        const currentTime =
-            Math.floor(video.currentTime);
+        // if (
+        //     currentTime -
+        //     lastSavedRef.current <
+        //     15
+        // ) {
+        //     return;
+        // }
 
-        if (
-            currentTime -
-            lastSavedRef.current <
-            15
-        ) {
-            return;
-        }
-
-        lastSavedRef.current =
-            currentTime;
+        // lastSavedRef.current =
+        //     currentTime;
 
         saveProgress(video);
     };
@@ -292,6 +313,27 @@ useEffect(() => {
             );
         }
     };
+    const saveSkipToBackend = async (skipData) => {
+    try {
+        const token = sessionStorage.getItem("token");
+        await axios.post(
+            `${import.meta.env.VITE_API_BASE_URL}/api/lessons-progress/skip`, 
+            {
+                lesson_id: selectedLesson.lesson_id,
+                skipped_from: skipData.from,
+                skipped_to: skipData.to,
+                timestamp: new Date().toISOString()
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+    } catch (error) {
+        console.error("Failed to save skip analytics", error);
+    }
+};
 
     /* Working */
     // const handleVideoEnded = async () => {
@@ -713,6 +755,31 @@ useEffect(() => {
 
         return formatDuration(lesson.lesson_duration);
     };
+    const handleAudioLanguageChange = (newLang) => {
+    setAudioLanguage(newLang);
+    const video = videoRef.current;
+    const audio = marathiAudioRef.current;
+
+    if (!video) return;
+
+    if (newLang === 'marathi') {
+        
+        video.muted = true;
+        if (audio) {
+            audio.currentTime = video.currentTime; 
+            if (!video.paused) {
+                audio.play().catch(err => console.log("Audio play error:", err));
+            }
+        }
+    } else {
+        
+        if (audio) {
+            audio.pause();
+        }
+        video.muted = false;
+    }
+};
+const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res.cloudinary.com/d1ugtqzg/video/upload/v1794990063/lesson_contents/MarathiLMS_y2rwf2.mp3";
 
     return (
         //{/* was: no bottom padding on the scroll container — last tab-content card (e.g. Target Goal) sat flush against the bottom edge on phone, getting visually cut close by browser chrome with no breathing room below it. Added pb-20 on phone only; sm: reverts to the original (no extra bottom padding), matching desktop/tablet exactly as before. */}
@@ -849,6 +916,10 @@ useEffect(() => {
                                                 setTimeout(() => {
                                                     setShowCenterControl(false);
                                                 }, 1000);
+                                                if (audioLanguage === 'marathi' && marathiAudioRef.current) {
+            marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+            marathiAudioRef.current.play().catch(e => console.log(e));
+        }
                                             }}
 
                                             onPause={() => {
@@ -859,7 +930,22 @@ useEffect(() => {
                                                 setTimeout(() => {
                                                     setShowCenterControl(false);
                                                 }, 1000);
+                                                if (marathiAudioRef.current) {
+            marathiAudioRef.current.pause();
+        }
                                             }}
+                                            onSeeked={() => {
+       
+        if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
+            marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+        }
+    }}
+    onRateChange={() => {
+        
+        if (marathiAudioRef.current && videoRef.current) {
+            marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+        }
+    }}
                                             playsInline
                                             // className="w-full h-full object-contain"
 
@@ -871,6 +957,13 @@ useEffect(() => {
     }`}
 
                                         />
+                                        
+                    <audio
+                                            ref={marathiAudioRef}
+                                            src={marathiAudioSrc}
+                                            preload="auto"
+                                        />
+
 
                                         {isBlur && (
                                             <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
@@ -1003,6 +1096,19 @@ useEffect(() => {
                                     : "No lesson selected")}
                         </h2>
                     </div>
+                    {selectedLesson?.lesson_content_type === "video" && (
+            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm self-start sm:self-center">
+                <span className="text-xs font-semibold text-slate-600">Audio Track:</span>
+                <select 
+                    value={audioLanguage}
+                    onChange={(e) => handleAudioLanguageChange(e.target.value)}
+                    className="text-xs bg-transparent font-medium text-slate-900 focus:outline-none cursor-pointer"
+                >
+                    <option value="english">English</option>
+                    <option value="marathi">Marathi</option>
+                </select>
+            </div>
+        )}
 
                     {/* Mark as Completed Button */}
                     {selectedLesson && toggleLessonCompletion && (

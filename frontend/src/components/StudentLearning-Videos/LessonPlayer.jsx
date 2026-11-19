@@ -21,6 +21,8 @@ import {
     FiMaximize2,
     FiMinimize2,
     FiLock,
+    FiVolumeX,
+    FiVolume2,
 } from "react-icons/fi";
 import ResourceLesson from "./ResourceLesson";
 import QuizPlayer from "./QuizPlayer";
@@ -62,6 +64,17 @@ const LessonPlayer = ({
     const [isVideoFullscreen, setIsVideoFullscreen] = useState(false);
     const marathiAudioRef = useRef(null);
     const [audioLanguage, setAudioLanguage] = useState('english');
+
+    const [showLanguageOptions, setShowLanguageOptions] = useState(false);
+    const languageDropdownRef = useRef(null);
+
+    const [showVideoControls, setShowVideoControls] = useState(true);
+const controlsTimeoutRef = useRef(null);
+
+    // Custom video player controls
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [isMuted, setIsMuted] = useState(false);
 
     /* VIDEO PRIVACY PROTECTION */
     // useEffect(() => {
@@ -127,6 +140,50 @@ const LessonPlayer = ({
             );
         };
     }, []);
+
+    useEffect(() => {
+    const handleClickOutside = (event) => {
+        if (
+            languageDropdownRef.current &&
+            !languageDropdownRef.current.contains(event.target)
+        ) {
+            setShowLanguageOptions(false);
+        }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+    };
+}, []);
+
+const showControlsTemporarily = () => {
+    setShowVideoControls(true);
+
+    clearTimeout(controlsTimeoutRef.current);
+
+    // Keep controls visible while the video is paused
+    if (videoRef.current?.paused) return;
+
+    controlsTimeoutRef.current = setTimeout(() => {
+        setShowVideoControls(false);
+    }, 3000);
+};
+
+const handlePlayerMouseLeave = () => {
+    clearTimeout(controlsTimeoutRef.current);
+
+    if (!videoRef.current?.paused) {
+        setShowVideoControls(false);
+    }
+};
+
+useEffect(() => {
+    return () => {
+        clearTimeout(controlsTimeoutRef.current);
+    };
+}, []);
 
     const toggleVideoFullscreen = async () => {
         try {
@@ -205,6 +262,8 @@ const LessonPlayer = ({
 
         if (!video) return;
         const currentTime = video.currentTime;
+        setCurrentTime(currentTime);
+
         const lastTime = lastTimeRef.current;
         const timeDiff = currentTime - lastTime;
         if (Math.abs(timeDiff) > 1.5) {
@@ -363,10 +422,10 @@ const LessonPlayer = ({
     };
 
     useEffect(() => {
-    if (selectedLesson?.lesson_id) {
-        fetchVideoSkipLogs();
-    }
-}, [selectedLesson?.lesson_id]);
+        if (selectedLesson?.lesson_id) {
+            fetchVideoSkipLogs();
+        }
+    }, [selectedLesson?.lesson_id]);
 
     /* Working */
     // const handleVideoEnded = async () => {
@@ -698,29 +757,41 @@ const LessonPlayer = ({
     /* Click on video = play/pause, double click = fullscreen */
     const clickTimerRef = useRef(null);
 
-    const handleVideoClick = (e) => {
-        if (!videoRef.current) return;
+    /* */
+    // const handleVideoClick = (e) => {
+    //     if (!videoRef.current) return;
 
-        // Ignore clicks on the native control bar (bottom ~60px) so its own buttons work normally
-        const rect = e.currentTarget.getBoundingClientRect();
-        if (rect.bottom - e.clientY < 60) return;
+    //     // Ignore clicks on the native control bar (bottom ~60px) so its own buttons work normally
+    //     const rect = e.currentTarget.getBoundingClientRect();
+    //     if (rect.bottom - e.clientY < 60) return;
 
-        // Wait briefly: a second click means double-click (fullscreen), not play/pause
+    //     // Wait briefly: a second click means double-click (fullscreen), not play/pause
+    //     clearTimeout(clickTimerRef.current);
+    //     clickTimerRef.current = setTimeout(togglePlayPause, 250);
+    // };
+
+    /* */
+    // const handleVideoDoubleClick = (e) => {
+    //     // Cancel the pending single-click play/pause
+    //     clearTimeout(clickTimerRef.current);
+
+    //     // Don't go fullscreen when double-clicking the control bar
+    //     const rect = e.currentTarget.getBoundingClientRect();
+    //     if (rect.bottom - e.clientY < 60) return;
+
+    //     toggleVideoFullscreen();
+    // };
+
+    const handleVideoClick = () => {
         clearTimeout(clickTimerRef.current);
         clickTimerRef.current = setTimeout(togglePlayPause, 250);
     };
 
-    const handleVideoDoubleClick = (e) => {
-        // Cancel the pending single-click play/pause
+    const handleVideoDoubleClick = () => {
         clearTimeout(clickTimerRef.current);
-
-        // Don't go fullscreen when double-clicking the control bar
-        const rect = e.currentTarget.getBoundingClientRect();
-        if (rect.bottom - e.clientY < 60) return;
-
         toggleVideoFullscreen();
     };
-
+    
     const getDownloadUrl = (url) => {
         return url.replace("/upload/", "/upload/fl_attachment/");
     };
@@ -812,6 +883,46 @@ const LessonPlayer = ({
             video.muted = false;
         }
     };
+
+    // Format video time as MM:SS or HH:MM:SS
+    const formatVideoTime = (seconds) => {
+        const time = Math.floor(Number(seconds) || 0);
+
+        const hours = Math.floor(time / 3600);
+        const minutes = Math.floor((time % 3600) / 60);
+        const secs = time % 60;
+
+        if (hours > 0) {
+            return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        }
+
+        return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    };
+
+    // Seek video
+    const handleVideoSeek = (e) => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        const newTime = Number(e.target.value);
+
+        video.currentTime = newTime;
+        setCurrentTime(newTime);
+
+        if (audioLanguage === "marathi" && marathiAudioRef.current) {
+            marathiAudioRef.current.currentTime = newTime;
+        }
+    };
+
+    // Toggle mute
+    const toggleMute = () => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        video.muted = !video.muted;
+        setIsMuted(video.muted);
+    };
+
     const marathiAudioSrc = selectedLesson?.lesson_marathi_audio_url || "https://res.cloudinary.com/d1ugtqzg/video/upload/v1794990063/lesson_contents/MarathiLMS_y2rwf2.mp3";
 
     return (
@@ -831,6 +942,10 @@ const LessonPlayer = ({
                                 ? "w-full h-full bg-black items-center text-white"
                                 : "bg-black aspect-video max-h-[500px] items-center shadow-2xl border border-slate-700 text-white rounded-2xl"
                         }`}
+
+                        onMouseMove={showControlsTemporarily}
+    onMouseEnter={showControlsTemporarily}
+    onMouseLeave={handlePlayerMouseLeave}
                 >
 
                     {selectedLesson ? (
@@ -925,152 +1040,439 @@ const LessonPlayer = ({
                                         className="w-full h-full"
                                     />
                                 ) : (
-                                    <>
-                                        <video
-                                            ref={videoRef}
-                                            key={selectedLesson.lesson_id}
-                                            src={selectedLesson.lesson_video_url}
-                                            controls
-                                            // was: controlsList="nofullscreen" — added nodownload to hide the Download option in the ⋮ menu
-                                            disablePictureInPicture
-                                            controlsList="nofullscreen nodownload"
-                                            onContextMenu={(e) => e.preventDefault()}
-                                            onClick={handleVideoClick}
-                                            onDoubleClick={handleVideoDoubleClick}
+                                    // <>
+                                    //     <video
+                                    //         ref={videoRef}
+                                    //         key={selectedLesson.lesson_id}
+                                    //         src={selectedLesson.lesson_video_url}
+                                    //         controls
+                                    //         // was: controlsList="nofullscreen" — added nodownload to hide the Download option in the ⋮ menu
+                                    //         disablePictureInPicture
+                                    //         controlsList="nofullscreen nodownload"
+                                    //         onContextMenu={(e) => e.preventDefault()}
+                                    //         onClick={handleVideoClick}
+                                    //         onDoubleClick={handleVideoDoubleClick}
 
-                                            onTimeUpdate={handleTimeUpdate}
-                                            onEnded={handleVideoEnded}
+                                    //         onTimeUpdate={handleTimeUpdate}
+                                    //         onEnded={handleVideoEnded}
 
-                                            onPlay={() => {
-                                                setIsPlaying(true);
-                                                setLastAction("play");
-                                                setShowCenterControl(true);
+                                    //         onPlay={() => {
+                                    //             setIsPlaying(true);
+                                    //             setLastAction("play");
+                                    //             setShowCenterControl(true);
 
-                                                setTimeout(() => {
-                                                    setShowCenterControl(false);
-                                                }, 1000);
-                                                if (audioLanguage === 'marathi' && marathiAudioRef.current) {
-                                                    marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-                                                    marathiAudioRef.current.play().catch(e => console.log(e));
-                                                }
-                                            }}
+                                    //             setTimeout(() => {
+                                    //                 setShowCenterControl(false);
+                                    //             }, 1000);
+                                    //             if (audioLanguage === 'marathi' && marathiAudioRef.current) {
+                                    //                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                    //                 marathiAudioRef.current.play().catch(e => console.log(e));
+                                    //             }
+                                    //         }}
 
-                                            onPause={() => {
-                                                setIsPlaying(false);
-                                                setLastAction("pause");
-                                                setShowCenterControl(true);
+                                    //         onPause={() => {
+                                    //             setIsPlaying(false);
+                                    //             setLastAction("pause");
+                                    //             setShowCenterControl(true);
 
-                                                setTimeout(() => {
-                                                    setShowCenterControl(false);
-                                                }, 1000);
-                                                if (marathiAudioRef.current) {
-                                                    marathiAudioRef.current.pause();
-                                                }
-                                            }}
-                                            onSeeked={() => {
+                                    //             setTimeout(() => {
+                                    //                 setShowCenterControl(false);
+                                    //             }, 1000);
+                                    //             if (marathiAudioRef.current) {
+                                    //                 marathiAudioRef.current.pause();
+                                    //             }
+                                    //         }}
+                                    //         onSeeked={() => {
 
-                                                if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
-                                                    marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-                                                }
-                                            }}
-                                            onRateChange={() => {
+                                    //             if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
+                                    //                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                    //             }
+                                    //         }}
+                                    //         onRateChange={() => {
 
-                                                if (marathiAudioRef.current && videoRef.current) {
-                                                    marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
-                                                }
-                                            }}
-                                            playsInline
-                                            // className="w-full h-full object-contain"
+                                    //             if (marathiAudioRef.current && videoRef.current) {
+                                    //                 marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+                                    //             }
+                                    //         }}
+                                    //         playsInline
+                                    //         // className="w-full h-full object-contain"
 
-                                            // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
-                                            //     }`}
+                                    //         // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
+                                    //         //     }`}
 
-                                            className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
-                                                }`}
+                                    //         className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
+                                    //             }`}
 
-                                        />
+                                    //     />
 
-                                        <audio
-                                            ref={marathiAudioRef}
-                                            src={marathiAudioSrc}
-                                            preload="auto"
-                                        />
+                                    //     {/* Audio Track Selector - Video Controls Overlay */}
+                                    //     <div className="absolute bottom-12 right-4 z-40">
+                                    //         <div className="flex items-center gap-2 bg-black/75 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 shadow-lg">
 
+                                    //             <FiMusic className="text-white text-sm" />
 
-                                        {isBlur && (
-                                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
-                                                <div>
-                                                    <FiLock size={36} className="mx-auto mb-4 text-red-400" />
+                                    //             <select
+                                    //                 value={audioLanguage}
+                                    //                 onChange={(e) => handleAudioLanguageChange(e.target.value)}
+                                    //                 className="text-xs bg-transparent font-semibold text-white focus:outline-none cursor-pointer"
+                                    //             >
+                                    //                 <option value="english" className="text-slate-900">
+                                    //                     English
+                                    //                 </option>
 
-                                                    <h3 className="text-lg font-bold mb-2">
-                                                        Video Temporarily Hidden
-                                                    </h3>
+                                    //                 <option value="marathi" className="text-slate-900">
+                                    //                     Marathi
+                                    //                 </option>
+                                    //             </select>
 
-                                                    <p className="text-sm text-slate-300">
-                                                        Video playback has been paused because the browser window lost focus.
-                                                    </p>
+                                    //         </div>
+                                    //     </div>
 
-                                                    <p className="text-xs text-slate-400 mt-2">
-                                                        Return to the learning window to continue.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
-
-
-                                        {/* {isPlaying ? (
-                                            <button
-                                                onClick={togglePlayPause}
-                                                // className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
-                                                         w-24 h-24 rounded-full bg-black backdrop-blur-sm text-white flex items-center justify-center
-                                                         opacity-0 group-hover:opacity-100
-            transition
-            cursor-pointer
-        "
-                                            // className="absolute inset-0 z-30 flex items-center justify-center transition-opacity cursor-pointer"
-                                            >
-                                                <div
-                                                    className="w-24 h-24 rounded-full bg-black backdrop-blur-sm text-white flex items-center justify-center transition duration-300"
-                                                >
-                                                    <FiPlay size={50} />
-                                                </div>
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={togglePlayPause}
-                                                // className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-300"
-                                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
-                                                         w-24 h-24 rounded-full bg-black backdrop-blur-sm text-white flex items-center justify-center
-                                                         opacity-0 group-hover:opacity-100
-        "
-                                            // className="absolute inset-0 z-30 flex items-center justify-center transition-opacity cursor-pointer duration-300"
-                                            >
-                                                <div
-                                                    className="w-24 h-24 rounded-full bg-black backdrop-blur-sm text-white flex items-center justify-center transition duration-300"
-                                                >
-                                                    <FiPause size={50} />
-                                                </div>
-                                            </button>
-                                        )} */}
+                                    //     <audio
+                                    //         ref={marathiAudioRef}
+                                    //         src={marathiAudioSrc}
+                                    //         preload="auto"
+                                    //     />
 
 
-                                        {showCenterControl && (
-                                            <div
-                                                className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
-                                            >
-                                                <div
-                                                    className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center animate-pulse"
-                                                >
-                                                    {lastAction === "play" ? (
-                                                        <FiPlay size={42} />
-                                                    ) : (
-                                                        <FiPause size={42} />
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
+                                    //     {isBlur && (
+                                    //         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
+                                    //             <div>
+                                    //                 <FiLock size={36} className="mx-auto mb-4 text-red-400" />
+
+                                    //                 <h3 className="text-lg font-bold mb-2">
+                                    //                     Video Temporarily Hidden
+                                    //                 </h3>
+
+                                    //                 <p className="text-sm text-slate-300">
+                                    //                     Video playback has been paused because the browser window lost focus.
+                                    //                 </p>
+
+                                    //                 <p className="text-xs text-slate-400 mt-2">
+                                    //                     Return to the learning window to continue.
+                                    //                 </p>
+                                    //             </div>
+                                    //         </div>
+                                    //     )}
+
+
+                                    //     {showCenterControl && (
+                                    //         <div
+                                    //             className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+                                    //         >
+                                    //             <div
+                                    //                 className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center animate-pulse"
+                                    //             >
+                                    //                 {lastAction === "play" ? (
+                                    //                     <FiPlay size={42} />
+                                    //                 ) : (
+                                    //                     <FiPause size={42} />
+                                    //                 )}
+                                    //             </div>
+                                    //         </div>
+                                    //     )}
+                                    // </>
+                                    
+<>
+    <video
+        ref={videoRef}
+        key={selectedLesson.lesson_id}
+        src={selectedLesson.lesson_video_url}
+        disablePictureInPicture
+        controlsList="nodownload"
+        onContextMenu={(e) => e.preventDefault()}
+        onClick={handleVideoClick}
+        onDoubleClick={handleVideoDoubleClick}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleVideoEnded}
+
+        onLoadedMetadata={(e) => {
+            setDuration(e.target.duration || 0);
+            setCurrentTime(e.target.currentTime || 0);
+        }}
+
+        onDurationChange={(e) => {
+            setDuration(e.target.duration || 0);
+        }}
+
+        onVolumeChange={(e) => {
+            setIsMuted(e.target.muted);
+        }}
+
+        onPlay={() => {
+            setIsPlaying(true);
+            setLastAction("play");
+            setShowCenterControl(true);
+
+            setTimeout(() => {
+                setShowCenterControl(false);
+            }, 1000);
+
+            if (audioLanguage === "marathi" && marathiAudioRef.current) {
+                marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                marathiAudioRef.current.play().catch(e => console.log(e));
+            }
+        }}
+
+        onPause={() => {
+            setIsPlaying(false);
+            setLastAction("pause");
+            setShowCenterControl(true);
+
+            setTimeout(() => {
+                setShowCenterControl(false);
+            }, 1000);
+
+            if (marathiAudioRef.current) {
+                marathiAudioRef.current.pause();
+            }
+        }}
+
+        onSeeked={() => {
+            if (
+                audioLanguage === "marathi" &&
+                marathiAudioRef.current &&
+                videoRef.current
+            ) {
+                marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+            }
+        }}
+
+        onRateChange={() => {
+            if (marathiAudioRef.current && videoRef.current) {
+                marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+            }
+        }}
+
+        playsInline
+        className={`absolute inset-0 w-full h-full object-contain block ${
+            isBlur ? "blur-xl" : "blur-none"
+        }`}
+    />
+
+    {/* Marathi Audio */}
+    <audio
+        ref={marathiAudioRef}
+        src={marathiAudioSrc}
+        preload="auto"
+    />
+
+    {/* Center Play Button */}
+    {!isPlaying && (
+        <button
+            type="button"
+            onClick={togglePlayPause}
+            // className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
+            //            w-14 h-14 rounded-full bg-white/95 text-slate-900
+            //            flex items-center justify-center shadow-xl
+            //            hover:scale-110 transition cursor-pointer"
+
+             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
+                       w-14 h-14 rounded-full bg-black/70 text-white
+                       flex items-center justify-center shadow-xl
+                       hover:scale-110 transition cursor-pointer"
+
+            title="Play video"
+        >
+            <FiPlay size={25} className="ml-1" />
+        </button>
+    )}
+
+    {/* Custom Video Controls */}
+    <div
+        // className="absolute bottom-0 left-0 right-0 z-30 bg-transparent
+        //            text-white"
+
+        className={`
+    absolute bottom-0 left-0 right-0 z-30
+    transition-opacity duration-500
+    ${showVideoControls
+        ? "opacity-100 pointer-events-auto"
+        : "opacity-0 pointer-events-none"
+    }
+`}
+        onClick={(e) => e.stopPropagation()}
+        onDoubleClick={(e) => e.stopPropagation()}
+    >
+        {/* Control Buttons */}
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2 gap-3">
+
+            {/* Left Controls */}
+            <div className="flex items-center gap-3 sm:gap-4">
+
+                {/* Play / Pause */}
+                <button
+                    type="button"
+                    onClick={togglePlayPause}
+                    className="w-9 h-9 rounded-full bg-black/70
+                     flex items-center justify-center text-white hover:text-red-400 transition-all cursor-pointer"
+                    title={isPlaying ? "Pause" : "Play"}
+                >
+                    {isPlaying
+                        ? <FiPause size={19} />
+                        : <FiPlay size={19} />
+                    }
+                </button>
+
+                {/* Volume */}
+                {/* <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="text-white hover:text-red-400 transition cursor-pointer"
+                    title={isMuted ? "Unmute" : "Mute"}
+                >
+                    {isMuted
+                        ? <FiVolumeX size={19} />
+                        : <FiVolume2 size={19} />
+                    }
+                </button> */}
+
+                <button
+            type="button"
+            onClick={toggleMute}
+            className="w-9 h-9 rounded-full bg-black/70
+                    hover:text-red-400
+                    flex items-center justify-center
+                    text-white transition-all duration-200
+                    cursor-pointer"
+            title={isMuted ? "Unmute" : "Mute"}
+        >
+            {isMuted
+                ? <FiVolumeX size={19} />
+                : <FiVolume2 size={19} />
+            }
+</button>
+
+                {/* Video Time */}
+                {/* <span className="text-xs sm:text-sm font-medium whitespace-nowrap tabular-nums">
+                    {formatVideoTime(currentTime)}
+                    {" / "}
+                    {formatVideoTime(duration)}
+                </span> */}
+
+                
+{/* Video Time */}
+<span
+    className="text-xs sm:text-sm font-medium whitespace-nowrap
+               tabular-nums px-3 py-2 rounded-full
+               transition-all duration-300"
+    style={{
+        background: `linear-gradient(
+        
+            rgba(0, 0, 0, 0.70) ${
+                duration ? (currentTime / duration) * 100 : 0
+            }%
+        )`
+    }}
+>
+    {formatVideoTime(currentTime)}
+    {" / "}
+    {formatVideoTime(duration)}
+</span>
+
+            </div>
+
+            {/* Right Controls */}
+            <div className="flex items-center gap-3">
+                {/* Audio Language Selector */}
+<div className="relative" ref={languageDropdownRef}>
+
+    <button
+        type="button"
+        onClick={() => setShowLanguageOptions(prev => !prev)}
+        className="flex items-center gap-2 bg-black/70
+                   hover:bg-black/90 rounded-lg px-3 py-2
+                   text-white text-xs sm:text-sm font-semibold
+                   transition-all cursor-pointer"
+    >
+        <FiMusic size={14} />
+
+        <span>
+            {audioLanguage === "english"
+                ? "English"
+                : audioLanguage === "marathi"
+                    ? "Marathi"
+                    : "Language"}
+        </span>
+
+        <FiChevronRight
+            size={13}
+            className={`transition-transform ${
+                showLanguageOptions ? "rotate-90" : ""
+            }`}
+        />
+    </button>
+
+    {showLanguageOptions && (
+        <div className="absolute bottom-full right-0 mb-2
+                        w-36 bg-[#181818] border border-white/10
+                        rounded-xl shadow-xl overflow-hidden z-50">
+
+            <div className="px-3 py-2 text-[10px] uppercase
+                            tracking-wider text-slate-400 border-b border-white/10">
+                Select Language
+            </div>
+
+            {[
+                { value: "english", label: "English" },
+                { value: "marathi", label: "Marathi" }
+            ].map((lang) => (
+                <button
+                    key={lang.value}
+                    type="button"
+                    onClick={() => {
+                        handleAudioLanguageChange(lang.value);
+                        setShowLanguageOptions(false);
+                    }}
+                    className={`w-full flex items-center justify-between
+                                px-3 py-2.5 text-xs text-left
+                                transition-colors cursor-pointer
+                                ${
+                                    audioLanguage === lang.value
+                                        ? "bg-[#35175a] text-white"
+                                        : "text-slate-300 hover:bg-white/10"
+                                }`}
+                            
+                >
+                    {lang.label}
+
+                    {audioLanguage === lang.value && (
+                        <FiCheckCircle size={14} className="text-white" />
+                    )}
+                </button>
+            ))}
+
+        </div>
+    )}
+
+</div>
+
+            </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="px-2.5 pb-2 pt-0">
+            <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                step="0.1"
+                value={Math.min(currentTime, duration || 0)}
+                onChange={handleVideoSeek}
+                disabled={!duration}
+                className="w-full h-1 rounded-full cursor-pointer
+                           accent-red-500
+                           hover:accent-red-400
+                           disabled:cursor-not-allowed"
+                style={{
+                    accentColor: "#ef4444"
+                }}
+                aria-label="Video progress"
+            />
+        </div>
+    </div>
+</>
+
                                 )
 
                             ) : (
@@ -1128,7 +1530,7 @@ const LessonPlayer = ({
                                     : "No lesson selected")}
                         </h2>
                     </div>
-                    {selectedLesson?.lesson_content_type === "video" && (
+                    {/* {selectedLesson?.lesson_content_type === "video" && (
                         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm self-start sm:self-center">
                             <span className="text-xs font-semibold text-slate-600">Audio Track:</span>
                             <select
@@ -1140,10 +1542,10 @@ const LessonPlayer = ({
                                 <option value="marathi">Marathi</option>
                             </select>
                         </div>
-                    )}
+                    )} */}
 
                     {/* Mark as Completed Button */}
-                    {selectedLesson && toggleLessonCompletion && (
+                    {/* {selectedLesson && toggleLessonCompletion && (
                         <button
                             onClick={() => toggleLessonCompletion(selectedLesson.lesson_id)}
                             className={`flex items-center self-start gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition cursor-pointer shrink-0 border ${isCompleted
@@ -1159,7 +1561,7 @@ const LessonPlayer = ({
 
                             <span>{isCompleted ? "Completed" : "Mark as Complete"}</span>
                         </button>
-                    )}
+                    )} */}
                 </div>
             </div>
 
@@ -1397,3 +1799,136 @@ const LessonPlayer = ({
 
 export default LessonPlayer;
 
+
+ // <>
+                                    //     <video
+                                    //         ref={videoRef}
+                                    //         key={selectedLesson.lesson_id}
+                                    //         src={selectedLesson.lesson_video_url}
+                                    //         controls
+                                    //         // was: controlsList="nofullscreen" — added nodownload to hide the Download option in the ⋮ menu
+                                    //         disablePictureInPicture
+                                    //         controlsList="nofullscreen nodownload"
+                                    //         onContextMenu={(e) => e.preventDefault()}
+                                    //         onClick={handleVideoClick}
+                                    //         onDoubleClick={handleVideoDoubleClick}
+
+                                    //         onTimeUpdate={handleTimeUpdate}
+                                    //         onEnded={handleVideoEnded}
+
+                                    //         onPlay={() => {
+                                    //             setIsPlaying(true);
+                                    //             setLastAction("play");
+                                    //             setShowCenterControl(true);
+
+                                    //             setTimeout(() => {
+                                    //                 setShowCenterControl(false);
+                                    //             }, 1000);
+                                    //             if (audioLanguage === 'marathi' && marathiAudioRef.current) {
+                                    //                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                    //                 marathiAudioRef.current.play().catch(e => console.log(e));
+                                    //             }
+                                    //         }}
+
+                                    //         onPause={() => {
+                                    //             setIsPlaying(false);
+                                    //             setLastAction("pause");
+                                    //             setShowCenterControl(true);
+
+                                    //             setTimeout(() => {
+                                    //                 setShowCenterControl(false);
+                                    //             }, 1000);
+                                    //             if (marathiAudioRef.current) {
+                                    //                 marathiAudioRef.current.pause();
+                                    //             }
+                                    //         }}
+                                    //         onSeeked={() => {
+
+                                    //             if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
+                                    //                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                    //             }
+                                    //         }}
+                                    //         onRateChange={() => {
+
+                                    //             if (marathiAudioRef.current && videoRef.current) {
+                                    //                 marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+                                    //             }
+                                    //         }}
+                                    //         playsInline
+                                    //         // className="w-full h-full object-contain"
+
+                                    //         // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
+                                    //         //     }`}
+
+                                    //         className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
+                                    //             }`}
+
+                                    //     />
+
+                                    //     {/* Audio Track Selector - Video Controls Overlay */}
+                                    //     <div className="absolute bottom-12 right-4 z-40">
+                                    //         <div className="flex items-center gap-2 bg-black/75 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 shadow-lg">
+
+                                    //             <FiMusic className="text-white text-sm" />
+
+                                    //             <select
+                                    //                 value={audioLanguage}
+                                    //                 onChange={(e) => handleAudioLanguageChange(e.target.value)}
+                                    //                 className="text-xs bg-transparent font-semibold text-white focus:outline-none cursor-pointer"
+                                    //             >
+                                    //                 <option value="english" className="text-slate-900">
+                                    //                     English
+                                    //                 </option>
+
+                                    //                 <option value="marathi" className="text-slate-900">
+                                    //                     Marathi
+                                    //                 </option>
+                                    //             </select>
+
+                                    //         </div>
+                                    //     </div>
+
+                                    //     <audio
+                                    //         ref={marathiAudioRef}
+                                    //         src={marathiAudioSrc}
+                                    //         preload="auto"
+                                    //     />
+
+
+                                    //     {isBlur && (
+                                    //         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
+                                    //             <div>
+                                    //                 <FiLock size={36} className="mx-auto mb-4 text-red-400" />
+
+                                    //                 <h3 className="text-lg font-bold mb-2">
+                                    //                     Video Temporarily Hidden
+                                    //                 </h3>
+
+                                    //                 <p className="text-sm text-slate-300">
+                                    //                     Video playback has been paused because the browser window lost focus.
+                                    //                 </p>
+
+                                    //                 <p className="text-xs text-slate-400 mt-2">
+                                    //                     Return to the learning window to continue.
+                                    //                 </p>
+                                    //             </div>
+                                    //         </div>
+                                    //     )}
+
+
+                                    //     {showCenterControl && (
+                                    //         <div
+                                    //             className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+                                    //         >
+                                    //             <div
+                                    //                 className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center animate-pulse"
+                                    //             >
+                                    //                 {lastAction === "play" ? (
+                                    //                     <FiPlay size={42} />
+                                    //                 ) : (
+                                    //                     <FiPause size={42} />
+                                    //                 )}
+                                    //             </div>
+                                    //         </div>
+                                    //     )}
+                                    // </>

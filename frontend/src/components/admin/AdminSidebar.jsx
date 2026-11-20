@@ -11,6 +11,7 @@ import {
     X,
 } from "lucide-react";
 import LogoutButton from "../login/LogoutButton";
+import { getCurrentUser } from "../../utils/auth";
 
 const menuItems = [
     {
@@ -48,6 +49,8 @@ const menuItems = [
 // isOpen / onClose control the phone/tablet drawer state (< md). On desktop (md+) the
 // sidebar ignores them and is always visible in its normal flex position.
 const AdminSidebar = ({ isOpen = false, onClose = () => {} }) => {
+    const user = getCurrentUser();
+
     return (
         // was: <aside className="w-64 min-w-64 max-w-64 flex-shrink-0 bg-[#F8FAFC] shadow-xl border-r border-slate-200 min-h-screen p-6 flex flex-col">
         <aside
@@ -83,8 +86,10 @@ const AdminSidebar = ({ isOpen = false, onClose = () => {} }) => {
                 <div>
                     {/* was: text-3xl */}
                     <h1 className="text-lg font-bold text-slate-800 break-words">
-                        Aquarius Engineering Pvt. Ltd.
+                        {/* Aquarius Engineering Pvt. Ltd. */}
                         {/* Aquarius Engineers */}
+
+                        {user.user_full_name}
                     </h1>
                 
                 </div>

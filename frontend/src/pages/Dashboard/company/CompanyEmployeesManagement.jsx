@@ -119,6 +119,7 @@ const CompanyEmployeesManagement = () => {
       } else {
         setEmployees([]);
       }
+
     } catch (error) {
       if (axios.isCancel(error)) return;
       console.error("Failed to fetch employees:", error);
@@ -190,47 +191,6 @@ const CompanyEmployeesManagement = () => {
   };
 
   /*Enroll employee in selected trainings */
-  // const handleEnrollEmployee = async ({ employee_id, training_ids }) => {
-  //   try {
-  //     const token = sessionStorage.getItem("token");
-
-  //     const response = await axios.post(
-  //       `${import.meta.env.VITE_API_BASE_URL}/api/company/enroll-employee`,
-  //       {
-  //         employee_id,
-  //         training_ids,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data?.success) {
-  //       toast.success(response.data.message || "Trainee enrolled successfully!");
-
-  //       await fetchEmployees();
-
-  //       return response.data;
-  //     }
-
-  //     throw new Error(response.data?.message || "Enrollment failed.");
-
-  //   } catch (error) {
-  //     console.error("Trainee enrollment error:", error);
-
-  //     toast.error(
-  //       error.response?.data?.message ||
-  //       error.message ||
-  //       "Failed to enroll trainee."
-  //     );
-
-  //     throw error;
-  //   }
-  // };
-
- /* */
   const handleEnrollEmployee = async ({ user_id, training_ids }) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -285,21 +245,27 @@ const CompanyEmployeesManagement = () => {
     return () => controller.abort();
   }, []);
 
-  const handleView = async (employee) => {
-    try {
-      const token = sessionStorage.getItem("token");
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/company/employees/${employee.user_id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data?.success) {
-        setSelectedEmployee(response.data.data);
-      } else {
-        setSelectedEmployee(employee);
-      }
-    } catch (error) {
-      setSelectedEmployee(employee);
-    }
+  // const handleView = async (employee) => {
+  //   try {
+  //     const token = sessionStorage.getItem("token");
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_API_BASE_URL}/api/company/employees/${employee.user_id}`,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     if (response.data?.success) {
+  //       setSelectedEmployee(response.data.data);
+  //     } else {
+  //       setSelectedEmployee(employee);
+  //     }
+  //   } catch (error) {
+  //     setSelectedEmployee(employee);
+  //   }
+  //   setShowDetails(true);
+  // };
+
+  const handleView = (employee) => {
+    setSelectedEmployee(employee);
+    // setCourseDetailsTab("details");
     setShowDetails(true);
   };
 

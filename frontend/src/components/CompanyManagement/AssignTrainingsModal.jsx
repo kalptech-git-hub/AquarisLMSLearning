@@ -22,7 +22,9 @@ const AssignTrainigsModal = ({
 }) => {
     const [availableTrainings, setAvailableTrainings] = useState([]);
     const [selectedTrainings, setSelectedTrainings] = useState([]);
+
     const [assignedTrainingIds, setAssignedTrainingIds] = useState([]);
+    const [assignedTrainings, setAssignedTrainings] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
@@ -51,9 +53,19 @@ const AssignTrainigsModal = ({
 
                 const [trainingResponse, companyResponse] =
                     await Promise.all([
+                        // axios.get(
+                        //     `${import.meta.env.VITE_API_BASE_URL}/api/trainings/dropdown`,
+                        //     { headers }
+                        // ),
+
                         axios.get(
                             `${import.meta.env.VITE_API_BASE_URL}/api/trainings/dropdown`,
-                            { headers }
+                            {
+                                headers,
+                                params: {
+                                    company_id: company.company_id
+                                }
+                            }
                         ),
                         axios.get(
                             `${import.meta.env.VITE_API_BASE_URL}/api/company/${company.company_id}`,
@@ -67,15 +79,22 @@ const AssignTrainigsModal = ({
                     );
                 }
 
+                // if (companyResponse.data.success) {
+                //     const existingTrainings =
+                //         companyResponse.data.data?.trainings || [];
+
+                //     setAssignedTrainingIds(
+                //         existingTrainings.map(item =>
+                //             Number(item.training_id)
+                //         )
+                //     );
+                // }
+
                 if (companyResponse.data.success) {
                     const existingTrainings =
                         companyResponse.data.data?.trainings || [];
 
-                    setAssignedTrainingIds(
-                        existingTrainings.map(item =>
-                            Number(item.training_id)
-                        )
-                    );
+                    setAssignedTrainings(existingTrainings);
                 }
 
             } catch (error) {
@@ -240,10 +259,9 @@ const AssignTrainigsModal = ({
     const inputClass = (error) => `
         w-full px-3 py-2 border rounded-md
         focus:outline-none focus:ring-1 transition
-        ${
-            error
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:ring-slate-500 focus:border-slate-500"
+        ${error
+            ? "border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:ring-slate-500 focus:border-slate-500"
         }
     `;
 
@@ -265,10 +283,22 @@ const AssignTrainigsModal = ({
         );
     }
 
-    const selectableTrainings = availableTrainings.filter(
-        training =>
-            !assignedTrainingIds.includes(Number(training.training_id))
-    );
+    // const selectableTrainings = availableTrainings.filter(
+    //     training =>
+    //         !assignedTrainingIds.includes(Number(training.training_id))
+    // );
+
+
+    // const assignedTrainingIds = assignedTrainings.map(
+    //     training => Number(training.training_id)
+    // );
+
+    // const selectableTrainings = availableTrainings.filter(
+    //     training =>
+    //         !assignedTrainingIds.includes(Number(training.training_id))
+    // );
+
+    const selectableTrainings = availableTrainings;
 
     const selectedOptions = selectedTrainings.map(training => ({
         value: training.training_id,
@@ -337,12 +367,104 @@ const AssignTrainigsModal = ({
                             </div>
                         </div>
 
-                        {assignedTrainingIds.length > 0 && (
+                        {/* {assignedTrainingIds.length > 0 && (
                             <p className="text-xs text-gray-500">
                                 {assignedTrainingIds.length} course(s)
                                 already assigned to this company.
                             </p>
+                        )} */}
+
+
+                        {/* Already Assigned Courses */}
+                        {assignedTrainings.length > 0 && (
+                            <div className="border border-gray-200 rounded-lg overflow-hidden">
+
+                                <div className="bg-slate-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-slate-800">
+                                            Already Assigned Courses
+                                        </h3>
+                                        <p className="text-xs text-gray-500 mt-0.5">
+                                            Courses currently assigned to this company
+                                        </p>
+                                    </div>
+
+                                    <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                        {assignedTrainings.length} Assigned
+                                    </span>
+                                </div>
+
+                                {/* <div className="divide-y divide-gray-100">
+                                    {assignedTrainings.map((training) => (
+                                        <div
+                                            key={training.company_trainings_id}
+                                            className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-9 h-9 shrink-0 rounded-lg bg-slate-100 flex items-center justify-center">
+                                                    <FiBookOpen
+                                                        className="text-slate-600"
+                                                        size={17}
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <p className="text-sm font-semibold text-gray-800">
+                                                        {training.training_title}
+                                                    </p>
+
+                                                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                                                        <span className="text-xs text-gray-500">
+                                                            Max users: {training.training_users_limit}
+                                                        </span>
+
+                                                        <span className="text-xs text-gray-500">
+                                                            Expires: {training.training_expiry_on}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <span className="text-xs font-medium text-green-700 bg-green-50 border border-green-100 rounded-full px-3 py-1 self-start sm:self-center">
+                                                Assigned
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div> */}
+
+
+                                <div className="divide-y divide-gray-100">
+                                    {assignedTrainings.map((training) => (
+                                        <div
+                                            key={training.company_trainings_id}
+                                            className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                                        >
+                                            <div className="flex items-start gap-1">
+                                                <div className="w-9 h-9 shrink-0 rounded-lg bg-slate-100 flex items-center justify-center">
+                                                    <FiBookOpen
+                                                        className="text-slate-600"
+                                                        size={17}
+                                                    />
+                                                </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm font-semibold text-gray-800">
+                                                        {training.training_title}
+                                                    </p>
+                                                    <span className="text-xs font-medium text-green-700 bg-green-50 border border-green-100 rounded-full px-3 py-1 self-start sm:self-center">
+                                                        Assigned
+                                                    </span>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         )}
+
 
                         {/* Course selector */}
                         <div>
@@ -360,11 +482,19 @@ const AssignTrainigsModal = ({
                                 value={selectedOptions}
                                 onChange={handleTrainingSelect}
                                 placeholder="Search and select courses..."
+                                // noOptionsMessage={() =>
+                                //     assignedTrainingIds.length > 0 &&
+                                //         selectableTrainings.length === 0
+                                //         ? "All available courses are already assigned."
+                                //         : "No active courses available."
+                                // }
+
                                 noOptionsMessage={() =>
-                                    assignedTrainingIds.length > 0 &&
                                     selectableTrainings.length === 0
-                                        ? "All available courses are already assigned."
-                                        : "No active courses available."
+                                        ? assignedTrainings.length > 0
+                                            ? "All available courses are already assigned."
+                                            : "No active courses available."
+                                        : "No matching courses found."
                                 }
                                 closeMenuOnSelect={false}
                                 isDisabled={loading}
@@ -424,7 +554,7 @@ const AssignTrainigsModal = ({
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     <span className="inline-flex items-center gap-1.5">
                                                         <FiUsers size={14} />
-                                                        Maximum Users
+                                                        Users limit
                                                         <span className="text-red-500">*</span>
                                                     </span>
                                                 </label>
@@ -515,7 +645,7 @@ const AssignTrainigsModal = ({
                             disabled={loading}
                             className="flex items-center gap-2 w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium cursor-pointer min-h-[44px]"
                         >
-                            <X size={17}/>
+                            <X size={17} />
                             Cancel
                         </button>
 

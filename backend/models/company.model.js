@@ -334,6 +334,84 @@ exports.getAllCompanies = async () => {
 // };
 
 
+/* */
+// exports.getCompanyEmployees = async (companyId) => {
+//     const sql = `
+//         SELECT
+//             u.user_id,
+//             u.user_full_name,
+//             u.username,
+//             u.user_email,
+//             u.user_mobile_no,
+//             u.user_qualification,
+//             u.user_postal_address,
+//             u.user_profile_photo,
+
+//             r.role_name,
+
+//             u.created_at,
+//             u.updated_at,
+//             u.created_by,
+//             u.updated_by,
+
+//             cu.user_full_name AS created_by_name,
+//             uu.user_full_name AS updated_by_name,
+
+//             CAST(u.is_active AS UNSIGNED) AS is_active,
+
+//             -- Enrolled training details
+//             GROUP_CONCAT(
+//                 DISTINCT t.training_title
+//                 ORDER BY t.training_title
+//                 SEPARATOR ', '
+//             ) AS training_titles,
+
+//             COUNT(DISTINCT e.training_id) AS training_count
+
+//         FROM tbl_users u
+
+//         INNER JOIN tbl_roles r
+//             ON u.role_id = r.role_id
+
+//         LEFT JOIN tbl_users cu
+//             ON cu.user_id = u.created_by
+
+//         LEFT JOIN tbl_users uu
+//             ON uu.user_id = u.updated_by
+
+//         LEFT JOIN tbl_enrollments e
+//             ON e.user_id = u.user_id
+
+//         LEFT JOIN tbl_trainings t
+//             ON t.training_id = e.training_id
+
+//         WHERE u.company_id = ?
+//             AND r.role_code = 'STD'
+
+//         GROUP BY
+//             u.user_id,
+//             u.user_full_name,
+//             u.username,
+//             u.user_email,
+//             u.user_mobile_no,
+//             u.user_qualification,
+//             u.user_postal_address,
+//             u.user_profile_photo,
+//             r.role_name,
+//             u.created_at,
+//             u.updated_at,
+//             u.created_by,
+//             u.updated_by,
+//             cu.user_full_name,
+//             uu.user_full_name,
+//             u.is_active
+
+//         ORDER BY u.user_id DESC
+//     `;
+
+//     const [rows] = await db.query(sql, [companyId]);
+//     return rows;
+// };
 
 exports.getCompanyEmployees = async (companyId) => {
     const sql = `
@@ -359,14 +437,13 @@ exports.getCompanyEmployees = async (companyId) => {
 
             CAST(u.is_active AS UNSIGNED) AS is_active,
 
-            -- Enrolled training details
-            GROUP_CONCAT(
-                DISTINCT t.training_title
-                ORDER BY t.training_title
-                SEPARATOR ', '
-            ) AS training_titles,
+            -- Enrolled training details with IDs
+            COALESCE(
+                et.trainings,
+                JSON_ARRAY()
+            ) AS trainings,
 
-            COUNT(DISTINCT e.training_id) AS training_count
+            COALESCE(et.training_count, 0) AS training_count
 
         FROM tbl_users u
 
@@ -379,40 +456,202 @@ exports.getCompanyEmployees = async (companyId) => {
         LEFT JOIN tbl_users uu
             ON uu.user_id = u.updated_by
 
-        LEFT JOIN tbl_enrollments e
-            ON e.user_id = u.user_id
+        LEFT JOIN (
+            SELECT
+                training_data.user_id,
 
-        LEFT JOIN tbl_trainings t
-            ON t.training_id = e.training_id
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'training_id', training_data.training_id,
+                        'training_title', training_data.training_title
+                    )
+                ) AS trainings,
+
+                COUNT(*) AS training_count
+
+            FROM (
+                SELECT DISTINCT
+                    e.user_id,
+                    t.training_id,
+                    t.training_title
+
+                FROM tbl_enrollments e
+
+                INNER JOIN tbl_trainings t
+                    ON t.training_id = e.training_id
+
+            ) AS training_data
+
+            GROUP BY training_data.user_id
+
+        ) AS et
+            ON et.user_id = u.user_id
 
         WHERE u.company_id = ?
             AND r.role_code = 'STD'
-
-        GROUP BY
-            u.user_id,
-            u.user_full_name,
-            u.username,
-            u.user_email,
-            u.user_mobile_no,
-            u.user_qualification,
-            u.user_postal_address,
-            u.user_profile_photo,
-            r.role_name,
-            u.created_at,
-            u.updated_at,
-            u.created_by,
-            u.updated_by,
-            cu.user_full_name,
-            uu.user_full_name,
-            u.is_active
 
         ORDER BY u.user_id DESC
     `;
 
     const [rows] = await db.query(sql, [companyId]);
+
     return rows;
 };
 
+exports.getEmployeeVideoActivityModel = async (
+    companyId,
+    userId
+) => {
+
+    // Step 1: Verify trainee belongs to this company
+    const [employeeRows] = await db.query(
+        `
+        SELECT u.user_id
+        FROM tbl_users u
+
+        INNER JOIN tbl_roles r
+            ON u.role_id = r.role_id
+
+        WHERE u.user_id = ?
+          AND u.company_id = ?
+          AND r.role_code = 'STD'
+        `,
+        [userId, companyId]
+    );
+
+    if (employeeRows.length === 0) {
+        return {
+            authorized: false,
+            data: []
+        };
+    }
+
+    // Step 2: Fetch enrolled course video activity
+    const [rows] = await db.query(
+        `
+        SELECT
+
+            tr.training_id,
+            tr.training_title,
+
+            tp.topic_id,
+            tp.topic_title,
+            tp.topic_display_order,
+
+            l.lesson_id,
+            l.lesson_title,
+            l.lesson_duration,
+            l.lesson_order,
+
+            COALESCE(
+                lp.lesson_progress_completed,
+                0
+            ) AS is_completed,
+
+            COALESCE(
+                skips.skip_count,
+                0
+            ) AS skip_count
+
+        FROM (
+            SELECT DISTINCT user_id, training_id
+            FROM tbl_enrollments
+            WHERE user_id = ?
+        ) e
+
+        INNER JOIN tbl_trainings tr
+            ON tr.training_id = e.training_id
+
+        LEFT JOIN tbl_training_topics tp
+            ON tp.training_id = tr.training_id
+
+        LEFT JOIN tbl_training_lessons l
+            ON l.topic_id = tp.topic_id
+            AND l.lesson_content_type = 'video'
+
+        LEFT JOIN tbl_lesson_progress lp
+            ON lp.lesson_id = l.lesson_id
+            AND lp.user_id = e.user_id
+
+        LEFT JOIN (
+            SELECT
+                lesson_id,
+                user_id,
+                COUNT(*) AS skip_count
+
+            FROM tbl_training_lesson_video_watch_log
+
+            WHERE user_id = ?
+
+            GROUP BY lesson_id, user_id
+
+        ) skips
+            ON skips.lesson_id = l.lesson_id
+            AND skips.user_id = e.user_id
+
+        ORDER BY
+            tr.training_title,
+            tp.topic_display_order,
+            l.lesson_order
+        `,
+        [userId, userId]
+    );
+
+    // Step 3: Group results into training -> modules -> lessons
+
+    const trainingMap = new Map();
+
+    rows.forEach(row => {
+
+        if (!trainingMap.has(row.training_id)) {
+            trainingMap.set(row.training_id, {
+                training_id: row.training_id,
+                training_title: row.training_title,
+                modules: []
+            });
+        }
+
+        const training = trainingMap.get(row.training_id);
+
+        // Skip module-less records
+        if (!row.topic_id) return;
+
+        let module = training.modules.find(
+            item => item.module_id === row.topic_id
+        );
+
+        if (!module) {
+            module = {
+                module_id: row.topic_id,
+                module_name: row.topic_title,
+                lessons: []
+            };
+
+            training.modules.push(module);
+        }
+
+        // Skip records without a video lesson
+        if (!row.lesson_id) return;
+
+        module.lessons.push({
+            lesson_id: row.lesson_id,
+            lesson_title: row.lesson_title,
+
+            // Stored in minutes
+            video_duration: Number(row.lesson_duration || 0),
+
+            is_completed: Boolean(row.is_completed),
+
+            skip_count: Number(row.skip_count || 0)
+        });
+
+    });
+
+    return {
+        authorized: true,
+        data: Array.from(trainingMap.values())
+    };
+};
 
 /* Combine function instead of separate. */
 exports.InsertEmployee = async (connection, employeeData) => {

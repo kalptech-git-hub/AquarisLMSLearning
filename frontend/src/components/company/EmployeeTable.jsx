@@ -134,11 +134,6 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
         accessorKey: "user_full_name",
       },
 
-      // {
-      //     header: "Email",
-      //     accessorKey: "user_email",
-      // },
-
       {
         header: "Email",
         accessorKey: "user_email",
@@ -153,12 +148,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
         accessorKey: "user_mobile_no",
         size: 140,
       },
-      // {
-      //     header: "Role",
-      //     accessorKey: "role_name",
-      // },
-
-
+  
       {
         header: "Status",
         accessorKey: "is_active",
@@ -189,24 +179,24 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
 
         cell: ({ row }) => (
 
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-2">
 
-            {/* <button
+            <button
               onClick={() =>
                 handleView(row.original)
               }
               className="text-blue-600 hover:text-blue-800 cursor-pointer"
-              title="View Instructor"
+              title="View Trainee"
             >
               <FiEye className="text-lg" />
-            </button> */}
+            </button>
 
             {/* <button
               onClick={() =>
                 handleEdit(row.original)
               }
               className="text-amber-600 hover:text-amber-900 cursor-pointer"
-              title="Edit Instructor"
+              title="Edit Trainee"
             >
               <FiEdit className="text-lg" />
             </button> */}
@@ -218,7 +208,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
               title="Enroll Trainee"
             >
               {/* <BookOpen size={18} /> */}
-              <MdHowToReg size={20} />
+              <MdHowToReg className="text-lg" />
               {/* <FaUserPlus size={20} /> */}
             </button>
 

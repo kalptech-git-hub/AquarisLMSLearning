@@ -69,23 +69,78 @@ exports.getTrainingById = async (req, res) => {
 };
 
 
+// exports.getTrainingsDropdown = async (req, res) => {
+//     // console.log("fetched dropdown courses called")
+//     try {
+//         const sql = `
+//             SELECT
+//                 training_id,
+//                 training_title
+//             FROM tbl_trainings
+//             WHERE is_active = b'1'
+//               AND publish_status = 'PUBLISHED'
+//             ORDER BY training_title ASC
+//         `;
+
+//         const [trainings] = await db.query(sql);
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Trainings fetched successfully",
+//             trainings
+//         });
+
+//     } catch (error) {
+//         console.error("Get Trainings Dropdown Error:", error);
+
+//         return res.status(500).json({
+//             success: false,
+//             message: "Failed to fetch trainings"
+//         });
+//     }
+// };
+
+
 exports.getTrainingsDropdown = async (req, res) => {
     try {
+        const companyId = Number(req.query.company_id);
+
+        if (!Number.isInteger(companyId) || companyId <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Valid company ID is required."
+            });
+        }
+
         const sql = `
             SELECT
-                training_id,
-                training_title
-            FROM tbl_trainings
-            WHERE is_active = b'1'
-              AND publish_status = 'PUBLISHED'
-            ORDER BY training_title ASC
+                t.training_id,
+                t.training_title
+
+            FROM tbl_trainings t
+
+            WHERE
+                t.is_active = b'1'
+                AND t.publish_status = 'PUBLISHED'
+
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM tbl_company_trainings ct
+
+                    WHERE
+                        ct.training_id = t.training_id
+                        AND ct.company_id = ?
+                        AND ct.is_active = b'1'
+                )
+
+            ORDER BY t.training_title ASC
         `;
 
-        const [trainings] = await db.query(sql);
+        const [trainings] = await db.query(sql, [companyId]);
 
         return res.status(200).json({
             success: true,
-            message: "Trainings fetched successfully",
+            message: "Available trainings fetched successfully.",
             trainings
         });
 
@@ -94,7 +149,7 @@ exports.getTrainingsDropdown = async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            message: "Failed to fetch trainings"
+            message: "Failed to fetch trainings."
         });
     }
 };

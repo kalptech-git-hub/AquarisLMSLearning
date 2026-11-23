@@ -166,7 +166,7 @@ const CompanyManagement = ({ }) => {
                         </div>
 
                         <div className="flex items-center gap-3">
-                            {/* <button
+                            <button
                                 onClick={() => {
                                     // setEditingCourseId(null);
                                     setEditingCompanyId(null);
@@ -177,7 +177,7 @@ const CompanyManagement = ({ }) => {
                             >
                                 <FiPlus />
                                 Add New Company
-                            </button> */}
+                            </button>
 
                         </div>
                     </div>

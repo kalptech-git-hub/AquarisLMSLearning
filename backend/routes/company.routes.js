@@ -26,13 +26,6 @@ router.get("/courses", authMiddleware, companyAdminMiddleware, getCourses);
 // Fetch all employees for the company
 router.get("/employees", authMiddleware, companyAdminMiddleware, getEmployees);
 
-router.get(
-  "/employees/:userId/training-progress",
-  authMiddleware,
-  companyAdminMiddleware,
-  getEmployeeTrainingProgress
-);
-
 // Fetch employee video logs-
 router.get("/employees/:userId/video-activity", authMiddleware, companyAdminMiddleware, getEmployeeVideoActivity);
 

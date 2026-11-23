@@ -1327,7 +1327,7 @@ useEffect(() => {
                     }
                 </button> */}
 
-                <button
+                {/* <button
             type="button"
             onClick={toggleMute}
             className="w-9 h-9 rounded-full bg-black/70
@@ -1341,7 +1341,7 @@ useEffect(() => {
                 ? <FiVolumeX size={19} />
                 : <FiVolume2 size={19} />
             }
-</button>
+</button> */}
 
                 {/* Video Time */}
                 {/* <span className="text-xs sm:text-sm font-medium whitespace-nowrap tabular-nums">

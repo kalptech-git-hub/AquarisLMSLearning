@@ -166,11 +166,15 @@ const CourseSection = () => {
 
   const getCourseLevelBadge = (course) => {
     const lvl = (course.course_level || "").toUpperCase();
-    if (lvl.includes("N5")) return "Beginner";
-    if (lvl.includes("N4")) return "Intermediate";
-    if (lvl.includes("N3")) return "Intermediate";
-    if (lvl.includes("N2")) return "Advanced";
-    if (lvl.includes("N1")) return "Advanced";
+    // if (lvl.includes("N5")) return "Beginner";
+    // if (lvl.includes("N4")) return "Intermediate";
+    // if (lvl.includes("N3")) return "Intermediate";
+    // if (lvl.includes("N2")) return "Advanced";
+    // if (lvl.includes("N1")) return "Advanced";
+
+    if (lvl.includes("Beginner")) return "Beginner";
+    if (lvl.includes("Intermediate")) return "Intermediate";
+    if (lvl.includes("Advanced")) return "Advanced";
     if (course.level) return course.level;
     return course.course_level || "Beginner";
   };
@@ -372,13 +376,13 @@ const CourseSection = () => {
 
                       {/* IT JUST A TEMPRORARY FIX */}
                       <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#c52d3f] shadow">
-                        {/* {levelBadge} */}
-                        {course.training_title
+                        {levelBadge}
+                        {/* {course.training_title
                           .trim()
                           .split(/\s+/)
                           .map((word) => word[0])
                           .join("")
-                          .toUpperCase()}
+                          .toUpperCase()} */}
                       </span>
                     </div>
 

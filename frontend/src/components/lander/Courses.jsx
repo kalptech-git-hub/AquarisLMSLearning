@@ -1009,13 +1009,13 @@ const Courses = () => {
                                                 >
                                                     {/* IT JUST A TEMPRORARY FIX */}
 
-                                                    {/* Level: {course.course_level || "N5"} */}
-                                                    {course.training_title
+                                                    Level: {course.course_level || "N5"}
+                                                    {/* {course.training_title
                                                         .trim()
                                                         .split(/\s+/)
                                                         .map((word) => word[0])
                                                         .join("")
-                                                        .toUpperCase()}
+                                                        .toUpperCase()} */}
                                                 </span>
                                             </div>
 

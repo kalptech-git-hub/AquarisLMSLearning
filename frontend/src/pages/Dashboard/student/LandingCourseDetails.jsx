@@ -342,13 +342,13 @@ const LandingCourseDetails = () => {
                             <span className="px-3 py-1 bg-[#C0432C] text-[#FCEBE5] font-semibold text-xs tracking-wide rounded-full uppercase">
                                 {/* IT JUST A TEMPRORARY FIX */}
 
-                                {/* Level: {course.course_level || "General"} */}
-                                {course.training_title
+                                Level: {course.course_level || "General"}
+                                {/* {course.training_title
                                     .trim()
                                     .split(/\s+/)
                                     .map((word) => word[0])
                                     .join("")
-                                    .toUpperCase()}
+                                    .toUpperCase()} */}
                             </span>
                             <span className="px-3 py-1 bg-white/10 text-[#E7E4DA] font-semibold text-xs tracking-wide rounded-full uppercase">
                                 Mode: {course.training_mode || "Online"}
@@ -568,10 +568,10 @@ const LandingCourseDetails = () => {
                                 className="formatted-desc text-slate-600 text-sm leading-relaxed mb-4"
                                 dangerouslySetInnerHTML={{ __html: course.training_description }}
                             />
-                            {/* <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-200/60">
+                            <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-200/60">
                                 <FiAward size={14} />
                                 {course.course_level || "General"} Level
-                            </div> */}
+                            </div>
                         </div>
 
                         {/* Course Curriculum / Topics - previous */}

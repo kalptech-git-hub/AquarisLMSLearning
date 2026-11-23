@@ -13,6 +13,7 @@ import {
   FiVideo,
   FiCheckCircle,
   FiChevronDown,
+  FiChevronRight,
 } from "react-icons/fi";
 
 const formatDuration = (minutes) => {
@@ -42,6 +43,8 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
   const [progressLoading, setProgressLoading] = useState(false);
 
   const [expandedTrainingId, setExpandedTrainingId] = useState(null);
+
+  const [expandedLessonId, setExpandedLessonId] = useState(null);
 
   // useEffect(() => {
   //   if (!employee?.user_id) return;
@@ -155,6 +158,7 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
 
     const fetchTrainingProgress = async () => {
       console.log("fetch progress");
+
       try {
         setProgressLoading(true);
         setTrainingProgress([]);
@@ -175,7 +179,7 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
           setTrainingProgress(response.data.data || []);
         }
 
-        console.log("progress: ", response.data.data)
+        console.log("progress: ", response.data.data);
 
       } catch (error) {
         if (axios.isCancel(error)) return;
@@ -222,7 +226,6 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
     });
   };
 
-
   // Convert comma-separated training names into an array
   // const trainings = employee.training_titles
   //   ? employee.training_titles
@@ -255,8 +258,6 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
       (item) => item.training_title === training
     );
   };
-
-
 
   return (
     <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-hidden pb-20">
@@ -337,14 +338,14 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
           <div className="hidden sm:flex gap-2 shrink-0">
 
             {/*
-                        <button
-                            onClick={() => handleEdit(employee)}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg cursor-pointer transition flex items-center gap-2"
-                        >
-                            <FiEdit2 size={16} />
-                            Edit
-                        </button>
-                        */}
+              <button
+                onClick={() => handleEdit(employee)}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg cursor-pointer transition flex items-center gap-2"
+              >
+                <FiEdit2 size={16} />
+                Edit
+              </button>
+            */}
 
             <button
               onClick={onBack}
@@ -424,236 +425,371 @@ const EmployeeDetails = ({ employee, onBack, handleEdit }) => {
             </div>
           </div>
 
+          {trainings.length > 0 ? (
 
-         
-{trainings.length > 0 ? (
+            <div className="space-y-3">
 
-  <div className="space-y-3">
+              {(showAllTrainings
+                ? trainings
+                : trainings.slice(0, 3)
+              ).map((training, index) => {
 
-    {(showAllTrainings
-      ? trainings
-      : trainings.slice(0, 3)
-    ).map((training, index) => {
+                const courseActivity = videoActivity.find(
+                  (item) =>
+                    Number(item.training_id) === Number(training.training_id)
+                );
 
-      const courseActivity = videoActivity.find(
-        (item) =>
-          Number(item.training_id) === Number(training.training_id)
-      );
+                const isExpanded =
+                  Number(expandedTrainingId) === Number(training.training_id);
 
-      const isExpanded =
-        Number(expandedTrainingId) === Number(training.training_id);
+                return (
+                  <div
+                    key={training.training_id}
+                    className="bg-white border border-gray-200 rounded-lg overflow-hidden"
+                  >
+                    {/* Course Header - Always Visible */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedTrainingId(
+                          isExpanded ? null : training.training_id
+                        )
+                      }
+                      className="w-full flex items-center justify-between gap-3 px-4 py-4 text-left hover:bg-slate-50 transition"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
 
-      return (
-        <div
-          key={training.training_id}
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden"
-        >
-          {/* Course Header - Always Visible */}
-          <button
-            type="button"
-            onClick={() =>
-              setExpandedTrainingId(
-                isExpanded ? null : training.training_id
-              )
-            }
-            className="w-full flex items-center justify-between gap-3 px-4 py-4 text-left hover:bg-slate-50 transition"
-          >
-            <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                          <span className="text-sm font-semibold text-slate-600">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                        </div>
 
-              <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-                <span className="text-sm font-semibold text-slate-600">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-800">
+                            {training.training_title}
+                          </p>
 
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-800">
-                  {training.training_title}
-                </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            View course video activity
+                          </p>
+                        </div>
 
-                <p className="text-xs text-gray-500 mt-1">
-                  View course video activity
-                </p>
-              </div>
+                      </div>
 
-            </div>
+                      <FiChevronDown
+                        size={20}
+                        className={`text-gray-500 shrink-0 transition-transform duration-300 cursor-pointer ${isExpanded ? "rotate-180" : ""
+                          }`}
 
-            <FiChevronDown
-              size={20}
-              className={`text-gray-500 shrink-0 transition-transform duration-300 ${
-                isExpanded ? "rotate-180" : ""
-              }`}
-            />
-          </button>
+                        title="View course modules"
+                      />
+                    </button>
 
-          {/* Expanded Course Content */}
-          {isExpanded && (
-            <div className="border-t border-gray-100">
+                    {/* Expanded Course Content */}
+                    {isExpanded && (
+                      <div className="border-t border-gray-100">
 
-              {/* Video Activity */}
-              <div className="border-t border-gray-100 bg-slate-50 p-3">
+                        {/* Video Activity */}
+                        <div className="border-t border-gray-100 bg-slate-50 p-3">
 
-                {activityLoading ? (
+                          {activityLoading ? (
 
-                  <div className="text-sm text-gray-500 py-3 text-center">
-                    Loading video activity...
-                  </div>
+                            <div className="text-sm text-gray-500 py-3 text-center">
+                              Loading video activity...
+                            </div>
 
-                ) : courseActivity ? (
+                          ) : courseActivity ? (
 
-                  courseActivity.modules?.length > 0 ? (
+                            courseActivity.modules?.length > 0 ? (
 
-                    <div className="space-y-3">
+                              <div className="space-y-3">
 
-                      {courseActivity.modules.map((module) => (
+                                {courseActivity.modules.map((module) => (
 
-                        <div
-                          key={module.module_id}
-                          className="bg-white border border-gray-200 rounded-lg p-3"
-                        >
+                                  <div
+                                    key={module.module_id}
+                                    className="bg-white border border-gray-200 rounded-lg p-3"
+                                  >
 
-                          {/* Module Name */}
-                          <div className="flex items-center gap-2">
-                            <FiBookOpen
-                              size={15}
-                              className="text-slate-500 shrink-0"
-                            />
-
-                            <h5 className="text-sm font-semibold text-gray-700">
-                              {module.module_name}
-                            </h5>
-                          </div>
-
-                          {/* Lessons */}
-                          {module.lessons?.length > 0 ? (
-
-                            <div className="space-y-2 mt-3">
-
-                              {module.lessons.map((lesson) => (
-
-                                <div
-                                  key={lesson.lesson_id}
-                                  className="border border-gray-100 rounded-lg p-3"
-                                >
-
-                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-
-                                    <div className="flex items-start gap-2 min-w-0">
-
-                                      <FiVideo
+                                    {/* Module Name */}
+                                    <div className="flex items-center gap-2">
+                                      <FiBookOpen
                                         size={15}
-                                        className="text-gray-400 mt-0.5 shrink-0"
+                                        className="text-slate-500 shrink-0"
                                       />
 
-                                      <div className="min-w-0">
+                                      <h5 className="text-sm font-semibold text-gray-700">
+                                        {module.module_name}
+                                      </h5>
+                                    </div>
 
-                                        <p className="text-sm font-medium text-gray-800 break-words">
-                                          {lesson.lesson_title}
-                                        </p>
+                                    {/* Lessons */}
+                                    {module.lessons?.length > 0 ? (
 
-                                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                          <FiClock size={12} />
-                                          {formatDuration(lesson.video_duration)}
-                                        </p>
+                                      <div className="space-y-2 mt-3">
+
+                                        {module.lessons.map((lesson) => {
+
+                                          const isLessonExpanded =
+                                            Number(expandedLessonId) ===
+                                            Number(lesson.lesson_id);
+
+                                          return (
+                                            <div
+                                              key={lesson.lesson_id}
+                                              className="border border-gray-100 rounded-lg overflow-hidden bg-white"
+                                            >
+
+                                              {/* Lesson Header */}
+                                              
+
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  setExpandedLessonId(
+                                                    isLessonExpanded ? null : lesson.lesson_id
+                                                  )
+                                                }
+                                                className="w-full flex items-center gap-2 p-3 text-left rounded-lg hover:bg-slate-50 transition cursor-pointer"
+                                                aria-expanded={isLessonExpanded}
+                                                aria-label={
+                                                  isLessonExpanded
+                                                    ? "Collapse lesson details"
+                                                    : "Expand lesson details"
+                                                }
+                                              >
+                                                {/* Lesson Information */}
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 flex-1 min-w-0">
+
+                                                  <div className="flex items-start gap-2 min-w-0">
+
+                                                    {/* Right Chevron */}
+                                                    <FiChevronRight
+                                                      size={19}
+                                                      className={`text-gray-500 shrink-0 transition-transform duration-300 ${isLessonExpanded ? "rotate-90" : ""
+                                                        }`}
+                                                    />
+
+                                                    <FiVideo
+                                                      size={15}
+                                                      className="text-gray-400 mt-0.5 shrink-0"
+                                                    />
+
+                                                    <div className="min-w-0">
+                                                      <p className="text-sm font-medium text-gray-800 break-words">
+                                                        {lesson.lesson_title}
+                                                      </p>
+
+                                                      {/* <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+          <FiClock size={12} />
+          {formatDuration(lesson.video_duration)}
+        </p> */}
+                                                    </div>
+
+                                                  </div>
+
+                                                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+
+                                                    {lesson.is_completed ? (
+                                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                                                        <FiCheckCircle size={13} />
+                                                        Completed
+                                                      </span>
+                                                    ) : (
+                                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                                                        <FiAlertCircle size={13} />
+                                                        Not Completed
+                                                      </span>
+                                                    )}
+
+                                                    {Number(lesson.skip_count) > 0 && (
+                                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
+                                                        <FiAlertCircle size={13} />
+                                                        {lesson.skip_count}{" "}
+                                                        {Number(lesson.skip_count) === 1
+                                                          ? "Skip"
+                                                          : "Skips"}
+                                                      </span>
+                                                    )}
+
+                                                  </div>
+
+                                                </div>
+                                              </button>
+
+                                              {/* Expanded Lesson Details */}
+                                              {isLessonExpanded && (
+
+                                                <div className="px-3 pb-3">
+
+                                                  {/* Video Watch History */}
+                                                  <div className="mt-1 pt-3 border-t border-gray-100">
+
+                                                    {/* Section Header */}
+                                                    <div className="flex items-center justify-between mb-3">
+                                                      <h6 className="text-xs font-semibold text-gray-700">
+                                                        VIDEO WATCH HISTORY
+                                                      </h6>
+
+                                                      <span className="text-[10px] text-blue-600 font-medium">
+                                                        Company Admin View
+                                                      </span>
+                                                    </div>
+
+                                                    {/* Watch History Statistics */}
+                                                    <div className="grid grid-cols-2 gap-y-4 gap-x-6 mb-4">
+
+                                                      <div>
+                                                        <p className="text-[11px] text-gray-500 mb-1">
+                                                          Total Duration
+                                                        </p>
+                                                        <p className="text-sm font-semibold text-gray-800">
+                                                          22:00
+                                                        </p>
+                                                      </div>
+
+                                                      <div>
+                                                        <p className="text-[11px] text-gray-500 mb-1">
+                                                          Total Skip Events
+                                                        </p>
+                                                        <p className="text-sm font-semibold text-gray-800">
+                                                          16
+                                                        </p>
+                                                      </div>
+
+                                                      <div>
+                                                        <p className="text-[11px] text-gray-500 mb-1">
+                                                          Watched Time
+                                                        </p>
+                                                        <p className="text-sm font-semibold text-gray-800">
+                                                          19:20
+                                                        </p>
+                                                      </div>
+
+                                                      <div>
+                                                        <p className="text-[11px] text-gray-500 mb-1">
+                                                          Completion
+                                                        </p>
+                                                        <p className="text-sm font-semibold text-green-700">
+                                                          87.9%
+                                                        </p>
+                                                      </div>
+
+                                                    </div>
+
+                                                    {/* Video Progress Timeline */}
+                                                    <div>
+                                                      <div className="flex items-center justify-between mb-2">
+                                                        <p className="text-xs font-semibold text-gray-700">
+                                                          Video Progress Timeline
+                                                        </p>
+                                                      </div>
+
+                                                      <div className="flex justify-between text-[9px] text-gray-500 mb-1.5">
+                                                        <span>00:00</span>
+                                                        <span>22:00</span>
+                                                      </div>
+
+                                                      {/* Timeline */}
+                                                      <div className="flex w-full h-2.5 rounded-full overflow-hidden gap-[2px] bg-gray-200">
+
+                                                        <div className="bg-green-600" style={{ width: "21%" }} />
+
+                                                        <div className="bg-amber-600" style={{ width: "5%" }} />
+
+                                                        <div className="bg-green-600" style={{ width: "16%" }} />
+
+                                                        <div className="bg-amber-600" style={{ width: "5%" }} />
+
+                                                        <div className="bg-green-600" style={{ width: "32%" }} />
+
+                                                        <div className="bg-amber-600" style={{ width: "5%" }} />
+
+                                                        <div className="bg-green-600 flex-1" />
+
+                                                      </div>
+
+                                                      {/* Timeline Legend */}
+                                                      <div className="flex items-center gap-4 mt-2">
+
+                                                        <span className="flex items-center gap-1 text-[10px] text-gray-500">
+                                                          <span className="w-1.5 h-1.5 rounded-full bg-green-600" />
+                                                          Watched
+                                                        </span>
+
+                                                        <span className="flex items-center gap-1 text-[10px] text-gray-500">
+                                                          <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                                                          Skipped
+                                                        </span>
+
+                                                      </div>
+                                                    </div>
+
+                                                  </div>
+
+                                                </div>
+
+                                              )}
+
+                                            </div>
+                                          );
+
+                                        })}
 
                                       </div>
 
-                                    </div>
+                                    ) : (
 
-                                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                                      <p className="text-xs text-gray-500 py-2">
+                                        No video lessons available in this module.
+                                      </p>
 
-                                      {lesson.is_completed ? (
-
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-                                          <FiCheckCircle size={13} />
-                                          Completed
-                                        </span>
-
-                                      ) : (
-
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
-                                          <FiAlertCircle size={13} />
-                                          Not Completed
-                                        </span>
-
-                                      )}
-
-                                      {Number(lesson.skip_count) > 0 && (
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
-                                          <FiAlertCircle size={13} />
-                                          {lesson.skip_count}{" "}
-                                          {Number(lesson.skip_count) === 1
-                                            ? "Skip"
-                                            : "Skips"}
-                                        </span>
-                                      )}
-
-                                    </div>
+                                    )}
 
                                   </div>
 
-                                </div>
+                                ))}
 
-                              ))}
+                              </div>
 
-                            </div>
+                            ) : (
+
+                              <p className="text-sm text-gray-500 py-2">
+                                No modules available.
+                              </p>
+
+                            )
 
                           ) : (
 
-                            <p className="text-xs text-gray-500 py-2">
-                              No video lessons available in this module.
+                            <p className="text-sm text-gray-500 py-2">
+                              No video activity available.
                             </p>
 
                           )}
 
                         </div>
 
-                      ))}
+                      </div>
+                    )}
 
-                    </div>
+                  </div>
+                );
 
-                  ) : (
-
-                    <p className="text-sm text-gray-500 py-2">
-                      No modules available.
-                    </p>
-
-                  )
-
-                ) : (
-
-                  <p className="text-sm text-gray-500 py-2">
-                    No video activity available.
-                  </p>
-
-                )}
-
-              </div>
+              })}
 
             </div>
+
+          ) : (
+
+            <div className="bg-white border border-dashed border-gray-300 rounded-lg px-4 py-6 text-center">
+              <p className="text-sm text-gray-500">
+                No enrolled trainings
+              </p>
+            </div>
+
           )}
-
-        </div>
-      );
-
-    })}
-
-  </div>
-
-) : (
-
-  <div className="bg-white border border-dashed border-gray-300 rounded-lg px-4 py-6 text-center">
-    <p className="text-sm text-gray-500">
-      No enrolled trainings
-    </p>
-  </div>
-
-)}
-
-
-
-
-
 
         </div>
 

@@ -2073,12 +2073,19 @@ const TopicManagement = ({
             <div className="w-14 h-14 bg-red-50 border border-slate-200 text-red-700 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0">
               {/* {courseSettings.code.includes("-") ? courseSettings.code.split("-")[1] : courseSettings.code || "N5"} */}
               {/* {courseSettings.level || training?.course_level || "N5"} */}
-              {courseSettings.title
+              {/* {courseSettings.level
                 ?.trim()
                 .split(/\s+/)
                 .map((word) => word[0])
                 .join("")
-                .toUpperCase() || "N/A"}
+                .toUpperCase() || "N/A"} */}
+                 {courseSettings.level
+                  ?.trim() 
+                  .split(/\s+/)
+                  .slice(0, 3)
+                  .map(w => w.slice(0, 3))
+                  .join("")
+                  .toUpperCase() || "N/A"} 
 
             </div>
             <div className="space-y-1 min-w-0 flex-1">

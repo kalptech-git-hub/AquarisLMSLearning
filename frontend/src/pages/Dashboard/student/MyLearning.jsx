@@ -254,16 +254,15 @@ const ContinueLearningCard = ({ course, idx, onContinue, onOpen }) => {
           alt={course.training_title}
           seed={course.training_id}
         />
-        {/* {course.course_level && (
+        {course.course_level && (
           <span className="absolute top-2 left-2 bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md">
             {course.course_level}
           </span>
-        )} */}
+        )}
 
-        {course.training_title && (
+        {/* IT JUST A TEMPRORARY FIX */}
+        {/* {course.training_title && (
           <span className="absolute top-2 left-2 bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md">
-            {/* IT JUST A TEMPRORARY FIX */}
-
             {course.training_title
               .trim()
               .split(/\s+/)
@@ -271,7 +270,7 @@ const ContinueLearningCard = ({ course, idx, onContinue, onOpen }) => {
               .join("")
               .toUpperCase()}
           </span>
-        )}
+        )} */}
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col">

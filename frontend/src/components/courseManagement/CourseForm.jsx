@@ -220,11 +220,15 @@ const CourseForm = ({ editingCourseId, fetchCourses, setShowForm, onSaveSuccess 
     };
 
     const levelOptions = [
-        { value: "N5", label: "N5 (Beginner)" },
-        { value: "N4", label: "N4 (Elementary)" },
-        { value: "N3", label: "N3 (Intermediate)" },
-        { value: "N2", label: "N2 (Pre-Advanced)" },
-        { value: "N1", label: "N1 (Advanced)" },
+        // { value: "N5", label: "N5 (Beginner)" },
+        // { value: "N4", label: "N4 (Elementary)" },
+        // { value: "N3", label: "N3 (Intermediate)" },
+        // { value: "N2", label: "N2 (Pre-Advanced)" },
+        // { value: "N1", label: "N1 (Advanced)" },
+
+        { value: "Beginner", label: "Beginner" },
+        { value: "Intermediate", label: "Intermediate" },
+        { value: "Advanced", label: "Advanced" },
     ];
 
     if (fetchingData) {

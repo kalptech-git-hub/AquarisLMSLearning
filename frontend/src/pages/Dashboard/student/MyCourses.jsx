@@ -208,17 +208,16 @@ export default function MyCourses() {
                     <div className={`relative flex w-[34%] min-w-[92px] shrink-0 flex-col justify-between overflow-hidden rounded-[16px] bg-gradient-to-br ${gradients[index % gradients.length]} bg-cover bg-center p-3`} style={imageSrc ? { backgroundImage: `url(${imageSrc})` } : undefined}>
                       {imageSrc && <div className="absolute inset-0 bg-black/10" />}
                       <span className="relative self-start rounded-md bg-white px-2 py-1 text-[10px] font-bold text-[#272247]">
-                        {/* {course.course_level || "Course"} */}
-                                              {/* IT JUST A TEMPRORARY FIX */}
-
-                        {
+                        {course.course_level || "Course"}
+                        {/* IT JUST A TEMPRORARY FIX */}
+                        {/* {
                           course.training_title
                             .trim()
                             .split(/\s+/)
                             .map((word) => word[0])
                             .join("")
                             .toUpperCase()
-                        }
+                        } */}
                       </span>
 
                       {!imageSrc && <strong className="relative line-clamp-3 text-sm font-bold leading-tight text-white">{course.training_title || "Japanese Course"}</strong>}

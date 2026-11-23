@@ -548,13 +548,13 @@ const StudentCourseDetails = () => {
                         <div className="flex-1 space-y-2.5 sm:space-y-3 w-full">
                             {/* Level Badge */}
                             <span className="inline-block px-3.5 py-1 rounded-full bg-red-500 text-white text-xs font-semibold">
-                                {/* {training.course_level} */}
-                                {training.training_title
+                                {training.course_level}
+                                {/* {training.training_title
                                     .trim()
                                     .split(/\s+/)
                                     .map((word) => word[0])
                                     .join("")
-                                    .toUpperCase()}
+                                    .toUpperCase()} */}
                             </span>
 
                             {/* Course Title */}

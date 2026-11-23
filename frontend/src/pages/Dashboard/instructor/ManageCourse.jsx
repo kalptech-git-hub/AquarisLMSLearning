@@ -2489,7 +2489,22 @@ const [contentFileError, setContentFileError] = useState("");
         <div className="flex items-start gap-4 min-w-0">
           <div className="w-14 h-14 bg-blue-50 border border-blue-100 text-[#1B357F] rounded-2xl flex items-center justify-center font-bold text-lg shrink-0">
             {/* {courseSettings.code.includes("-") ? courseSettings.code.split("-")[1] : courseSettings.code || "N5"} */}
-            {courseSettings.level || "N5"}
+            {/* {courseSettings.level || "N5"} */}
+            {/* {courseSettings.level
+                ?.trim()
+                // .split(/\s+/)
+                .split(0,3)
+                .map((word) => word[0] + word[1] + word[2])
+                .join("")
+                .toUpperCase() || "N/A"} */}
+
+                {courseSettings.level
+                  ?.trim() 
+                  .split(/\s+/)
+                  .slice(0, 3)
+                  .map(w => w.slice(0, 3))
+                  .join("")
+                  .toUpperCase() || "N/A"}   
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-3 flex-wrap">

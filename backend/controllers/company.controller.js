@@ -64,7 +64,7 @@ exports.getEmployees = async (req, res) => {
 };
 
 exports.getEmployeeVideoActivity = async (req, res) => {
-    console.log("called fetch video logs")
+    // console.log("called fetch video logs")
     try {
         const companyId = req.user?.company_id;
         const userId = Number(req.params.userId);
@@ -110,6 +110,109 @@ exports.getEmployeeVideoActivity = async (req, res) => {
     }
 };
 
+exports.getEmployeeTrainingProgress = async (req, res) => {
+  const { userId } = req.params;
+  const companyId = req.user?.company_id;
+
+  try {
+    if (!companyId) {
+      return res.status(403).json({
+        success: false,
+        message: "Company access denied",
+      });
+    }
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Employee ID is required",
+      });
+    }
+
+    const [students] = await db.query(
+      `
+      SELECT
+          t.training_id,
+          t.training_title,
+
+          COUNT(DISTINCT tl.lesson_id) AS total_lessons,
+
+          COUNT(
+              DISTINCT CASE
+                  WHEN lp.lesson_progress_completed = TRUE
+                  THEN tl.lesson_id
+              END
+          ) AS completed_lessons,
+
+          CASE
+              WHEN COUNT(DISTINCT tl.lesson_id) = 0 THEN 0
+              ELSE ROUND(
+                  COUNT(
+                      DISTINCT CASE
+                          WHEN lp.lesson_progress_completed = TRUE
+                          THEN tl.lesson_id
+                      END
+                  ) * 100.0 / COUNT(DISTINCT tl.lesson_id)
+              )
+          END AS progress
+
+      FROM tbl_enrollments e
+
+      INNER JOIN tbl_users u
+          ON u.user_id = e.user_id
+
+      INNER JOIN tbl_trainings t
+          ON t.training_id = e.training_id
+
+      INNER JOIN tbl_company_trainings ct
+          ON ct.training_id = e.training_id
+          AND ct.company_id = u.company_id
+
+      LEFT JOIN tbl_training_topics tt
+          ON tt.training_id = e.training_id
+
+      LEFT JOIN tbl_training_lessons tl
+          ON tl.topic_id = tt.topic_id
+          AND tl.lesson_content_type <> 'live'
+
+      LEFT JOIN tbl_lesson_progress lp
+          ON lp.user_id = e.user_id
+          AND lp.lesson_id = tl.lesson_id
+
+      WHERE e.user_id = ?
+        AND e.enroll_status = 'A'
+        AND u.company_id = ?
+        AND u.role_id = (
+            SELECT role_id
+            FROM tbl_roles
+            WHERE role_code = 'STD'
+            LIMIT 1
+        )
+
+      GROUP BY
+          t.training_id,
+          t.training_title
+
+      ORDER BY t.training_title ASC
+      `,
+      [userId, companyId]
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: students,
+    });
+
+  } catch (error) {
+    console.error("GET EMPLOYEE COURSE PROGRESS ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch employee training progress",
+      error: error.message,
+    });
+  }
+};
 
 
 exports.getCompanyById = async (req, res) => {
@@ -494,6 +597,299 @@ exports.createCompany = async (req, res) => {
             success: false,
             message: "Failed to create company.",
             error: error.message
+        });
+
+    } finally {
+
+        if (connection) {
+            connection.release();
+        }
+    }
+};
+
+exports.updateCompany = async (req, res) => {
+    let connection;
+
+    try {
+        const superAdminId = req.user.user_id;
+        const companyId = Number(req.params.companyId);
+
+        const { company, admin } = req.body;
+
+        // 1. BASIC VALIDATION
+
+        if (!Number.isInteger(companyId) || companyId <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid company ID."
+            });
+        }
+
+        if (!company || !company.company_name?.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Company name is required."
+            });
+        }
+
+        if (
+            !admin ||
+            !admin.user_id ||
+            !admin.user_full_name?.trim() ||
+            !admin.username?.trim() ||
+            !admin.user_email?.trim()
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Complete Company Admin details are required."
+            });
+        }
+
+        // 3. START TRANSACTION
+
+        connection = await db.getConnection();
+
+        await connection.beginTransaction();
+
+        // 4. VERIFY COMPANY EXISTS AND LOCK IT
+
+        const [companies] = await connection.execute(
+            `
+            SELECT company_id
+            FROM tbl_companies
+            WHERE company_id = ?
+            FOR UPDATE
+            `,
+            [companyId]
+        );
+
+        if (companies.length === 0) {
+
+            await connection.rollback();
+
+            return res.status(404).json({
+                success: false,
+                message: "Company not found."
+            });
+        }
+
+        // 5. VERIFY COMPANY ADMIN
+
+        const [admins] = await connection.execute(
+            `
+            SELECT
+                u.user_id,
+                u.role_id
+
+            FROM tbl_users u
+
+            INNER JOIN tbl_roles r
+                ON r.role_id = u.role_id
+
+            WHERE
+                u.user_id = ?
+                AND u.company_id = ?
+                AND r.role_code = 'CAD'
+
+            LIMIT 1
+            FOR UPDATE
+            `,
+            [admin.user_id, companyId]
+        );
+
+        if (admins.length === 0) {
+
+            await connection.rollback();
+
+            return res.status(404).json({
+                success: false,
+                message: "Company Admin not found."
+            });
+        }
+
+        const companyAdminId = admins[0].user_id;
+
+        // 6. CHECK ADMIN DUPLICATES
+
+        const mobile = admin.user_mobile_no?.trim() || null;
+
+        const [existingUsers] = await connection.execute(
+            `
+            SELECT
+                user_id,
+                username,
+                user_email,
+                user_mobile_no
+
+            FROM tbl_users
+
+            WHERE
+                user_id != ?
+                AND (
+                    username = ?
+                    OR user_email = ?
+                    OR (
+                        ? IS NOT NULL
+                        AND user_mobile_no = ?
+                    )
+                )
+
+            LIMIT 1
+            `,
+            [
+                companyAdminId,
+                admin.username.trim(),
+                admin.user_email.trim(),
+                mobile,
+                mobile
+            ]
+        );
+
+        if (existingUsers.length > 0) {
+
+            const existing = existingUsers[0];
+
+            let message = "Company Admin details already exist.";
+
+            if (existing.username === admin.username.trim()) {
+                message = "Username already exists.";
+            } else if (
+                existing.user_email === admin.user_email.trim()
+            ) {
+                message = "Email already exists.";
+            } else if (
+                mobile &&
+                existing.user_mobile_no === mobile
+            ) {
+                message = "Mobile number already exists.";
+            }
+
+            await connection.rollback();
+
+            return res.status(409).json({
+                success: false,
+                message
+            });
+        }
+
+
+        // 10. UPDATE COMPANY INFORMATION
+
+        await connection.execute(
+            `
+            UPDATE tbl_companies
+
+            SET
+                company_name = ?,
+                company_email = ?,
+                company_mobile_no = ?,
+                company_address = ?,
+                updated_by = ?,
+                updated_at = CURRENT_TIMESTAMP
+
+            WHERE company_id = ?
+            `,
+            [
+                company.company_name.trim(),
+                company.company_email?.trim() || null,
+                company.company_mobile_no?.trim() || null,
+                company.company_address?.trim() || null,
+                superAdminId,
+                companyId
+            ]
+        );
+
+        // 11. UPDATE COMPANY ADMIN
+
+        const adminValues = [
+            admin.user_full_name.trim(),
+            admin.username.trim(),
+            admin.user_email.trim(),
+            mobile,
+            superAdminId
+        ];
+
+        let adminSQL = `
+            UPDATE tbl_users
+
+            SET
+                user_full_name = ?,
+                username = ?,
+                user_email = ?,
+                user_mobile_no = ?,
+                updated_by = ?,
+                updated_at = CURRENT_TIMESTAMP
+        `;
+
+        // Only update password when supplied
+        if (admin.password?.trim()) {
+
+            const hashedPassword = await bcrypt.hash(
+                admin.password,
+                10
+            );
+
+            adminSQL += `,
+                user_password = ?
+            `;
+
+            adminValues.push(hashedPassword);
+        }
+
+        adminSQL += `
+            WHERE
+                user_id = ?
+                AND company_id = ?
+        `;
+
+        adminValues.push(companyAdminId, companyId);
+
+        await connection.execute(
+            adminSQL,
+            adminValues
+        );
+
+
+        // 14. COMMIT TRANSACTION
+
+        await connection.commit();
+
+        return res.status(200).json({
+            success: true,
+            message: "Company updated successfully.",
+            data: {
+                company_id: companyId,
+                company_admin_id: companyAdminId,
+                // assigned_trainings: trainingIds.length,
+                // inserted_trainings: insertedCount,
+                // updated_trainings: updatedCount,
+                // removed_trainings: removedTrainingIds.length
+            }
+        });
+
+    } catch (error) {
+
+        if (connection) {
+            await connection.rollback();
+        }
+
+        console.error("Update Company Error:", error);
+
+        if (error.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({
+                success: false,
+                message: "Duplicate company admin username, email or mobile number."
+            });
+        }
+
+        // return res.status(500).json({
+        //     success: false,
+        //     message: error.message || "Failed to update company."
+        // });
+
+        return res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Failed to update company."
         });
 
     } finally {

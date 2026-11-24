@@ -17,6 +17,7 @@ const {
   getEmployeeVideoActivity,
   getEmployeeTrainingProgress,
   createCompany,
+  updateCompany,
 } = require("../controllers/company.controller");
 
 
@@ -25,6 +26,9 @@ router.get("/courses", authMiddleware, companyAdminMiddleware, getCourses);
 
 // Fetch all employees for the company
 router.get("/employees", authMiddleware, companyAdminMiddleware, getEmployees);
+
+// Fetch employee progress
+router.get("/employees/:userId/training-progress", authMiddleware, companyAdminMiddleware, getEmployeeTrainingProgress);
 
 // Fetch employee video logs-
 router.get("/employees/:userId/video-activity", authMiddleware, companyAdminMiddleware, getEmployeeVideoActivity);
@@ -38,6 +42,10 @@ router.get("/:companyId", authMiddleware, adminMiddleware, getCompanyById);
 
 // Create company and company admin account
 router.post("/create", authMiddleware, adminMiddleware, createCompany);
+
+// Update company and company admin account
+router.put("/company/:companyId", authMiddleware, adminMiddleware, updateCompany);
+
 
 // Assign trainings to company
 router.post("/:companyId/assign-trainings", authMiddleware, adminMiddleware, assignTrainingsToCompany);

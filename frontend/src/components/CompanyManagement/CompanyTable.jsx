@@ -159,7 +159,7 @@ const CompanyTable = ({ companies, loading, handleView, handleEdit, handleAssign
                             <FiEye className="text-lg" />
                         </button>
 
-                        {/* <button
+                        <button
                             onClick={() =>
                                 handleEdit(row.original)
                             }
@@ -168,7 +168,7 @@ const CompanyTable = ({ companies, loading, handleView, handleEdit, handleAssign
                             className="text-amber-600 hover:text-amber-900 cursor-pointer"
                         >
                             <FiEdit className="text-lg" />
-                        </button> */}
+                        </button>
 
                         <button
                             onClick={() => handleAssignCourses(row.original)}

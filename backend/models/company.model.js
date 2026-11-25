@@ -86,6 +86,272 @@ exports.checkDuplicateUser = async (
     return rows;
 };
 
+exports.getCompanyDashboardStats = async (
+    companyId,
+    connection = db
+) => {
+
+    // Calculate individual enrollment progress.
+    // Lessons without progress records count as 0%.
+    const enrollmentProgressQuery = `
+        SELECT
+            e.enroll_id,
+            e.user_id,
+            e.training_id,
+            e.enroll_status,
+
+            COALESCE(
+                AVG(
+                    COALESCE(lp.lesson_progress_percentage, 0)
+                ),
+                0
+            ) AS progress_percentage
+
+        FROM tbl_enrollments e
+
+        LEFT JOIN tbl_training_topics tp
+            ON tp.training_id = e.training_id
+
+        LEFT JOIN tbl_training_lessons l
+            ON l.topic_id = tp.topic_id
+
+        LEFT JOIN tbl_lesson_progress lp
+            ON lp.lesson_id = l.lesson_id
+            AND lp.user_id = e.user_id
+
+        GROUP BY
+            e.enroll_id,
+            e.user_id,
+            e.training_id,
+            e.enroll_status
+    `;
+
+
+    // 1. Total company trainees.
+    const [employeeStats] = await connection.query(
+        `
+        SELECT
+            COUNT(u.user_id) AS total_employees
+
+        FROM tbl_users u
+
+        INNER JOIN tbl_roles r
+            ON r.role_id = u.role_id
+
+        WHERE
+            u.company_id = ?
+            AND r.role_code = 'STD'
+        `,
+        [companyId]
+    );
+
+
+    // 2. Active assigned courses.
+    const [courseStats] = await connection.query(
+        `
+        SELECT
+            COUNT(*) AS total_assigned_courses
+
+        FROM tbl_company_trainings ct
+
+        WHERE
+            ct.company_id = ?
+            AND ct.is_active = b'1'
+        `,
+        [companyId]
+    );
+
+
+    // 3. Enrollment activity statistics.
+    const [enrollmentStats] = await connection.query(
+        `
+        SELECT
+
+            COUNT(*) AS total_enrollments,
+
+            COUNT(
+                CASE
+                    WHEN ep.enroll_status = 'A'
+                     AND ep.progress_percentage < 100
+                    THEN 1
+                END
+            ) AS active_enrollments,
+
+            COUNT(
+                CASE
+                    WHEN ep.enroll_status = 'A'
+                     AND ep.progress_percentage >= 100
+                    THEN 1
+                END
+            ) AS completed_enrollments,
+
+            COUNT(
+                CASE
+                    WHEN ep.enroll_status IN ('P', 'R')
+                    THEN 1
+                END
+            ) AS inactive_enrollments,
+
+            COUNT(
+                DISTINCT CASE
+                    WHEN ep.enroll_status = 'A'
+                    THEN ep.user_id
+                END
+            ) AS enrolled_learners
+
+        FROM (${enrollmentProgressQuery}) ep
+
+        INNER JOIN tbl_users u
+            ON u.user_id = ep.user_id
+
+        INNER JOIN tbl_roles r
+            ON r.role_id = u.role_id
+
+        WHERE
+            u.company_id = ?
+            AND r.role_code = 'STD'
+        `,
+        [companyId]
+    );
+
+
+    // 4. Average completion across approved enrollments.
+    const [progressStats] = await connection.query(
+        `
+        SELECT
+            COALESCE(
+                AVG(ep.progress_percentage),
+                0
+            ) AS average_completion_rate
+
+        FROM (${enrollmentProgressQuery}) ep
+
+        INNER JOIN tbl_users u
+            ON u.user_id = ep.user_id
+
+        INNER JOIN tbl_roles r
+            ON r.role_id = u.role_id
+
+        WHERE
+            u.company_id = ?
+            AND r.role_code = 'STD'
+            AND ep.enroll_status = 'A'
+        `,
+        [companyId]
+    );
+
+
+    // 5. Assigned courses with trainee count and average progress.
+    // Include assigned courses even when nobody is enrolled.
+    const [assignedCourses] = await connection.query(
+        `
+        SELECT
+
+            ct.training_id AS id,
+
+            t.training_title AS title,
+
+            COUNT(
+                DISTINCT CASE
+                    WHEN r.role_code = 'STD'
+                     AND ep.enroll_status = 'A'
+                    THEN ep.user_id
+                END
+            ) AS enrolledCount,
+
+            COALESCE(
+                ROUND(
+                    AVG(
+                        CASE
+                            WHEN r.role_code = 'STD'
+                             AND ep.enroll_status = 'A'
+                            THEN ep.progress_percentage
+                        END
+                    ),
+                    2
+                ),
+                0
+            ) AS avgProgress
+
+        FROM tbl_company_trainings ct
+
+        INNER JOIN tbl_trainings t
+            ON t.training_id = ct.training_id
+
+        LEFT JOIN (${enrollmentProgressQuery}) ep
+            ON ep.training_id = ct.training_id
+
+        LEFT JOIN tbl_users u
+            ON u.user_id = ep.user_id
+            AND u.company_id = ct.company_id
+
+        LEFT JOIN tbl_roles r
+            ON r.role_id = u.role_id
+            AND r.role_code = 'STD'
+
+        WHERE
+            ct.company_id = ?
+            AND ct.is_active = b'1'
+
+        GROUP BY
+            ct.training_id,
+            t.training_title
+
+        ORDER BY
+            t.training_title ASC
+        `,
+        [companyId]
+    );
+
+
+    // 6. Format response for frontend.
+    const employee = employeeStats[0];
+    const course = courseStats[0];
+    const enrollment = enrollmentStats[0];
+    const progress = progressStats[0];
+
+    return {
+
+        stats: {
+            totalEmployees: Number(
+                employee.total_employees || 0
+            ),
+
+            assignedCourses: Number(
+                course.total_assigned_courses || 0
+            ),
+
+            enrolledLearners: Number(
+                enrollment.enrolled_learners || 0
+            ),
+
+            averageCompletionRate: Number(
+                Number(
+                    progress.average_completion_rate || 0
+                ).toFixed(2)
+            ),
+
+            activeEnrollments: Number(
+                enrollment.active_enrollments || 0
+            ),
+
+            completedEnrollments: Number(
+                enrollment.completed_enrollments || 0
+            ),
+
+            inactiveEnrollments: Number(
+                enrollment.inactive_enrollments || 0
+            )
+        },
+
+        assignedCourses: assignedCourses.map(item => ({
+            id: Number(item.id),
+            title: item.title,
+            enrolledCount: Number(item.enrolledCount || 0),
+            avgProgress: Number(item.avgProgress || 0)
+        }))
+    };
+};
 
 
 /* */

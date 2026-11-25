@@ -69,7 +69,7 @@ const LessonPlayer = ({
     const languageDropdownRef = useRef(null);
 
     const [showVideoControls, setShowVideoControls] = useState(true);
-const controlsTimeoutRef = useRef(null);
+    const controlsTimeoutRef = useRef(null);
 
     // Custom video player controls
     const [currentTime, setCurrentTime] = useState(0);
@@ -142,48 +142,48 @@ const controlsTimeoutRef = useRef(null);
     }, []);
 
     useEffect(() => {
-    const handleClickOutside = (event) => {
-        if (
-            languageDropdownRef.current &&
-            !languageDropdownRef.current.contains(event.target)
-        ) {
-            setShowLanguageOptions(false);
+        const handleClickOutside = (event) => {
+            if (
+                languageDropdownRef.current &&
+                !languageDropdownRef.current.contains(event.target)
+            ) {
+                setShowLanguageOptions(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const showControlsTemporarily = () => {
+        setShowVideoControls(true);
+
+        clearTimeout(controlsTimeoutRef.current);
+
+        // Keep controls visible while the video is paused
+        if (videoRef.current?.paused) return;
+
+        controlsTimeoutRef.current = setTimeout(() => {
+            setShowVideoControls(false);
+        }, 3000);
+    };
+
+    const handlePlayerMouseLeave = () => {
+        clearTimeout(controlsTimeoutRef.current);
+
+        if (!videoRef.current?.paused) {
+            setShowVideoControls(false);
         }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-    };
-}, []);
-
-const showControlsTemporarily = () => {
-    setShowVideoControls(true);
-
-    clearTimeout(controlsTimeoutRef.current);
-
-    // Keep controls visible while the video is paused
-    if (videoRef.current?.paused) return;
-
-    controlsTimeoutRef.current = setTimeout(() => {
-        setShowVideoControls(false);
-    }, 3000);
-};
-
-const handlePlayerMouseLeave = () => {
-    clearTimeout(controlsTimeoutRef.current);
-
-    if (!videoRef.current?.paused) {
-        setShowVideoControls(false);
-    }
-};
-
-useEffect(() => {
-    return () => {
-        clearTimeout(controlsTimeoutRef.current);
-    };
-}, []);
+    useEffect(() => {
+        return () => {
+            clearTimeout(controlsTimeoutRef.current);
+        };
+    }, []);
 
     const toggleVideoFullscreen = async () => {
         try {
@@ -754,6 +754,42 @@ useEffect(() => {
             setShowCenterControl(false);
         }, 1000);
     };
+
+    // Spacebar keyboard shortcut for video play/pause
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const video = videoRef.current;
+
+            if (!video) return;
+
+            // Only handle Spacebar
+            if (e.code !== "Space") return;
+
+            // Ignore if user is typing in an input or textarea
+            const activeElement = document.activeElement;
+
+            if (
+                activeElement?.tagName === "INPUT" ||
+                activeElement?.tagName === "TEXTAREA" ||
+                activeElement?.isContentEditable
+            ) {
+                return;
+            }
+
+            // Prevent page scrolling
+            e.preventDefault();
+
+            // Toggle video play/pause
+            togglePlayPause();
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
     /* Click on video = play/pause, double click = fullscreen */
     const clickTimerRef = useRef(null);
 
@@ -787,11 +823,20 @@ useEffect(() => {
         clickTimerRef.current = setTimeout(togglePlayPause, 250);
     };
 
-    const handleVideoDoubleClick = () => {
+    // const handleVideoDoubleClick = () => {
+    //     clearTimeout(clickTimerRef.current);
+    //     toggleVideoFullscreen();
+    // };
+
+    const handleVideoDoubleClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         clearTimeout(clickTimerRef.current);
+
         toggleVideoFullscreen();
     };
-    
+
     const getDownloadUrl = (url) => {
         return url.replace("/upload/", "/upload/fl_attachment/");
     };
@@ -943,9 +988,9 @@ useEffect(() => {
                                 : "bg-black aspect-video max-h-[500px] items-center shadow-2xl border border-slate-700 text-white rounded-2xl"
                         }`}
 
-                        onMouseMove={showControlsTemporarily}
-    onMouseEnter={showControlsTemporarily}
-    onMouseLeave={handlePlayerMouseLeave}
+                    onMouseMove={showControlsTemporarily}
+                    onMouseEnter={showControlsTemporarily}
+                    onMouseLeave={handlePlayerMouseLeave}
                 >
 
                     {selectedLesson ? (
@@ -1172,150 +1217,149 @@ useEffect(() => {
                                     //         </div>
                                     //     )}
                                     // </>
-                                    
-<>
-    <video
-        ref={videoRef}
-        key={selectedLesson.lesson_id}
-        src={selectedLesson.lesson_video_url}
-        disablePictureInPicture
-        controlsList="nodownload"
-        onContextMenu={(e) => e.preventDefault()}
-        onClick={handleVideoClick}
-        onDoubleClick={handleVideoDoubleClick}
-        onTimeUpdate={handleTimeUpdate}
-        onEnded={handleVideoEnded}
 
-        onLoadedMetadata={(e) => {
-            setDuration(e.target.duration || 0);
-            setCurrentTime(e.target.currentTime || 0);
-        }}
+                                    <>
+                                        <video
+                                            ref={videoRef}
+                                            key={selectedLesson.lesson_id}
+                                            src={selectedLesson.lesson_video_url}
+                                            disablePictureInPicture
+                                            controlsList="nodownload"
+                                            onContextMenu={(e) => e.preventDefault()}
+                                            onClick={handleVideoClick}
+                                            onDoubleClick={handleVideoDoubleClick}
+                                            onTimeUpdate={handleTimeUpdate}
+                                            onEnded={handleVideoEnded}
 
-        onDurationChange={(e) => {
-            setDuration(e.target.duration || 0);
-        }}
+                                            onLoadedMetadata={(e) => {
+                                                setDuration(e.target.duration || 0);
+                                                setCurrentTime(e.target.currentTime || 0);
+                                            }}
 
-        onVolumeChange={(e) => {
-            setIsMuted(e.target.muted);
-        }}
+                                            onDurationChange={(e) => {
+                                                setDuration(e.target.duration || 0);
+                                            }}
 
-        onPlay={() => {
-            setIsPlaying(true);
-            setLastAction("play");
-            setShowCenterControl(true);
+                                            onVolumeChange={(e) => {
+                                                setIsMuted(e.target.muted);
+                                            }}
 
-            setTimeout(() => {
-                setShowCenterControl(false);
-            }, 1000);
+                                            onPlay={() => {
+                                                setIsPlaying(true);
+                                                setLastAction("play");
+                                                setShowCenterControl(true);
 
-            if (audioLanguage === "marathi" && marathiAudioRef.current) {
-                marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-                marathiAudioRef.current.play().catch(e => console.log(e));
-            }
-        }}
+                                                setTimeout(() => {
+                                                    setShowCenterControl(false);
+                                                }, 1000);
 
-        onPause={() => {
-            setIsPlaying(false);
-            setLastAction("pause");
-            setShowCenterControl(true);
+                                                if (audioLanguage === "marathi" && marathiAudioRef.current) {
+                                                    marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                                    marathiAudioRef.current.play().catch(e => console.log(e));
+                                                }
+                                            }}
 
-            setTimeout(() => {
-                setShowCenterControl(false);
-            }, 1000);
+                                            onPause={() => {
+                                                setIsPlaying(false);
+                                                setLastAction("pause");
+                                                setShowCenterControl(true);
 
-            if (marathiAudioRef.current) {
-                marathiAudioRef.current.pause();
-            }
-        }}
+                                                setTimeout(() => {
+                                                    setShowCenterControl(false);
+                                                }, 1000);
 
-        onSeeked={() => {
-            if (
-                audioLanguage === "marathi" &&
-                marathiAudioRef.current &&
-                videoRef.current
-            ) {
-                marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-            }
-        }}
+                                                if (marathiAudioRef.current) {
+                                                    marathiAudioRef.current.pause();
+                                                }
+                                            }}
 
-        onRateChange={() => {
-            if (marathiAudioRef.current && videoRef.current) {
-                marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
-            }
-        }}
+                                            onSeeked={() => {
+                                                if (
+                                                    audioLanguage === "marathi" &&
+                                                    marathiAudioRef.current &&
+                                                    videoRef.current
+                                                ) {
+                                                    marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+                                                }
+                                            }}
 
-        playsInline
-        className={`absolute inset-0 w-full h-full object-contain block ${
-            isBlur ? "blur-xl" : "blur-none"
-        }`}
-    />
+                                            onRateChange={() => {
+                                                if (marathiAudioRef.current && videoRef.current) {
+                                                    marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+                                                }
+                                            }}
 
-    {/* Marathi Audio */}
-    <audio
-        ref={marathiAudioRef}
-        src={marathiAudioSrc}
-        preload="auto"
-    />
+                                            playsInline
+                                            className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
+                                                }`}
+                                        />
 
-    {/* Center Play Button */}
-    {!isPlaying && (
-        <button
-            type="button"
-            onClick={togglePlayPause}
-            // className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
-            //            w-14 h-14 rounded-full bg-white/95 text-slate-900
-            //            flex items-center justify-center shadow-xl
-            //            hover:scale-110 transition cursor-pointer"
+                                        {/* Marathi Audio */}
+                                        <audio
+                                            ref={marathiAudioRef}
+                                            src={marathiAudioSrc}
+                                            preload="auto"
+                                        />
 
-             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
+                                        {/* Center Play Button */}
+                                        {!isPlaying && (
+                                            <button
+                                                type="button"
+                                                onClick={togglePlayPause}
+                                                // className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
+                                                //            w-14 h-14 rounded-full bg-white/95 text-slate-900
+                                                //            flex items-center justify-center shadow-xl
+                                                //            hover:scale-110 transition cursor-pointer"
+
+                                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30
                        w-14 h-14 rounded-full bg-black/70 text-white
                        flex items-center justify-center shadow-xl
                        hover:scale-110 transition cursor-pointer"
 
-            title="Play video"
-        >
-            <FiPlay size={25} className="ml-1" />
-        </button>
-    )}
+                                                title="Play video"
+                                            >
+                                                <FiPlay size={25} className="ml-1" />
+                                            </button>
+                                        )}
 
-    {/* Custom Video Controls */}
-    <div
-        // className="absolute bottom-0 left-0 right-0 z-30 bg-transparent
-        //            text-white"
+                                        {/* Custom Video Controls */}
+                                        <div
+                                            // className="absolute bottom-0 left-0 right-0 z-30 bg-transparent
+                                            //            text-white"
 
-        className={`
+                                            className={`
     absolute bottom-0 left-0 right-0 z-30
     transition-opacity duration-500
     ${showVideoControls
-        ? "opacity-100 pointer-events-auto"
-        : "opacity-0 pointer-events-none"
-    }
+                                                    ? "opacity-100 pointer-events-auto"
+                                                    : "opacity-0 pointer-events-none"
+                                                }
 `}
-        onClick={(e) => e.stopPropagation()}
-        onDoubleClick={(e) => e.stopPropagation()}
-    >
-        {/* Control Buttons */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2 gap-3">
+                                            onClick={(e) => e.stopPropagation()}
+                                            onDoubleClick={(e) => e.stopPropagation()}
+                                        >
+                                            {/* Control Buttons */}
+                                            <div className="flex items-center justify-between px-3 sm:px-4 py-2 gap-3">
 
-            {/* Left Controls */}
-            <div className="flex items-center gap-3 sm:gap-4">
+                                                {/* Left Controls */}
+                                                <div className="flex items-center gap-3 sm:gap-4">
 
-                {/* Play / Pause */}
-                <button
-                    type="button"
-                    onClick={togglePlayPause}
-                    className="w-9 h-9 rounded-full bg-black/70
+                                                    {/* Play / Pause */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={togglePlayPause}
+                                                        className="w-9 h-9 rounded-full bg-black/70
                      flex items-center justify-center text-white hover:text-red-400 transition-all cursor-pointer"
-                    title={isPlaying ? "Pause" : "Play"}
-                >
-                    {isPlaying
-                        ? <FiPause size={19} />
-                        : <FiPlay size={19} />
-                    }
-                </button>
+                                                        title={isPlaying ? "Pause" : "Play"}
+                                                    >
+                                                        {isPlaying
+                                                            ? <FiPause size={19} />
+                                                            : <FiPlay size={19} />
+                                                        }
+                                                    </button>
 
-                {/* Volume */}
-                {/* <button
+                                                    {/* Volume */}
+                                                    {/* <button
                     type="button"
                     onClick={toggleMute}
                     className="text-white hover:text-red-400 transition cursor-pointer"
@@ -1327,7 +1371,7 @@ useEffect(() => {
                     }
                 </button> */}
 
-                {/* <button
+                                                    {/* <button
             type="button"
             onClick={toggleMute}
             className="w-9 h-9 rounded-full bg-black/70
@@ -1343,135 +1387,132 @@ useEffect(() => {
             }
 </button> */}
 
-                {/* Video Time */}
-                {/* <span className="text-xs sm:text-sm font-medium whitespace-nowrap tabular-nums">
+                                                    {/* Video Time */}
+                                                    {/* <span className="text-xs sm:text-sm font-medium whitespace-nowrap tabular-nums">
                     {formatVideoTime(currentTime)}
                     {" / "}
                     {formatVideoTime(duration)}
                 </span> */}
 
-                
-{/* Video Time */}
-<span
-    className="text-xs sm:text-sm font-medium whitespace-nowrap
+
+                                                    {/* Video Time */}
+                                                    <span
+                                                        className="text-xs sm:text-sm font-medium whitespace-nowrap
                tabular-nums px-3 py-2 rounded-full
                transition-all duration-300"
-    style={{
-        background: `linear-gradient(
+                                                        style={{
+                                                            background: `linear-gradient(
         
-            rgba(0, 0, 0, 0.70) ${
-                duration ? (currentTime / duration) * 100 : 0
-            }%
+            rgba(0, 0, 0, 0.70) ${duration ? (currentTime / duration) * 100 : 0
+                                                                }%
         )`
-    }}
->
-    {formatVideoTime(currentTime)}
-    {" / "}
-    {formatVideoTime(duration)}
-</span>
+                                                        }}
+                                                    >
+                                                        {formatVideoTime(currentTime)}
+                                                        {" / "}
+                                                        {formatVideoTime(duration)}
+                                                    </span>
 
-            </div>
+                                                </div>
 
-            {/* Right Controls */}
-            <div className="flex items-center gap-3">
-                {/* Audio Language Selector */}
-<div className="relative" ref={languageDropdownRef}>
+                                                {/* Right Controls */}
+                                                <div className="flex items-center gap-3">
+                                                    {/* Audio Language Selector */}
+                                                    <div className="relative" ref={languageDropdownRef}>
 
-    <button
-        type="button"
-        onClick={() => setShowLanguageOptions(prev => !prev)}
-        className="flex items-center gap-2 bg-black/70
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowLanguageOptions(prev => !prev)}
+                                                            className="flex items-center gap-2 bg-black/70
                    hover:bg-black/90 rounded-lg px-3 py-2
                    text-white text-xs sm:text-sm font-semibold
                    transition-all cursor-pointer"
-    >
-        <FiMusic size={14} />
+                                                        >
+                                                            <FiMusic size={14} />
 
-        <span>
-            {audioLanguage === "english"
-                ? "English"
-                : audioLanguage === "marathi"
-                    ? "Marathi"
-                    : "Language"}
-        </span>
+                                                            <span>
+                                                                {audioLanguage === "english"
+                                                                    ? "English"
+                                                                    : audioLanguage === "marathi"
+                                                                        ? "Marathi"
+                                                                        : "Language"}
+                                                            </span>
 
-        <FiChevronRight
-            size={13}
-            className={`transition-transform ${
-                showLanguageOptions ? "rotate-90" : ""
-            }`}
-        />
-    </button>
+                                                            <FiChevronRight
+                                                                size={13}
+                                                                className={`transition-transform ${showLanguageOptions ? "rotate-90" : ""
+                                                                    }`}
+                                                            />
+                                                        </button>
 
-    {showLanguageOptions && (
-        <div className="absolute bottom-full right-0 mb-2
+                                                        {showLanguageOptions && (
+                                                            <div className="absolute bottom-full right-0 mb-2
                         w-36 bg-[#181818] border border-white/10
                         rounded-xl shadow-xl overflow-hidden z-50">
 
-            <div className="px-3 py-2 text-[10px] uppercase
+                                                                <div className="px-3 py-2 text-[10px] uppercase
                             tracking-wider text-slate-400 border-b border-white/10">
-                Select Language
-            </div>
+                                                                    Select Language
+                                                                </div>
 
-            {[
-                { value: "english", label: "English" },
-                { value: "marathi", label: "Marathi" }
-            ].map((lang) => (
-                <button
-                    key={lang.value}
-                    type="button"
-                    onClick={() => {
-                        handleAudioLanguageChange(lang.value);
-                        setShowLanguageOptions(false);
-                    }}
-                    className={`w-full flex items-center justify-between
+                                                                {[
+                                                                    { value: "english", label: "English" },
+                                                                    { value: "marathi", label: "Marathi" }
+                                                                ].map((lang) => (
+                                                                    <button
+                                                                        key={lang.value}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            handleAudioLanguageChange(lang.value);
+                                                                            setShowLanguageOptions(false);
+                                                                        }}
+                                                                        className={`w-full flex items-center justify-between
                                 px-3 py-2.5 text-xs text-left
                                 transition-colors cursor-pointer
-                                ${
-                                    audioLanguage === lang.value
-                                        ? "bg-[#35175a] text-white"
-                                        : "text-slate-300 hover:bg-white/10"
-                                }`}
-                            
-                >
-                    {lang.label}
+                                ${audioLanguage === lang.value
+                                                                                ? "bg-[#35175a] text-white"
+                                                                                : "text-slate-300 hover:bg-white/10"
+                                                                            }`}
 
-                    {audioLanguage === lang.value && (
-                        <FiCheckCircle size={14} className="text-white" />
-                    )}
-                </button>
-            ))}
+                                                                    >
+                                                                        {lang.label}
 
-        </div>
-    )}
+                                                                        {audioLanguage === lang.value && (
+                                                                            <FiCheckCircle size={14} className="text-white" />
+                                                                        )}
+                                                                    </button>
+                                                                ))}
 
-</div>
+                                                            </div>
+                                                        )}
 
-            </div>
-        </div>
+                                                    </div>
 
-        {/* Progress Bar */}
-        <div className="px-2.5 pb-2 pt-0">
-            <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                step="0.1"
-                value={Math.min(currentTime, duration || 0)}
-                onChange={handleVideoSeek}
-                disabled={!duration}
-                className="w-full h-1 rounded-full cursor-pointer
+                                                </div>
+                                            </div>
+
+                                            {/* Progress Bar */}
+                                            <div className="px-2.5 pb-2 pt-0">
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max={duration || 0}
+                                                    step="0.1"
+                                                    value={Math.min(currentTime, duration || 0)}
+                                                    onChange={handleVideoSeek}
+                                                    disabled={!duration}
+                                                    className="w-full h-1 rounded-full cursor-pointer
                            accent-red-500
                            hover:accent-red-400
                            disabled:cursor-not-allowed"
-                style={{
-                    accentColor: "#ef4444"
-                }}
-                aria-label="Video progress"
-            />
-        </div>
-    </div>
-</>
+                                                    style={{
+                                                        accentColor: "#ef4444"
+                                                    }}
+                                                    aria-label="Video progress"
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
 
                                 )
 
@@ -1800,135 +1841,135 @@ useEffect(() => {
 export default LessonPlayer;
 
 
- // <>
-                                    //     <video
-                                    //         ref={videoRef}
-                                    //         key={selectedLesson.lesson_id}
-                                    //         src={selectedLesson.lesson_video_url}
-                                    //         controls
-                                    //         // was: controlsList="nofullscreen" — added nodownload to hide the Download option in the ⋮ menu
-                                    //         disablePictureInPicture
-                                    //         controlsList="nofullscreen nodownload"
-                                    //         onContextMenu={(e) => e.preventDefault()}
-                                    //         onClick={handleVideoClick}
-                                    //         onDoubleClick={handleVideoDoubleClick}
+// <>
+//     <video
+//         ref={videoRef}
+//         key={selectedLesson.lesson_id}
+//         src={selectedLesson.lesson_video_url}
+//         controls
+//         // was: controlsList="nofullscreen" — added nodownload to hide the Download option in the ⋮ menu
+//         disablePictureInPicture
+//         controlsList="nofullscreen nodownload"
+//         onContextMenu={(e) => e.preventDefault()}
+//         onClick={handleVideoClick}
+//         onDoubleClick={handleVideoDoubleClick}
 
-                                    //         onTimeUpdate={handleTimeUpdate}
-                                    //         onEnded={handleVideoEnded}
+//         onTimeUpdate={handleTimeUpdate}
+//         onEnded={handleVideoEnded}
 
-                                    //         onPlay={() => {
-                                    //             setIsPlaying(true);
-                                    //             setLastAction("play");
-                                    //             setShowCenterControl(true);
+//         onPlay={() => {
+//             setIsPlaying(true);
+//             setLastAction("play");
+//             setShowCenterControl(true);
 
-                                    //             setTimeout(() => {
-                                    //                 setShowCenterControl(false);
-                                    //             }, 1000);
-                                    //             if (audioLanguage === 'marathi' && marathiAudioRef.current) {
-                                    //                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-                                    //                 marathiAudioRef.current.play().catch(e => console.log(e));
-                                    //             }
-                                    //         }}
+//             setTimeout(() => {
+//                 setShowCenterControl(false);
+//             }, 1000);
+//             if (audioLanguage === 'marathi' && marathiAudioRef.current) {
+//                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+//                 marathiAudioRef.current.play().catch(e => console.log(e));
+//             }
+//         }}
 
-                                    //         onPause={() => {
-                                    //             setIsPlaying(false);
-                                    //             setLastAction("pause");
-                                    //             setShowCenterControl(true);
+//         onPause={() => {
+//             setIsPlaying(false);
+//             setLastAction("pause");
+//             setShowCenterControl(true);
 
-                                    //             setTimeout(() => {
-                                    //                 setShowCenterControl(false);
-                                    //             }, 1000);
-                                    //             if (marathiAudioRef.current) {
-                                    //                 marathiAudioRef.current.pause();
-                                    //             }
-                                    //         }}
-                                    //         onSeeked={() => {
+//             setTimeout(() => {
+//                 setShowCenterControl(false);
+//             }, 1000);
+//             if (marathiAudioRef.current) {
+//                 marathiAudioRef.current.pause();
+//             }
+//         }}
+//         onSeeked={() => {
 
-                                    //             if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
-                                    //                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
-                                    //             }
-                                    //         }}
-                                    //         onRateChange={() => {
+//             if (audioLanguage === 'marathi' && marathiAudioRef.current && videoRef.current) {
+//                 marathiAudioRef.current.currentTime = videoRef.current.currentTime;
+//             }
+//         }}
+//         onRateChange={() => {
 
-                                    //             if (marathiAudioRef.current && videoRef.current) {
-                                    //                 marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
-                                    //             }
-                                    //         }}
-                                    //         playsInline
-                                    //         // className="w-full h-full object-contain"
+//             if (marathiAudioRef.current && videoRef.current) {
+//                 marathiAudioRef.current.playbackRate = videoRef.current.playbackRate;
+//             }
+//         }}
+//         playsInline
+//         // className="w-full h-full object-contain"
 
-                                    //         // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
-                                    //         //     }`}
+//         // className={`w-full transition-all duration-200  ${isBlur ? "blur-xl" : "blur-none"
+//         //     }`}
 
-                                    //         className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
-                                    //             }`}
+//         className={`absolute inset-0 w-full h-full object-contain block ${isBlur ? "blur-xl" : "blur-none"
+//             }`}
 
-                                    //     />
+//     />
 
-                                    //     {/* Audio Track Selector - Video Controls Overlay */}
-                                    //     <div className="absolute bottom-12 right-4 z-40">
-                                    //         <div className="flex items-center gap-2 bg-black/75 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 shadow-lg">
+//     {/* Audio Track Selector - Video Controls Overlay */}
+//     <div className="absolute bottom-12 right-4 z-40">
+//         <div className="flex items-center gap-2 bg-black/75 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 shadow-lg">
 
-                                    //             <FiMusic className="text-white text-sm" />
+//             <FiMusic className="text-white text-sm" />
 
-                                    //             <select
-                                    //                 value={audioLanguage}
-                                    //                 onChange={(e) => handleAudioLanguageChange(e.target.value)}
-                                    //                 className="text-xs bg-transparent font-semibold text-white focus:outline-none cursor-pointer"
-                                    //             >
-                                    //                 <option value="english" className="text-slate-900">
-                                    //                     English
-                                    //                 </option>
+//             <select
+//                 value={audioLanguage}
+//                 onChange={(e) => handleAudioLanguageChange(e.target.value)}
+//                 className="text-xs bg-transparent font-semibold text-white focus:outline-none cursor-pointer"
+//             >
+//                 <option value="english" className="text-slate-900">
+//                     English
+//                 </option>
 
-                                    //                 <option value="marathi" className="text-slate-900">
-                                    //                     Marathi
-                                    //                 </option>
-                                    //             </select>
+//                 <option value="marathi" className="text-slate-900">
+//                     Marathi
+//                 </option>
+//             </select>
 
-                                    //         </div>
-                                    //     </div>
+//         </div>
+//     </div>
 
-                                    //     <audio
-                                    //         ref={marathiAudioRef}
-                                    //         src={marathiAudioSrc}
-                                    //         preload="auto"
-                                    //     />
-
-
-                                    //     {isBlur && (
-                                    //         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
-                                    //             <div>
-                                    //                 <FiLock size={36} className="mx-auto mb-4 text-red-400" />
-
-                                    //                 <h3 className="text-lg font-bold mb-2">
-                                    //                     Video Temporarily Hidden
-                                    //                 </h3>
-
-                                    //                 <p className="text-sm text-slate-300">
-                                    //                     Video playback has been paused because the browser window lost focus.
-                                    //                 </p>
-
-                                    //                 <p className="text-xs text-slate-400 mt-2">
-                                    //                     Return to the learning window to continue.
-                                    //                 </p>
-                                    //             </div>
-                                    //         </div>
-                                    //     )}
+//     <audio
+//         ref={marathiAudioRef}
+//         src={marathiAudioSrc}
+//         preload="auto"
+//     />
 
 
-                                    //     {showCenterControl && (
-                                    //         <div
-                                    //             className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
-                                    //         >
-                                    //             <div
-                                    //                 className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center animate-pulse"
-                                    //             >
-                                    //                 {lastAction === "play" ? (
-                                    //                     <FiPlay size={42} />
-                                    //                 ) : (
-                                    //                     <FiPause size={42} />
-                                    //                 )}
-                                    //             </div>
-                                    //         </div>
-                                    //     )}
-                                    // </>
+//     {isBlur && (
+//         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 text-white text-center p-6">
+//             <div>
+//                 <FiLock size={36} className="mx-auto mb-4 text-red-400" />
+
+//                 <h3 className="text-lg font-bold mb-2">
+//                     Video Temporarily Hidden
+//                 </h3>
+
+//                 <p className="text-sm text-slate-300">
+//                     Video playback has been paused because the browser window lost focus.
+//                 </p>
+
+//                 <p className="text-xs text-slate-400 mt-2">
+//                     Return to the learning window to continue.
+//                 </p>
+//             </div>
+//         </div>
+//     )}
+
+
+//     {showCenterControl && (
+//         <div
+//             className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+//         >
+//             <div
+//                 className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center animate-pulse"
+//             >
+//                 {lastAction === "play" ? (
+//                     <FiPlay size={42} />
+//                 ) : (
+//                     <FiPause size={42} />
+//                 )}
+//             </div>
+//         </div>
+//     )}
+// </>

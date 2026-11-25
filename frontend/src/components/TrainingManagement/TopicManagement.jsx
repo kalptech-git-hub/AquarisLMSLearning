@@ -2070,7 +2070,9 @@ const TopicManagement = ({
 
           {/* Left Side: Course Details */}
           <div className="flex items-start gap-4 min-w-0 flex-1">
-            <div className="w-14 h-14 bg-red-50 border border-slate-200 text-red-700 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0">
+            <div className="w-14 h-14 bg-red-50 border border-slate-200 text-red-700 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0"
+            title={courseSettings.level}
+            >
               {/* {courseSettings.code.includes("-") ? courseSettings.code.split("-")[1] : courseSettings.code || "N5"} */}
               {/* {courseSettings.level || training?.course_level || "N5"} */}
               {/* {courseSettings.level

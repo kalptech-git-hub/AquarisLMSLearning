@@ -5,11 +5,12 @@ import {
   BookOpen,
   UserCheck,
   TrendingUp,
+  FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowRight } from "react-icons/fi";
 
-const NAVY = "#152B66";
+const NAVY = "#0F172A";
 const RED = "#dc2626";
 const GRAY = "#9CA3AF";
 
@@ -229,56 +230,56 @@ const CompanyDashboard = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // const [stats, setStats] = useState({
-  //     totalEmployees: 0,
-  //     assignedCourses: 0,
-  //     enrolledLearners: 0,
-  //     averageCompletionRate: 0,
-  //     activeEnrollments: 0,
-  //     completedEnrollments: 0,
-  //     inactiveEnrollments: 0,
-  // });
-
   const [stats, setStats] = useState({
-    totalEmployees: 5,
-    assignedCourses: 3,
-    enrolledLearners: 28,
-    averageCompletionRate: 68,
-
-    activeEnrollments: 2,
-    completedEnrollments: 3,
-    inactiveEnrollments: 0,
+      totalEmployees: 0,
+      assignedCourses: 0,
+      enrolledLearners: 0,
+      averageCompletionRate: 0,
+      activeEnrollments: 0,
+      completedEnrollments: 0,
+      inactiveEnrollments: 0,
   });
 
-  // const [assignedCourses, setAssignedCourses] = useState([]);
+  // const [stats, setStats] = useState({
+  //   totalEmployees: 5,
+  //   assignedCourses: 3,
+  //   enrolledLearners: 28,
+  //   averageCompletionRate: 68,
 
-  const [assignedCourses, setAssignedCourses] = useState([
-    {
-      id: 1,
-      title: "Construction Primary Discipline",
-      enrolledCount: 3,
-      avgProgress: 5,
-    },
-    {
-      id: 2,
-      title: "Concrete Recycling Plant",
-      enrolledCount: 2,
-      avgProgress: 10,
-    },
-    {
-      id: 3,
-      title: "Truck Mounted Boom Pumps",
-      enrolledCount: 1,
-      avgProgress: 5,
-    },
+  //   activeEnrollments: 2,
+  //   completedEnrollments: 3,
+  //   inactiveEnrollments: 0,
+  // });
 
-    // {
-    //   id: 4,
-    //   title: "Stationary Boom Placers",
-    //   enrolledCount: 18,
-    //   avgProgress: 45,
-    // },
-  ]);
+  const [assignedCourses, setAssignedCourses] = useState([]);
+
+  // const [assignedCourses, setAssignedCourses] = useState([
+  //   {
+  //     id: 1,
+  //     title: "Construction Primary Discipline",
+  //     enrolledCount: 3,
+  //     avgProgress: 5,
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Concrete Recycling Plant",
+  //     enrolledCount: 2,
+  //     avgProgress: 10,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Truck Mounted Boom Pumps",
+  //     enrolledCount: 1,
+  //     avgProgress: 5,
+  //   },
+
+  //   // {
+  //   //   id: 4,
+  //   //   title: "Stationary Boom Placers",
+  //   //   enrolledCount: 18,
+  //   //   avgProgress: 45,
+  //   // },
+  // ]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -346,6 +347,7 @@ const CompanyDashboard = () => {
       label: "Courses",
       value: stats.assignedCourses,
       icon: BookOpen,
+      icon: FileText,
       gradient: "linear-gradient(135deg, #D7DFE9 0%, #F1F3F6 100%)",
       path: "/company/courses",
     },
@@ -404,27 +406,21 @@ const CompanyDashboard = () => {
               }}
               className="rounded-xl p-3 sm:p-5 flex justify-between cursor-pointer
                                 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5
-                                focus:outline-none focus:ring-2 focus:ring-blue-900"
+                                focus:outline-none"
               style={{ background: gradient }}
             >
               <div>
-                <p
-                  className="text-xs sm:text-sm"
-                  style={{ color: NAVY, opacity: 0.65 }}
-                >
+                <p className="text-xs sm:text-sm"  style={{ color: NAVY, opacity: 0.65 }}>
                   {label}
                 </p>
 
-                <p
-                  className="text-xl sm:text-3xl font-bold mt-1"
-                  style={{ color: NAVY }}
-                >
+                <p className="text-xl sm:text-3xl font-bold mt-1" style={{ color: NAVY }}>
                   {loading ? "—" : value}
                 </p>
               </div>
 
               <div
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: NAVY }}
               >
                 <Icon className="text-sm sm:text-base text-white" />
@@ -472,7 +468,7 @@ const CompanyDashboard = () => {
 
           <EmployeesPerCourseChart courses={assignedCourses} />
 
-          <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-4">
+          <div className="flex sm:hidden items-center gap-1.5 text-xs text-gray-400 mt-4">
             <FiArrowRight aria-hidden="true" />
             <span>Swipe to see more courses</span>
           </div>

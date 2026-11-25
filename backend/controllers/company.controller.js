@@ -11,9 +11,37 @@ const {
     enrollEmployeeInTrainings,
     getAllCompanies,
     getEmployeeVideoActivityModel,
+    getCompanyDashboardStats,
 } = require("../models/company.model");
 
+exports.getDashboard = async (req, res) => {
+    try {
+        const companyId = req.user.company_id;
 
+        if (!companyId) {
+            return res.status(403).json({
+                success: false,
+                message: "No company associated with this account."
+            });
+        }
+
+        const data = await getCompanyDashboardStats(companyId);
+
+        return res.status(200).json({
+            success: true,
+            stats: data.stats,
+            assignedCourses: data.assignedCourses
+        });
+
+    } catch (error) {
+        console.error("Company Dashboard Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to fetch dashboard data"
+        });
+    }
+};
 
 exports.getAllCompanies = async (req, res) => {
     try {

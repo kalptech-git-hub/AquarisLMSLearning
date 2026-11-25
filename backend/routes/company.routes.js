@@ -18,8 +18,11 @@ const {
   getEmployeeTrainingProgress,
   createCompany,
   updateCompany,
+  getDashboard,
 } = require("../controllers/company.controller");
 
+// Dashboard stata
+router.get("/dashboard", authMiddleware, companyAdminMiddleware, getDashboard);
 
 // Fetch courses for dropdown for enrolling employees
 router.get("/courses", authMiddleware, companyAdminMiddleware, getCourses);

@@ -558,7 +558,8 @@ const AdminLayout = () => {
 
 
     return (
-        <div className="flex bg-gray-100 min-h-screen">
+        // <div className="flex bg-gray-100 min-h-screen">
+        <div className="flex bg-gray-100 h-dvh overflow-hidden">
             <AdminSidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
@@ -573,7 +574,8 @@ const AdminLayout = () => {
                 />
             )}
 
-            <div className="flex-1 flex flex-col overflow-hidden">
+            {/* <div className="flex-1 flex flex-col overflow-hidden"> */}
+            <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
 
                 {/* was: className="bg-white border-b border-red-100 px-8 py-2 flex justify-end items-center shadow-sm" */}
                 <header className="bg-white border-b border-red-100 px-4 sm:px-8 py-2 flex justify-between md:justify-end items-center shadow-sm">
@@ -752,7 +754,10 @@ const AdminLayout = () => {
                     so it was invisible on phone even though it rendered correctly.
                     sm: reverts to the original p-8 with no extra bottom space, so
                     desktop/tablet is untouched. */}
-                <main id="admin-main-scroll" className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20 sm:p-8">
+                <main id="admin-main-scroll" 
+                // className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20 sm:p-8"
+                className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 sm:p-8"
+                >
                     <Outlet />
                 </main>
             </div>

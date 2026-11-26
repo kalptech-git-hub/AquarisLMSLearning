@@ -12,6 +12,7 @@ const {
     getAllCompanies,
     getEmployeeVideoActivityModel,
     getCompanyDashboardStats,
+    getCompanyTrainingReport,
 } = require("../models/company.model");
 
 exports.getDashboard = async (req, res) => {
@@ -59,6 +60,82 @@ exports.getAllCompanies = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to fetch companies."
+        });
+    }
+};
+
+exports.getCompanyTrainingReport = async (req, res) => {
+    try {
+        const { company_id, training_id, assignment_status } = req.query;
+
+        // Validate numeric filters
+        if (
+            company_id !== undefined &&
+            (!Number.isInteger(Number(company_id)) ||
+                Number(company_id) <= 0)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid company_id."
+            });
+        }
+
+        if (
+            training_id !== undefined &&
+            (!Number.isInteger(Number(training_id)) ||
+                Number(training_id) <= 0)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid training_id."
+            });
+        }
+
+        const allowedStatuses = [
+            "Active",
+            "Revoked"
+        ];
+
+        if (
+            assignment_status &&
+            !allowedStatuses.includes(assignment_status)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid assignment_status."
+            });
+        }
+
+        const filters = {
+            company_id: company_id
+                ? Number(company_id)
+                : null,
+
+            training_id: training_id
+                ? Number(training_id)
+                : null,
+
+            assignment_status: assignment_status || null
+        };
+
+        const report = await getCompanyTrainingReport(filters);
+
+        return res.status(200).json({
+            success: true,
+            message: "Company training report fetched successfully.",
+            total: report.length,
+            report
+        });
+
+    } catch (error) {
+        console.error(
+            "Get Company Training Report Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch company training report."
         });
     }
 };

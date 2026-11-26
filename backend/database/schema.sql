@@ -295,7 +295,7 @@ CREATE TABLE IF NOT EXISTS tbl_company_trainings (
     FOREIGN KEY (training_id)
         REFERENCES tbl_trainings(training_id),
 
-    FOREIGN KEY (assigned_by)
+    FOREIGN KEY (created_by)
         REFERENCES tbl_users(user_id),
 
     UNIQUE KEY uq_company_training (company_id, training_id)

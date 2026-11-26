@@ -554,6 +554,204 @@ exports.getAllCompanies = async () => {
     return Array.from(companyMap.values());
 };
 
+exports.getCompanyTrainingReport = async (filters = {}) => {
+    const conditions = [];
+    const params = [];
+
+    if (filters.company_id) {
+        conditions.push("c.company_id = ?");
+        params.push(filters.company_id);
+    }
+
+    if (filters.training_id) {
+        conditions.push("t.training_id = ?");
+        params.push(filters.training_id);
+    }
+
+    if (filters.assignment_status === "active") {
+        conditions.push("ct.is_active = b'1'");
+    } else if (filters.assignment_status === "Revoked") {
+        conditions.push("ct.is_active = b'0'");
+    }
+
+    const whereClause = conditions.length
+        ? `WHERE ${conditions.join(" AND ")}`
+        : "";
+
+    const sql = `
+        SELECT
+            /* Company details */
+            c.company_id,
+            c.company_name,
+            c.company_email,
+            c.company_mobile_no,
+            c.company_address,
+            CAST(c.is_active AS UNSIGNED) AS company_is_active,
+            c.created_at AS company_created_at,
+            c.updated_at AS company_updated_at,
+            c.created_by AS company_created_by,
+            c.updated_by AS company_updated_by,
+
+            company_creator.user_full_name
+                AS company_created_by_name,
+
+            company_updater.user_full_name
+                AS company_updated_by_name,
+
+            /* Company training assignment */
+            ct.company_trainings_id,
+            ct.training_users_limit,
+            ct.training_expiry_on,
+            CAST(ct.is_active AS UNSIGNED)
+                AS training_is_active,
+            ct.created_at AS assignment_created_at,
+            ct.updated_at AS assignment_updated_at,
+            ct.created_by AS assignment_created_by,
+            ct.updated_by AS assignment_updated_by,
+
+            assignment_creator.user_full_name
+                AS assignment_created_by_name,
+
+            assignment_updater.user_full_name
+                AS assignment_updated_by_name,
+
+            /* Training details */
+            t.training_id,
+            t.training_title,
+            t.training_description,
+            t.training_thumbnail,
+            t.training_duration_hours,
+            t.training_mode,
+            /* t.training_exam_name, */
+            /* t.training_exam_frequency, */
+            /* t.training_textbook_name, */
+            /* t.training_textbook_chapters, */
+            t.training_fee,
+            /* t.training_start_date, */
+            /* t.training_end_date, */
+            /* t.training_status, */
+            /* t.publish_status, */
+            /* t.enrollment_status, */
+            /* t.publish_at, */
+            /* t.enrollment_closed_at, */
+            CAST(t.is_active AS UNSIGNED)
+                AS training_master_is_active,
+            t.created_at AS training_created_at,
+            t.updated_at AS training_updated_at,
+            t.created_by AS training_created_by,
+            t.updated_by AS training_updated_by,
+
+            /* Course/category details */
+            co.course_id,
+            co.course_name,
+            co.course_code,
+            co.course_level,
+
+            /* Enrollment statistics */
+            COALESCE(enrollment_counts.approved_count, 0)
+                AS approved_user_count,
+
+            /* COALESCE(enrollment_counts.pending_count, 0) */
+            /*     AS pending_user_count, */
+
+            /* COALESCE(enrollment_counts.rejected_count, 0) */
+            /*     AS rejected_user_count, */
+
+            COALESCE(enrollment_counts.total_count, 0)
+                AS total_enrollment_count,
+
+            GREATEST(
+                ct.training_users_limit -
+                COALESCE(enrollment_counts.approved_count, 0),
+                0
+            ) AS available_user_slots,
+
+            CASE
+                WHEN ct.company_trainings_id IS NULL
+                    THEN 'Not_Assigned'
+
+                WHEN ct.is_active = b'0'
+                    THEN 'Revoked'
+
+                WHEN ct.training_expiry_on < NOW()
+                    THEN 'Expired'
+
+                ELSE 'Active'
+            END AS assignment_status
+
+        FROM tbl_companies c
+
+        LEFT JOIN tbl_users company_creator
+            ON c.created_by = company_creator.user_id
+
+        LEFT JOIN tbl_users company_updater
+            ON c.updated_by = company_updater.user_id
+
+        LEFT JOIN tbl_company_trainings ct
+            ON c.company_id = ct.company_id
+
+        LEFT JOIN tbl_users assignment_creator
+            ON ct.created_by = assignment_creator.user_id
+
+        LEFT JOIN tbl_users assignment_updater
+            ON ct.updated_by = assignment_updater.user_id
+
+        LEFT JOIN tbl_trainings t
+            ON ct.training_id = t.training_id
+
+        LEFT JOIN tbl_courses co
+            ON t.course_id = co.course_id
+
+        LEFT JOIN (
+            SELECT
+                u.company_id,
+                e.training_id,
+
+                COUNT(DISTINCT CASE
+                    WHEN e.enroll_status = 'A'
+                    THEN e.user_id
+                END) AS approved_count,
+
+                /* COUNT(DISTINCT CASE */
+                /*     WHEN e.enroll_status = 'P' */
+                /*     THEN e.user_id */
+                /* END) AS pending_count, */
+
+                /* COUNT(DISTINCT CASE */
+                /*     WHEN e.enroll_status = 'R' */
+                /*     THEN e.user_id */
+                /* END) AS rejected_count, */
+
+                COUNT(DISTINCT e.user_id)
+                    AS total_count
+
+            FROM tbl_enrollments e
+
+            INNER JOIN tbl_users u
+                ON e.user_id = u.user_id
+
+            WHERE u.company_id IS NOT NULL
+
+            GROUP BY
+                u.company_id,
+                e.training_id
+
+        ) enrollment_counts
+            ON enrollment_counts.company_id = c.company_id
+            AND enrollment_counts.training_id = ct.training_id
+
+        ${whereClause}
+
+        ORDER BY
+            c.company_id DESC,
+            ct.company_trainings_id DESC
+    `;
+
+    const [rows] = await db.query(sql, params);
+
+    return rows;
+};
+
 // exports.getCompanyEmployees = async (companyId) => {
 //     const sql = `
 //     SELECT

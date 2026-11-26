@@ -19,6 +19,7 @@ const {
   createCompany,
   updateCompany,
   getDashboard,
+  getCompanyTrainingReport,
 } = require("../controllers/company.controller");
 
 // Dashboard stata
@@ -39,6 +40,9 @@ router.get("/employees/:userId/video-activity", authMiddleware, companyAdminMidd
 
 // Super Admin - Get all companies
 router.get("/", authMiddleware, adminMiddleware, getAllCompanies);
+
+// Fetch report training vise
+router.get("/company-training", authMiddleware, adminMiddleware, getCompanyTrainingReport);
 
 // GET COMPANY BY ID
 router.get("/:companyId", authMiddleware, adminMiddleware, getCompanyById);

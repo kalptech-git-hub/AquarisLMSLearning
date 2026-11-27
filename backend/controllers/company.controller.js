@@ -7,13 +7,18 @@ const {
     checkDuplicateUser,
     InsertEmployee,
     getCompanyEmployees,
-    getCompanyCourses,
     enrollEmployeeInTrainings,
     getAllCompanies,
     getEmployeeVideoActivityModel,
     getCompanyDashboardStats,
     getCompanyTrainingReport,
+    getEmployeeEnrolledCourses,
+    getCompanyTrainingModel,
+    getEmployeeEnrolledTrainingdropdownModel,
 } = require("../models/company.model");
+const { companyAdminCreatedNotificationEmail, companyAdminWelcomeEmail, companyTrainingsAssignedEmail, employeeWelcomeEmail, employeeCourseEnrollmentEmail } = require("../utils/emailTemplate");
+const transporter = require("../utils/transporter");
+const { createNotificationRecord, emitNotification } = require("../services/notification.service");
 
 exports.getDashboard = async (req, res) => {
     try {
@@ -216,26 +221,26 @@ exports.getEmployeeVideoActivity = async (req, res) => {
 };
 
 exports.getEmployeeTrainingProgress = async (req, res) => {
-  const { userId } = req.params;
-  const companyId = req.user?.company_id;
+    const { userId } = req.params;
+    const companyId = req.user?.company_id;
 
-  try {
-    if (!companyId) {
-      return res.status(403).json({
-        success: false,
-        message: "Company access denied",
-      });
-    }
+    try {
+        if (!companyId) {
+            return res.status(403).json({
+                success: false,
+                message: "Company access denied",
+            });
+        }
 
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: "Employee ID is required",
-      });
-    }
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "Employee ID is required",
+            });
+        }
 
-    const [students] = await db.query(
-      `
+        const [students] = await db.query(
+            `
       SELECT
           t.training_id,
           t.training_title,
@@ -300,23 +305,23 @@ exports.getEmployeeTrainingProgress = async (req, res) => {
 
       ORDER BY t.training_title ASC
       `,
-      [userId, companyId]
-    );
+            [userId, companyId]
+        );
 
-    return res.status(200).json({
-      success: true,
-      data: students,
-    });
+        return res.status(200).json({
+            success: true,
+            data: students,
+        });
 
-  } catch (error) {
-    console.error("GET EMPLOYEE COURSE PROGRESS ERROR:", error);
+    } catch (error) {
+        console.error("GET EMPLOYEE COURSE PROGRESS ERROR:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch employee training progress",
-      error: error.message,
-    });
-  }
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch employee training progress",
+            error: error.message,
+        });
+    }
 };
 
 
@@ -674,6 +679,121 @@ exports.createCompany = async (req, res) => {
 
         await connection.commit();
 
+
+        // -----------------------------------
+        // 12. RELEASE DB CONNECTION
+        // -----------------------------------
+
+        connection.release();
+        connection = null;
+
+
+        // -----------------------------------
+        // 13. SEND EMAIL NOTIFICATIONS
+        // -----------------------------------
+
+        const createdAt = new Date().toLocaleString(
+            "en-IN",
+            {
+                timeZone: "Asia/Kolkata",
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            }
+        );
+
+
+        // -----------------------------------
+        // EMAIL 1: COMPANY ADMIN LOGIN DETAILS
+        // -----------------------------------
+
+        try {
+
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: admin.user_email.trim(),
+
+                subject: "Welcome to TrainSphere - Company Admin Account",
+
+                html: companyAdminWelcomeEmail({
+                    recipientName: admin.user_full_name.trim(),
+                    companyName: company.company_name.trim(),
+                    username: admin.username.trim(),
+                    email: admin.user_email.trim(),
+                    password: admin.password,
+                    date: createdAt
+                })
+            });
+
+            console.log(
+                "Company Admin welcome email sent:",
+                admin.user_email
+            );
+
+        } catch (emailError) {
+
+            console.error(
+                "Company Admin welcome email failed:",
+                emailError
+            );
+
+        }
+
+
+        // -----------------------------------
+        // EMAIL 2: COMPANY NOTIFICATION
+        // NO PASSWORD INCLUDED
+        // -----------------------------------
+
+        if (company.company_email?.trim()) {
+
+            try {
+
+                await transporter.sendMail({
+                    from: process.env.EMAIL_USER,
+                    to: company.company_email.trim(),
+
+                    subject: "TrainSphere - Company Admin Created",
+
+                    html: companyAdminCreatedNotificationEmail({
+                        companyName: company.company_name.trim(),
+                        companyEmail: company.company_email.trim(),
+
+                        adminName: admin.user_full_name.trim(),
+                        adminEmail: admin.user_email.trim(),
+                        adminUsername: admin.username.trim(),
+
+                        date: createdAt
+                    })
+                });
+
+                console.log(
+                    "Company notification email sent:",
+                    company.company_email
+                );
+
+            } catch (emailError) {
+
+                console.error(
+                    "Company notification email failed:",
+                    emailError
+                );
+
+            }
+
+        } else {
+
+            console.log(
+                "Company notification email skipped: Company email not provided."
+            );
+
+        }
+
+
         return res.status(201).json({
             success: true,
             message: "Company and Company Admin created successfully.",
@@ -1006,8 +1126,209 @@ exports.updateCompany = async (req, res) => {
 };
 
 /* ASSIGN TRAININGS TO COMPANY */
+// exports.assignTrainingsToCompany = async (req, res) => {
+//     let connection;
+
+//     try {
+//         const companyId = Number(req.params.companyId);
+//         const superAdminId = req.user.user_id;
+
+//         const { trainings } = req.body;
+
+//         // 1. Validate company ID
+//         if (!Number.isInteger(companyId) || companyId <= 0) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Invalid company ID."
+//             });
+//         }
+
+//         // 2. Validate selected courses
+//         if (!Array.isArray(trainings) || trainings.length === 0) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Please select at least one course."
+//             });
+//         }
+
+//         const trainingIds = trainings.map(
+//             item => Number(item.training_id)
+//         );
+
+//         if (
+//             trainingIds.some(
+//                 id => !Number.isInteger(id) || id <= 0
+//             )
+//         ) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Invalid course ID."
+//             });
+//         }
+
+//         if (new Set(trainingIds).size !== trainingIds.length) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Duplicate courses are not allowed."
+//             });
+//         }
+
+//         // 3. Validate user limit and expiry
+//         for (const training of trainings) {
+//             const limit = Number(training.training_users_limit);
+//             const expiryDate = new Date(training.training_expiry_on);
+
+//             if (!Number.isInteger(limit) || limit <= 0) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: "Course user limit must be greater than zero."
+//                 });
+//             }
+
+//             if (
+//                 !training.training_expiry_on ||
+//                 Number.isNaN(expiryDate.getTime()) ||
+//                 expiryDate <= new Date()
+//             ) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: "Please provide a valid future expiry date."
+//                 });
+//             }
+//         }
+
+//         connection = await db.getConnection();
+//         await connection.beginTransaction();
+
+//         // 4. Verify company exists and is active
+//         const [companies] = await connection.execute(
+//             `
+//             SELECT company_id
+//             FROM tbl_companies
+//             WHERE company_id = ?
+//               AND is_active = b'1'
+//             FOR UPDATE
+//             `,
+//             [companyId]
+//         );
+
+//         if (companies.length === 0) {
+//             throw new Error("Company does not exist or is inactive.");
+//         }
+
+//         // 5. Verify all selected courses exist and are active
+//         const placeholders = trainingIds.map(() => "?").join(",");
+
+//         const [existingTrainings] = await connection.execute(
+//             `
+//             SELECT training_id, training_title
+//             FROM tbl_trainings
+//             WHERE training_id IN (${placeholders})
+//               AND is_active = b'1'
+//               AND publish_status = 'PUBLISHED'
+//               AND training_status = 'ACTIVE'
+//             `,
+//             trainingIds
+//         );
+
+//         if (existingTrainings.length !== trainingIds.length) {
+//             throw new Error(
+//                 "One or more selected courses are invalid, inactive, or unpublished."
+//             );
+//         }
+
+//         // 6. Check existing company assignments
+//         const [existingAssignments] = await connection.execute(
+//             `
+//             SELECT training_id
+//             FROM tbl_company_trainings
+//             WHERE company_id = ?
+//               AND training_id IN (${placeholders})
+//             FOR UPDATE
+//             `,
+//             [companyId, ...trainingIds]
+//         );
+
+//         if (existingAssignments.length > 0) {
+//             const existingIds = existingAssignments.map(
+//                 row => Number(row.training_id)
+//             );
+
+//             const existingNames = existingTrainings
+//                 .filter(item => existingIds.includes(Number(item.training_id)))
+//                 .map(item => item.training_title);
+
+//             throw new Error(
+//                 `Already assigned to this company: ${existingNames.join(", ")}.`
+//             );
+//         }
+
+//         // 7. Insert course assignments
+//         const values = [];
+//         const placeholdersForInsert = trainings.map(training => {
+//             values.push(
+//                 companyId,
+//                 Number(training.training_id),
+//                 Number(training.training_users_limit),
+//                 `${training.training_expiry_on} 23:59:59`,
+//                 superAdminId,
+//                 superAdminId
+//             );
+
+//             return "(?, ?, ?, ?, b'1', ?, ?)";
+//         });
+
+//         await connection.execute(
+//             `
+//             INSERT INTO tbl_company_trainings (
+//                 company_id,
+//                 training_id,
+//                 training_users_limit,
+//                 training_expiry_on,
+//                 is_active,
+//                 created_by,
+//                 updated_by
+//             )
+//             VALUES ${placeholdersForInsert.join(", ")}
+//             `,
+//             values
+//         );
+
+//         await connection.commit();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Courses assigned to company successfully.",
+//             data: {
+//                 company_id: companyId,
+//                 assigned_courses: trainings.length
+//             }
+//         });
+
+//     } catch (error) {
+//         if (connection) {
+//             await connection.rollback();
+//         }
+
+//         console.error("Assign Courses To Company Error:", error);
+
+//         return res.status(400).json({
+//             success: false,
+//             message: error.message || "Failed to assign courses."
+//         });
+
+//     } finally {
+//         if (connection) {
+//             connection.release();
+//         }
+//     }
+// };
+
 exports.assignTrainingsToCompany = async (req, res) => {
     let connection;
+
+    let pendingNotifications = [];
+    let transactionCommitted = false;
 
     try {
         const companyId = Number(req.params.companyId);
@@ -1081,9 +1402,32 @@ exports.assignTrainingsToCompany = async (req, res) => {
         await connection.beginTransaction();
 
         // 4. Verify company exists and is active
+        // const [companies] = await connection.execute(
+        //     `
+        //     SELECT company_id
+        //     FROM tbl_companies
+        //     WHERE company_id = ?
+        //       AND is_active = b'1'
+        //     FOR UPDATE
+        //     `,
+        //     [companyId]
+        // );
+
+        // if (companies.length === 0) {
+        //     throw new Error("Company does not exist or is inactive.");
+        // }
+
+
+        // -----------------------------------
+        // 4. VERIFY COMPANY
+        // -----------------------------------
+
         const [companies] = await connection.execute(
             `
-            SELECT company_id
+            SELECT
+                company_id,
+                company_name,
+                company_email
             FROM tbl_companies
             WHERE company_id = ?
               AND is_active = b'1'
@@ -1095,6 +1439,39 @@ exports.assignTrainingsToCompany = async (req, res) => {
         if (companies.length === 0) {
             throw new Error("Company does not exist or is inactive.");
         }
+
+        const companyDetails = companies[0];
+
+
+        // -----------------------------------
+        // 4.1 GET COMPANY ADMIN
+        // -----------------------------------
+
+        const [companyAdmins] = await connection.execute(
+            `
+            SELECT
+                u.user_id,
+                u.user_full_name,
+                u.user_email,
+                u.username
+            FROM tbl_users u
+            INNER JOIN tbl_roles r
+                ON r.role_id = u.role_id
+            WHERE u.company_id = ?
+              AND r.role_code = 'CAD'
+              AND u.is_active = b'1'
+            `,
+            [companyId]
+        );
+
+        if (companyAdmins.length === 0) {
+            throw new Error(
+                "No active Company Admin found for this company."
+            );
+        }
+
+        const companyAdmin = companyAdmins[0];
+
 
         // 5. Verify all selected courses exist and are active
         const placeholders = trainingIds.map(() => "?").join(",");
@@ -1174,7 +1551,194 @@ exports.assignTrainingsToCompany = async (req, res) => {
             values
         );
 
+
+        // -----------------------------------
+        // 8. CREATE SYSTEM NOTIFICATIONS
+        // -----------------------------------
+
+        const io = req.app.get("io");
+
+        for (const training of existingTrainings) {
+
+            const assignedTraining = trainings.find(
+                item =>
+                    Number(item.training_id) ===
+                    Number(training.training_id)
+            );
+
+            const notification = await createNotificationRecord(
+                connection,
+                {
+                    user_id: companyAdmin.user_id,
+
+                    notification_type: "COMPANY_COURSE_ASSIGNED",
+
+                    title: "New Course Assigned",
+
+                    message:
+                        `Super Admin has assigned the course "${training.training_title}" to your company.`,
+
+                    training_id: training.training_id
+                }
+            );
+
+            pendingNotifications.push(notification);
+        }
+
+
+        // await connection.commit();
+
+        // return res.status(200).json({
+        //     success: true,
+        //     message: "Courses assigned to company successfully.",
+        //     data: {
+        //         company_id: companyId,
+        //         assigned_courses: trainings.length
+        //     }
+        // });
+
+
+        // -----------------------------------
+        // 9. COMMIT TRANSACTION
+        // -----------------------------------
+
         await connection.commit();
+
+        transactionCommitted = true;
+
+
+        // -----------------------------------
+        // 10. RELEASE DB CONNECTION
+        // -----------------------------------
+
+        connection.release();
+        connection = null;
+
+
+        // -----------------------------------
+        // 11. EMIT REAL-TIME NOTIFICATIONS
+        // -----------------------------------
+
+        for (const notification of pendingNotifications) {
+            emitNotification(io, notification);
+        }
+
+
+        // -----------------------------------
+        // 12. PREPARE EMAIL DETAILS
+        // -----------------------------------
+
+        const emailTrainings = trainings.map(training => {
+
+            const trainingDetails = existingTrainings.find(
+                item =>
+                    Number(item.training_id) ===
+                    Number(training.training_id)
+            );
+
+            return {
+                training_title: trainingDetails.training_title,
+
+                training_users_limit:
+                    Number(training.training_users_limit),
+
+                training_expiry_on:
+                    training.training_expiry_on
+            };
+        });
+
+
+        // -----------------------------------
+        // 13. EMAIL COMPANY ADMIN
+        // -----------------------------------
+
+        try {
+
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+
+                to: companyAdmin.user_email,
+
+                subject: "TrainSphere - New Courses Assigned",
+
+                html: companyTrainingsAssignedEmail({
+                    recipientName: companyAdmin.user_full_name,
+
+                    companyName: companyDetails.company_name,
+
+                    trainings: emailTrainings,
+
+                    isCompanyAdmin: true
+                })
+            });
+
+            console.log(
+                "Company Admin course assignment email sent:",
+                companyAdmin.user_email
+            );
+
+        } catch (emailError) {
+
+            console.error(
+                "Company Admin course assignment email failed:",
+                emailError
+            );
+
+        }
+
+
+        // -----------------------------------
+        // 14. EMAIL COMPANY
+        // -----------------------------------
+
+        if (companyDetails.company_email?.trim()) {
+
+            try {
+
+                await transporter.sendMail({
+                    from: process.env.EMAIL_USER,
+
+                    to: companyDetails.company_email,
+
+                    subject: "TrainSphere - Courses Assigned to Your Company",
+
+                    html: companyTrainingsAssignedEmail({
+                        recipientName: companyDetails.company_name,
+
+                        companyName: companyDetails.company_name,
+
+                        trainings: emailTrainings,
+
+                        isCompanyAdmin: false
+                    })
+                });
+
+                console.log(
+                    "Company course assignment email sent:",
+                    companyDetails.company_email
+                );
+
+            } catch (emailError) {
+
+                console.error(
+                    "Company course assignment email failed:",
+                    emailError
+                );
+
+            }
+
+        } else {
+
+            console.log(
+                "Company email skipped: Company email not provided."
+            );
+
+        }
+
+
+        // -----------------------------------
+        // 15. RESPONSE
+        // -----------------------------------
 
         return res.status(200).json({
             success: true,
@@ -1185,12 +1749,43 @@ exports.assignTrainingsToCompany = async (req, res) => {
             }
         });
 
-    } catch (error) {
-        if (connection) {
-            await connection.rollback();
+
+    }
+    // catch (error) {
+    //     if (connection) {
+    //         await connection.rollback();
+    //     }
+
+    //     console.error("Assign Courses To Company Error:", error);
+
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: error.message || "Failed to assign courses."
+    //     });
+
+    // } finally {
+    //     if (connection) {
+    //         connection.release();
+    //     }
+    // }
+
+    catch (error) {
+
+        if (connection && !transactionCommitted) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error(
+                    "Assign Trainings Rollback Error:",
+                    rollbackError
+                );
+            }
         }
 
-        console.error("Assign Courses To Company Error:", error);
+        console.error(
+            "Assign Trainings To Company Error:",
+            error
+        );
 
         return res.status(400).json({
             success: false,
@@ -1198,12 +1793,12 @@ exports.assignTrainingsToCompany = async (req, res) => {
         });
 
     } finally {
+
         if (connection) {
             connection.release();
         }
     }
 };
-
 
 
 exports.createEmployee = async (req, res) => {
@@ -1340,6 +1935,42 @@ exports.createEmployee = async (req, res) => {
         await connection.commit();
         transactionStarted = false;
 
+        // 8. Fetch company details
+        const [companyRows] = await connection.query(
+            `SELECT company_name
+     FROM tbl_companies
+     WHERE company_id = ?`,
+            [companyId]
+        );
+
+        const companyName = companyRows[0]?.company_name || "Your Company";
+
+        // 9. Send welcome email
+        try {
+
+
+            const emailHtml = employeeWelcomeEmail({
+                recipientName: user_full_name.trim(),
+                companyName,
+                username: finalUsername,
+                email: normalizedEmail,
+                password: user_password,
+                loginUrl: process.env.FRONTEND_URL,
+                date: new Date().toLocaleDateString("en-IN")
+            });
+
+            await transporter.sendMail({
+                to: normalizedEmail,
+                subject: `Welcome to ${companyName} - Your LMS Account`,
+                html: emailHtml
+            });
+
+        } catch (emailError) {
+
+            console.error("Employee welcome email error:", emailError);
+
+        }
+
         return res.status(201).json({
             success: true,
             message: "Employee created successfully.",
@@ -1391,11 +2022,11 @@ exports.createEmployee = async (req, res) => {
 };
 
 
-
-exports.getCourses = async (req, res) => {
+/* */
+exports.getCompanyTrainings = async (req, res) => {
     try {
         const companyId = req.user.company_id;
-        const courses = await getCompanyCourses(companyId);
+        const courses = await getCompanyTrainingModel(companyId);
 
         return res.status(200).json({
             success: true,
@@ -1410,6 +2041,46 @@ exports.getCourses = async (req, res) => {
     }
 };
 
+exports.getEmployeeEnrolledTrainingdropdownController = async (req, res) => {
+    try {
+        const companyId = req.user.company_id;
+        const { user_id } = req.query;
+
+        if (!companyId) {
+            return res.status(403).json({
+                success: false,
+                message: "No company associated with this account."
+            });
+        }
+
+        const courses = await getEmployeeEnrolledTrainingdropdownModel(
+            companyId,
+            db,
+            user_id || null
+        );
+        const enrolledCourses = user_id
+            ? await getEmployeeEnrolledCourses(companyId, user_id, db)
+            : [];
+
+
+        return res.status(200).json({
+            success: true,
+            // data: courses,
+            data: {
+                availableCourses: courses,
+                enrolledCourses,
+            },
+        });
+
+    } catch (error) {
+        console.error("Company Courses Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch company courses",
+        });
+    }
+};
 
 // exports.enrollEmployee = async (req, res) => {
 //     let connection;
@@ -1488,8 +2159,93 @@ exports.getCourses = async (req, res) => {
 // };
 
 
+/** */
+// exports.enrollEmployee = async (req, res) => {
+//     let connection;
+
+//     try {
+//         const companyId = req.user.company_id;
+//         const createdBy = req.user.user_id;
+
+//         const { user_id, training_ids } = req.body;
+
+//         if (!companyId) {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "No company associated with this account."
+//             });
+//         }
+
+//         if (!user_id) {
+//             return res.status(400).json({
+//                 success: false,
+//                 // message: "Please select an employee."
+//                 message: "Please select an trainee."
+//             });
+//         }
+
+//         if (
+//             !Array.isArray(training_ids) ||
+//             training_ids.length === 0
+//         ) {
+//             return res.status(400).json({
+//                 success: false,
+//                 // message: "Please select at least one training."
+//                 message: "Please select at least one course."
+//             });
+//         }
+
+//         connection = await db.getConnection();
+
+//         await connection.beginTransaction();
+
+//         const result = await enrollEmployeeInTrainings(
+//             connection,
+//             {
+//                 companyId,
+//                 userId: user_id,
+//                 trainingIds: training_ids,
+//                 createdBy
+//             }
+//         );
+
+//         await connection.commit();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: result.enrolled > 0
+//                 // ? "Employee enrolled successfully."
+//                 ? "Trainee enrolled successfully."
+//                 // : "Employee is already enrolled in all selected trainings.",
+//                 : "Trainee is already enrolled in all selected courses.",
+//             data: result
+//         });
+
+//     } catch (error) {
+//         if (connection) {
+//             await connection.rollback();
+//         }
+
+//         // console.error("Enroll Employee Error:", error);
+//         console.error("Enroll Trainee Error:", error);
+
+//         return res.status(400).json({
+//             success: false,
+//             // message: error.message || "Failed to enroll employee."
+//             message: error.message || "Failed to enroll employee."
+//         });
+
+//     } finally {
+//         if (connection) {
+//             connection.release();
+//         }
+//     }
+// };
+
 exports.enrollEmployee = async (req, res) => {
     let connection;
+    let transactionStarted = false;
+    let notifications = [];
 
     try {
         const companyId = req.user.company_id;
@@ -1527,6 +2283,8 @@ exports.enrollEmployee = async (req, res) => {
 
         await connection.beginTransaction();
 
+        transactionStarted = true;
+
         const result = await enrollEmployeeInTrainings(
             connection,
             {
@@ -1537,7 +2295,86 @@ exports.enrollEmployee = async (req, res) => {
             }
         );
 
+        // 2. Create notifications only for newly enrolled courses
+        if (result.enrolledCourses.length > 0) {
+
+            for (const course of result.enrolledCourses) {
+
+                const notification = await createNotificationRecord(
+                    connection,
+                    {
+                        user_id: Number(user_id),
+                        notification_type: "COURSE_ENROLLED",
+                        title: "Course Enrollment Successful",
+                        message: `You have been enrolled in "${course.training_title}" by your company administrator.`,
+                        enroll_id: course.enroll_id,
+                        training_id: course.training_id
+                    }
+                );
+
+                notifications.push(notification);
+            }
+        }
+
+        // 3. Fetch trainee and company details for email
+        const [details] = await connection.query(
+            `
+            SELECT
+                u.user_full_name,
+                u.user_email,
+                u.username,
+                c.company_name
+
+            FROM tbl_users u
+
+            INNER JOIN tbl_companies c
+                ON c.company_id = u.company_id
+
+            WHERE
+                u.user_id = ?
+                AND u.company_id = ?
+            `,
+            [user_id, companyId]
+        );
+
         await connection.commit();
+        transactionStarted = false;
+
+        // 4. Emit real-time system notifications
+        const io = req.app.get("io");
+
+        for (const notification of notifications) {
+            emitNotification(io, notification);
+        }
+
+        // 5. Send course enrollment email
+        if (result.enrolledCourses.length > 0 && details.length > 0) {
+
+            try {
+                const trainee = details[0];
+
+                const emailHtml = employeeCourseEnrollmentEmail({
+                    recipientName: trainee.user_full_name,
+                    companyName: trainee.company_name,
+                    courses: result.enrolledCourses,
+                    date: new Date().toLocaleDateString("en-IN"),
+                    loginUrl: process.env.FRONTEND_URL
+                });
+
+                await transporter.sendMail({
+                    from: process.env.EMAIL_USER,
+                    to: trainee.user_email,
+                    subject: "New Course Enrollment - TrainSphere",
+                    html: emailHtml
+                });
+
+            } catch (emailError) {
+                console.error(
+                    "Trainee Course Enrollment Email Error:",
+                    emailError
+                );
+            }
+        }
 
         return res.status(200).json({
             success: true,
@@ -1549,18 +2386,19 @@ exports.enrollEmployee = async (req, res) => {
             data: result
         });
 
-    } catch (error) {
-        if (connection) {
+    }
+    catch (error) {
+
+        if (connection && transactionStarted) {
             await connection.rollback();
+            transactionStarted = false;
         }
 
-        // console.error("Enroll Employee Error:", error);
         console.error("Enroll Trainee Error:", error);
 
         return res.status(400).json({
             success: false,
-            // message: error.message || "Failed to enroll employee."
-            message: error.message || "Failed to enroll employee."
+            message: error.message || "Failed to enroll trainee."
         });
 
     } finally {
@@ -1568,5 +2406,5 @@ exports.enrollEmployee = async (req, res) => {
             connection.release();
         }
     }
-};
 
+};

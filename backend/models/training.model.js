@@ -322,13 +322,13 @@ exports.updateTrainingModel = async (
     WHERE training_id = ?
   `;
 
-    
-  const resolvedEndDate =
-    training.training_status === "COMPLETED"
-        ? new Date().toISOString().split("T")[0]
-        : (training.training_end_date ?? null);
 
-  const [result] = await connection.query(sql, [
+    const resolvedEndDate =
+        training.training_status === "COMPLETED"
+            ? new Date().toISOString().split("T")[0]
+            : (training.training_end_date ?? null);
+
+    const [result] = await connection.query(sql, [
         training.title,
         training.description,
         training.examName,

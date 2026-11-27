@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Search, BookOpen, X } from "lucide-react";
-import { FiEdit, FiEdit2, FiEye } from "react-icons/fi";
+import { FiBookOpen, FiEdit, FiEdit2, FiEye, FiInfo, FiSave, FiTrash2, FiUser } from "react-icons/fi";
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,8 +18,8 @@ import { FaUserPlus } from "react-icons/fa";
 // Columns pinned on the left on phone widths while the rest scroll horizontally
 const STICKY_COLUMN_IDS = ["index", "user_full_name"];
 
-const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, companyCourses = [], coursesLoading,
-  handleEnrollEmployee }) => {
+const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, companyCourses = [], enrolledCourses = [], coursesLoading,
+  handleEnrollEmployee, fetchCompanyCourses }) => {
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedTrainings, setSelectedTrainings] = useState([]);
@@ -69,10 +69,13 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
     }));
   };
 
-  const openEnrollModal = (employee) => {
+  const openEnrollModal = async (employee) => {
     setSelectedEmployee(employee);
     setSelectedTrainings([]);
     setShowEnrollModal(true);
+
+    await fetchCompanyCourses(employee.user_id);
+
   };
 
   const closeEnrollModal = () => {
@@ -148,7 +151,7 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
         accessorKey: "user_mobile_no",
         size: 140,
       },
-  
+
       {
         header: "Status",
         accessorKey: "is_active",
@@ -256,6 +259,13 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
 
   // Left offset for the second sticky column (Name) = width of the Sr. No column (56px, set via min-w below)
   const stickyLeftOffset = (colId) => (colId === "user_full_name" ? "56px" : "0px");
+  const removeSelectedTraining = (trainingId) => {
+    setSelectedTrainings(previous =>
+      previous.filter(
+        training => Number(training.value) !== Number(trainingId)
+      )
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -667,7 +677,6 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
           <div className="bg-white rounded-2xl shadow-2xl
                         w-full max-w-xl overflow-hidden">
 
-            {/* Modal Header */}
             <div className="flex items-center justify-between
                             px-6 py-5 bg-slate-900 text-white">
 
@@ -690,10 +699,8 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
 
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 space-y-5">
 
-              {/* Trainee Details */}
               <div className="bg-slate-50 border border-slate-200
                                 rounded-lg p-4">
 
@@ -711,7 +718,6 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
 
               </div>
 
-              {/* Course Selection */}
               <div>
 
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -729,8 +735,16 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
                   }))}
                   value={selectedTrainings}
                   onChange={(selected) => setSelectedTrainings(selected || [])}
-                  placeholder="Search and select courses..."
-                  noOptionsMessage={() => "No active courses available for this company"}
+                  placeholder={
+                    coursesLoading
+                      ? "Loading available courses..."
+                      : "Search and select courses..."
+                  }
+                  noOptionsMessage={() =>
+                    coursesLoading
+                      ? "Loading courses..."
+                      : "This trainee is already enrolled in all available courses."
+                  }
                   styles={{
                     ...selectStyles,
                     menuPortal: (base) => ({
@@ -750,7 +764,6 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
 
             </div>
 
-            {/* Modal Footer */}
             <div className="flex justify-end gap-3 px-6 py-4
                             bg-slate-50 border-t border-slate-200">
 
@@ -784,6 +797,8 @@ const EmployeeTable = ({ employees = [], loading, handleView, handleEdit, compan
 
         </div>
       )}
+
+
 
     </div>
 

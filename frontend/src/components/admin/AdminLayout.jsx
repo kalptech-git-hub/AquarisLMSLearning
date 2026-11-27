@@ -222,38 +222,6 @@ const AdminLayout = () => {
                 });
             }
 
-            // toast(
-            //     <div className="w-full">
-            //         <div className="mb-1 flex items-center justify-between ">
-            //             <p className="text-sm font-semibold tracking-tight text-gray-900">
-            //                 {notification.title || "New Notification"}
-            //             </p>
-
-            //             <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
-            //                 Just now
-            //             </span>
-            //         </div>
-
-            //         <p className="text-sm leading-5 text-gray-500">
-            //             {notification.message ||
-            //                 "You have a new notification"}
-            //         </p>
-            //     </div>,
-            //     {
-            //         position: "top-right",
-            //         autoClose: 5000,
-            //         hideProgressBar: true,
-            //         closeOnClick: true,
-            //         pauseOnHover: true,
-            //         draggable: true,
-
-            //         className:
-            //             "!w-[380px] !rounded-2xl !border !border-gray-200/70 !bg-white !p-6 !shadow-[0_12px_35px_rgba(0,0,0,0.10)]",
-
-            //         bodyClassName:
-            //             "!m-0 !p-0",
-            //     }
-            // );
 
             toast(
                 <div className="w-full">
@@ -295,43 +263,6 @@ const AdminLayout = () => {
                         "!m-0 !p-0",
                 }
             );
-
-            // toast(
-            //     <div className="w-full">
-            //         <div className="mb-2 flex items-center justify-between">
-            //             <p className="text-[13px] font-semibold text-gray-900">
-            //                 {notification.title || "New Notification"}
-            //             </p>
-
-            //             <span className="text-[10px] font-medium text-gray-400">
-            //                 NOW
-            //             </span>
-            //         </div>
-
-            //         <p className="text-[12px] leading-[1.6] text-gray-500">
-            //             {notification.message ||
-            //                 "You have a new notification"}
-            //         </p>
-
-            //         <div className="mt-3 h-[2px] w-full overflow-hidden rounded-full bg-gray-100">
-            //             <div className="h-full w-1/3 rounded-full bg-gray-900" />
-            //         </div>
-            //     </div>,
-            //     {
-            //         position: "top-right",
-            //         autoClose: 5000,
-            //         hideProgressBar: true,
-            //         closeOnClick: true,
-            //         pauseOnHover: true,
-            //         draggable: true,
-
-            //         className:
-            //             "!w-[380px] !rounded-2xl !border !border-gray-200/60 !bg-white !p-4 !shadow-[0_15px_40px_rgba(0,0,0,0.12)]",
-
-            //         bodyClassName:
-            //             "!m-0 !p-0",
-            //     }
-            // );
         };
         socket.on(
             "notification:new",
@@ -754,9 +685,9 @@ const AdminLayout = () => {
                     so it was invisible on phone even though it rendered correctly.
                     sm: reverts to the original p-8 with no extra bottom space, so
                     desktop/tablet is untouched. */}
-                <main id="admin-main-scroll" 
-                // className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20 sm:p-8"
-                className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 sm:p-8"
+                <main id="admin-main-scroll"
+                    // className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20 sm:p-8"
+                    className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 sm:p-8"
                 >
                     <Outlet />
                 </main>

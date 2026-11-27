@@ -273,7 +273,6 @@ const CompanyLayout = () => {
 
   /* CLICK NOTIFICATION - BACKEND CONNECTED */
   const handleNotificationClick = async (notification) => {
-
     try {
 
       const token =
@@ -319,13 +318,13 @@ const CompanyLayout = () => {
 
     setShowNotifications(false);
 
-    navigate("/admin/enrollments", {
+    navigate("/company/courses", {
       state: {
         notificationId:
           notification.notification_id,
 
-        enroll_id:
-          notification.enroll_id
+        training_id:
+          notification.training_id
       }
     });
 

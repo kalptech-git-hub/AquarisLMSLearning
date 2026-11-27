@@ -1142,3 +1142,774 @@ exports.enrollmentRejectedEmailTemplate = ({
   </html>
   `;
 };
+
+
+exports.companyAdminWelcomeEmail = ({
+    recipientName,
+    companyName,
+    username,
+    email,
+    password,
+    date
+}) => {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background: #F9FAFB;
+                color: #374151;
+                padding: 30px;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #DC2626, #B91C1C);
+                color: white;
+                padding: 25px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .content {
+                background: white;
+                padding: 30px;
+                border: 1px solid #E5E7EB;
+                border-radius: 0 0 12px 12px;
+            }
+
+            .card {
+                background: #FEF2F2;
+                border-left: 5px solid #DC2626;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            td {
+                padding: 12px 8px;
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            td:first-child {
+                color: #991B1B;
+                font-weight: bold;
+            }
+
+            .warning {
+                color: #B91C1C;
+                background: #FEE2E2;
+                padding: 12px;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+
+            .footer {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 12px;
+                color: #6B7280;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header">
+            <h2>TrainSphere Learning Management System</h2>
+            <h1>Company Admin Account Created</h1>
+        </div>
+
+        <div class="content">
+            <p>Dear <strong>${recipientName}</strong>,</p>
+
+            <p>
+                Welcome to TrainSphere!
+                Your Company Admin account has been successfully created
+                for <strong>${companyName}</strong>.
+            </p>
+
+            <div class="card">
+                <h3>Your Login Details</h3>
+
+                <table>
+                    <tr>
+                        <td>Company</td>
+                        <td>${companyName}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Full Name</td>
+                        <td>${recipientName}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Username</td>
+                        <td>${username}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Email</td>
+                        <td>${email}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Password</td>
+                        <td>${password}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Role</td>
+                        <td>Company Admin</td>
+                    </tr>
+                </table>
+
+                <p class="warning">
+                    Please keep your password confidential and change it
+                    after your first login.
+                </p>
+            </div>
+
+            <p>
+                You can now log in to TrainSphere and manage your
+                company's users and assigned courses.
+            </p>
+
+            <p>Account created on: ${date}</p>
+
+            <div class="footer">
+                <p><strong>TrainSphere Learning Management System</strong></p>
+                <p>Learn Contruction-related disciplines. Build Safe Future.</p>
+                <p>This is an automated email. Please do not reply.</p>
+                <p>© 2026 TrainSphere. All Rights Reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+};
+
+
+// ---------------------------------------
+// COMPANY NOTIFICATION EMAIL
+// ---------------------------------------
+
+exports.companyAdminCreatedNotificationEmail = ({
+    companyName,
+    companyEmail,
+    adminName,
+    adminEmail,
+    adminUsername,
+    date
+}) => {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background: #F9FAFB;
+                color: #374151;
+                padding: 30px;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #DC2626, #B91C1C);
+                color: white;
+                padding: 25px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .content {
+                background: white;
+                padding: 30px;
+                border: 1px solid #E5E7EB;
+                border-radius: 0 0 12px 12px;
+            }
+
+            .card {
+                background: #FEF2F2;
+                border-left: 5px solid #DC2626;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            td {
+                padding: 12px 8px;
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            td:first-child {
+                color: #991B1B;
+                font-weight: bold;
+            }
+
+            .footer {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 12px;
+                color: #6B7280;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header">
+            <h2>TrainSphere Learning Management System</h2>
+            <h1>Company Admin Created</h1>
+        </div>
+
+        <div class="content">
+            <p>Dear <strong>${companyName}</strong>,</p>
+
+            <p>
+                We are pleased to inform you that your Company Admin
+                account has been successfully created in TrainSphere.
+            </p>
+
+            <div class="card">
+                <h3>Company Admin Information</h3>
+
+                <table>
+                    <tr>
+                        <td>Company</td>
+                        <td>${companyName}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Company Email</td>
+                        <td>${companyEmail || "Not provided"}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Admin Name</td>
+                        <td>${adminName}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Admin Email</td>
+                        <td>${adminEmail}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Username</td>
+                        <td>${adminUsername}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Role</td>
+                        <td>Company Admin</td>
+                    </tr>
+                </table>
+            </div>
+
+            <p>
+                The Company Admin can now log in and manage the company's
+                users and assigned courses.
+            </p>
+
+            <p>Account created on: ${date}</p>
+
+            <div class="footer">
+                <p><strong>TrainSphere Learning Management System</strong></p>
+                <p>Learn Contruction-related disciplines. Build Safe Future.</p>
+                <p>This is an automated email. Please do not reply.</p>
+                <p>© 2026 TrainSphere. All Rights Reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+};
+
+
+exports.companyTrainingsAssignedEmail = ({
+    recipientName,
+    companyName,
+    trainings,
+    isCompanyAdmin
+}) => {
+
+    const trainingRows = trainings.map(training => `
+        <tr>
+            <td>${training.training_title}</td>
+            <td>${training.training_users_limit}</td>
+            <td>${training.training_expiry_on}</td>
+        </tr>
+    `).join("");
+
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background: #F9FAFB;
+                color: #374151;
+                padding: 30px;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #DC2626, #B91C1C);
+                color: white;
+                padding: 25px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .content {
+                background: white;
+                padding: 30px;
+                border: 1px solid #E5E7EB;
+            }
+
+            .card {
+                background: #FEF2F2;
+                border-left: 5px solid #DC2626;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+            }
+
+            th, td {
+                padding: 12px 8px;
+                border-bottom: 1px solid #E5E7EB;
+                text-align: left;
+            }
+
+            th {
+                color: #991B1B;
+                background: #FEF2F2;
+            }
+
+            .footer {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 12px;
+                color: #6B7280;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header">
+            <h2>TrainSphere Learning Management System</h2>
+            <h1>New Courses Assigned</h1>
+        </div>
+
+        <div class="content">
+            <p>Dear <strong>${recipientName}</strong>,</p>
+
+            <p>
+                ${isCompanyAdmin
+                    ? `New courses have been assigned to your company, ${companyName}. You can now manage employee enrollment for these courses.`
+                    : `We are pleased to inform you that new courses have been assigned to ${companyName} in TrainSphere.`
+                }
+            </p>
+
+            <div class="card">
+                <h3>Assigned Courses</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>User Limit</th>
+                            <th>Expiry Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${trainingRows}
+                    </tbody>
+                </table>
+            </div>
+
+            ${isCompanyAdmin
+                ? `<p>Please log in to TrainSphere to view your assigned courses and manage employee enrollment.</p>`
+                : `<p>Your Company Admin has been notified and can manage employee enrollment for the assigned courses.</p>`
+            }
+
+            <div class="footer">
+                <p><strong>TrainSphere Learning Management System</strong></p>
+                <p>Learn Construction-related disciplines. Build Safe Future.</p>
+                <p>This is an automated email. Please do not reply.</p>
+                <p>© 2026 TrainSphere. All Rights Reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+};
+
+
+exports.employeeWelcomeEmail = ({
+    recipientName,
+    companyName,
+    username,
+    email,
+    password,
+    loginUrl,
+    date
+}) => {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background: #F9FAFB;
+                color: #374151;
+                padding: 30px;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #DC2626, #B91C1C);
+                color: white;
+                padding: 25px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .content {
+                background: white;
+                padding: 30px;
+                border: 1px solid #E5E7EB;
+                border-radius: 0 0 12px 12px;
+            }
+
+            .card {
+                background: #FEF2F2;
+                border-left: 5px solid #DC2626;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            td {
+                padding: 12px 8px;
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            td:first-child {
+                color: #991B1B;
+                font-weight: bold;
+            }
+
+            .warning {
+                color: #B91C1C;
+                background: #FEE2E2;
+                padding: 12px;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+
+            .login-button {
+                display: inline-block;
+                background: #DC2626;
+                color: white !important;
+                text-decoration: none;
+                padding: 13px 28px;
+                border-radius: 6px;
+                font-weight: 600;
+                margin: 15px 0;
+            }
+
+            .footer {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 12px;
+                color: #6B7280;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header">
+            <h2>TrainSphere Learning Management System</h2>
+            <h1>Employee Account Created</h1>
+        </div>
+
+        <div class="content">
+            <p>Dear <strong>${recipientName}</strong>,</p>
+
+            <p>
+                Welcome to TrainSphere!
+
+                Your Trainee/Employee account has been successfully
+                created by your company administrator for
+                <strong>${companyName}</strong>.
+            </p>
+
+            <div class="card">
+                <h3>Your Login Details</h3>
+
+                <table>
+                    <tr>
+                        <td>Company</td>
+                        <td>${companyName}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Full Name</td>
+                        <td>${recipientName}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Username</td>
+                        <td>${username}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Email</td>
+                        <td>${email}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Password</td>
+                        <td>${password}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Role</td>
+                        <td>Trainee / Employee</td>
+                    </tr>
+                </table>
+
+                <p class="warning">
+                    Please keep your password confidential and change it
+                    after your first login.
+                </p>
+            </div>
+
+            <p>
+                You can now access TrainSphere using the login link below
+                to view and participate in the training courses assigned
+                to your company.
+            </p>
+
+            <div style="text-align: center;">
+                <a href="${loginUrl}" class="login-button">
+                    Login to TrainSphere
+                </a>
+            </div>
+
+            <p>
+                If the button doesn't work, copy and paste the following
+                URL into your browser:
+            </p>
+
+            <p>
+                <a href="${loginUrl}">${loginUrl}</a>
+            </p>
+
+            <p>Account created on: ${date}</p>
+
+            <div class="footer">
+                <p><strong>TrainSphere Learning Management System</strong></p>
+                <p>Learn Construction-related disciplines. Build Safe Future.</p>
+                <p>This is an automated email. Please do not reply.</p>
+                <p>© 2026 TrainSphere. All Rights Reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+};
+
+
+exports.employeeCourseEnrollmentEmail = ({
+    recipientName,
+    companyName,
+    courses,
+    date,
+    loginUrl
+}) => {
+
+    const courseRows = courses.map((course, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${course.training_title}</td>
+        </tr>
+    `).join("");
+
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background: #F9FAFB;
+                color: #374151;
+                padding: 30px;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #DC2626, #B91C1C);
+                color: white;
+                padding: 25px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .content {
+                background: white;
+                padding: 30px;
+                border: 1px solid #E5E7EB;
+                border-radius: 0 0 12px 12px;
+            }
+
+            .card {
+                background: #FEF2F2;
+                border-left: 5px solid #DC2626;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th, td {
+                padding: 12px;
+                border-bottom: 1px solid #E5E7EB;
+                text-align: left;
+            }
+
+            th {
+                color: #991B1B;
+            }
+
+            .login-button {
+                display: inline-block;
+                background: #DC2626;
+                color: white !important;
+                text-decoration: none;
+                padding: 13px 28px;
+                border-radius: 6px;
+                font-weight: 600;
+                margin: 15px 0;
+            }
+
+            .footer {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 12px;
+                color: #6B7280;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="header">
+            <h2>TrainSphere Learning Management System</h2>
+            <h1>Course Enrollment Successful</h1>
+        </div>
+
+        <div class="content">
+
+            <p>Dear <strong>${recipientName}</strong>,</p>
+
+            <p>
+                Great news! Your company administrator has successfully
+                enrolled you in the following course(s) on TrainSphere.
+            </p>
+
+            <div class="card">
+
+                <h3>Enrollment Details</h3>
+
+                <p>
+                    <strong>Company:</strong> ${companyName}
+                </p>
+
+                <p>
+                    <strong>Enrollment Date:</strong> ${date}
+                </p>
+
+                <h3>Enrolled Courses</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Course Name</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${courseRows}
+                    </tbody>
+                </table>
+
+            </div>
+
+            <p>
+                You can now log in to TrainSphere and access your
+                enrolled courses from the My Learning section.
+            </p>
+
+            <div style="text-align: center;">
+                <a href="${loginUrl}" class="login-button">
+                    Login to TrainSphere
+                </a>
+            </div>
+
+            <p>
+                If the button doesn't work, copy and paste this URL
+                into your browser:
+            </p>
+
+            <p>
+                <a href="${loginUrl}">${loginUrl}</a>
+            </p>
+
+            <div class="footer">
+                <p><strong>TrainSphere Learning Management System</strong></p>
+                <p>Learn Construction-related disciplines. Build Safe Future.</p>
+                <p>This is an automated email. Please do not reply.</p>
+                <p>© 2026 TrainSphere. All Rights Reserved.</p>
+            </div>
+
+        </div>
+
+    </body>
+    </html>
+    `;
+};

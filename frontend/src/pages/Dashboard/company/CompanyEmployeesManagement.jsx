@@ -91,6 +91,8 @@ const CompanyEmployeesManagement = () => {
   const [loading, setLoading] = useState(false);
   const [coursesLoading, setCoursesLoading] = useState(false);
 
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+
 
   // Fetch all employees under this company
   const fetchEmployees = async (signal) => {
@@ -154,26 +156,43 @@ const CompanyEmployeesManagement = () => {
   };
 
   // Fetch Company Courses
-  const fetchCompanyCourses = async (signal) => {
+  const fetchCompanyCourses = async (userId, signal) => {
     setCoursesLoading(true);
 
     try {
       const token = sessionStorage.getItem("token");
 
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/company/courses`,
+        // `${import.meta.env.VITE_API_BASE_URL}/api/company/courses`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/company/employee-training-dropdown`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+          },
+          params: {
+            user_id: userId
           },
           signal,
         }
       );
 
+      // if (response.data?.success) {
+      //   setCompanyCourses(response.data.data || []);
+      // } else {
+      //   setCompanyCourses([]);
+      // }
+
       if (response.data?.success) {
-        setCompanyCourses(response.data.data || []);
+        setCompanyCourses(
+          response.data.data?.availableCourses || []
+        );
+
+        setEnrolledCourses(
+          response.data.data?.enrolledCourses || []
+        );
       } else {
         setCompanyCourses([]);
+        setEnrolledCourses([]);
       }
 
     } catch (error) {
@@ -240,7 +259,7 @@ const CompanyEmployeesManagement = () => {
     const controller = new AbortController();
 
     fetchEmployees(controller.signal);
-    fetchCompanyCourses(controller.signal);
+    // fetchCompanyCourses(controller.signal);
 
     return () => controller.abort();
   }, []);
@@ -318,8 +337,10 @@ const CompanyEmployeesManagement = () => {
             handleView={handleView}
             handleEdit={handleEdit}
             companyCourses={companyCourses}
+            enrolledCourses={enrolledCourses}
             coursesLoading={coursesLoading}
             handleEnrollEmployee={handleEnrollEmployee}
+            fetchCompanyCourses={fetchCompanyCourses}
           />
         </>
       ) : showForm ? (

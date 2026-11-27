@@ -643,7 +643,8 @@ const AssignTrainigsModal = ({
                             type="button"
                             onClick={onClose}
                             disabled={loading}
-                            className="flex items-center gap-2 w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium cursor-pointer min-h-[44px]"
+                            className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium cursor-pointer min-h-[44px] disabled:opacity-50"
+
                         >
                             <X size={17} />
                             Cancel

@@ -1366,7 +1366,8 @@ exports.InsertEmployee = async (connection, employeeData) => {
 //     return rows;
 // };
 
-exports.getCompanyCourses = async (companyId, connection = db) => {
+/* */
+exports.getCompanyTrainingModel = async (companyId, connection = db) => {
     const [rows] = await connection.query(
         `
         SELECT
@@ -1439,6 +1440,128 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
     return rows;
 };
 
+exports.getEmployeeEnrolledTrainingdropdownModel = async (
+    companyId,
+    connection = db,
+    userId = null
+) => {
+
+    const [rows] = await connection.query(
+        `
+        SELECT
+            ct.company_trainings_id,
+            ct.company_id,
+            ct.training_id,
+            ct.training_users_limit,
+            ct.training_expiry_on,
+            CAST(ct.is_active AS UNSIGNED) AS assignment_is_active,
+
+            ct.created_by,
+            creator.user_full_name AS created_by_name,
+            ct.created_at,
+
+            ct.updated_by,
+            updater.user_full_name AS updated_by_name,
+            ct.updated_at,
+
+            c.course_id,
+            c.course_name,
+            c.course_code,
+            c.course_level,
+
+            t.training_title,
+            t.training_description,
+            t.training_thumbnail,
+            t.training_duration_hours,
+            t.training_mode,
+            t.training_start_date,
+            t.training_end_date,
+            t.training_status,
+            t.publish_status,
+            t.enrollment_status,
+            t.publish_at,
+            t.enrollment_closed_at,
+            CAST(t.is_active AS UNSIGNED) AS training_is_active
+
+        FROM tbl_company_trainings ct
+
+        INNER JOIN tbl_trainings t
+            ON t.training_id = ct.training_id
+
+        INNER JOIN tbl_courses c
+            ON c.course_id = t.course_id
+
+        LEFT JOIN tbl_users creator
+            ON creator.user_id = ct.created_by
+
+        LEFT JOIN tbl_users updater
+            ON updater.user_id = ct.updated_by
+
+        WHERE
+            ct.company_id = ?
+            AND ct.is_active = b'1'
+            AND ct.training_expiry_on > NOW()
+            AND t.is_active = b'1'
+            AND t.publish_status = 'PUBLISHED'
+            AND t.training_status = 'ACTIVE'
+
+            AND (
+                ? IS NULL
+                OR NOT EXISTS (
+                    SELECT 1
+                    FROM tbl_enrollments e
+                    WHERE
+                        e.training_id = ct.training_id
+                        AND e.user_id = ?
+                        AND e.enroll_status IN ('P', 'A')
+                )
+            )
+
+        ORDER BY ct.created_at DESC
+        `,
+        [companyId, userId, userId]
+    );
+
+    return rows;
+};
+
+// Get courses already enrolled by a specific trainee
+exports.getEmployeeEnrolledCourses = async (
+    companyId,
+    userId,
+    connection = db
+) => {
+    const [rows] = await connection.query(
+        `
+        SELECT DISTINCT
+            e.enroll_id,
+            e.training_id,
+            e.enroll_status,
+            CASE
+                WHEN e.enroll_status = 'P' THEN 'Pending Approval'
+                WHEN e.enroll_status = 'A' THEN 'Approved'
+            END AS enrollment_status_label,
+            t.training_title,
+            t.training_thumbnail,
+            c.course_name
+        FROM tbl_enrollments e
+        INNER JOIN tbl_trainings t
+            ON t.training_id = e.training_id
+        INNER JOIN tbl_courses c
+            ON c.course_id = t.course_id
+        INNER JOIN tbl_company_trainings ct
+            ON ct.training_id = e.training_id
+           AND ct.company_id = ?
+        WHERE
+            e.user_id = ?
+            AND e.enroll_status IN ('P', 'A')
+        ORDER BY e.training_id
+        `,
+        [companyId, userId]
+    );
+
+    return rows;
+};
 /** */
 // exports.enrollEmployeeInTrainings = async (
 //     connection,
@@ -1638,6 +1761,205 @@ exports.getCompanyCourses = async (companyId, connection = db) => {
 // };
 
 
+/* */
+// exports.enrollEmployeeInTrainings = async (
+//     connection,
+//     {
+//         companyId,
+//         userId,
+//         trainingIds,
+//         createdBy
+//     }
+// ) => {
+//     // 1. Validate training IDs
+//     if (!Array.isArray(trainingIds) || trainingIds.length === 0) {
+//         // throw new Error("Please select at least one training.");
+//         throw new Error("Please select at least one course.");
+//     }
+
+//     const uniqueTrainingIds = [
+//         ...new Set(trainingIds.map(Number))
+//     ];
+
+//     if (
+//         uniqueTrainingIds.some(
+//             id => !Number.isInteger(id) || id <= 0
+//         )
+//     ) {
+//         // throw new Error("Invalid training IDs.");
+//         throw new Error("Invalid course IDs.");
+//     }
+
+//     userId = Number(userId);
+
+//     if (!Number.isInteger(userId) || userId <= 0) {
+//         throw new Error("Invalid user ID.");
+//     }
+
+//     // 2. Verify employee belongs to this company and is active
+//     const [employees] = await connection.query(
+//         `
+//         SELECT user_id
+//         FROM tbl_users
+//         WHERE
+//             user_id = ?
+//             AND company_id = ?
+//             AND is_active = b'1'
+//         `,
+//         [userId, companyId]
+//     );
+
+//     if (employees.length === 0) {
+//         throw new Error(
+//             // "Employee does not belong to your company, is inactive, or does not exist."
+//             "Trainee does not belong to your company, is inactive, or does not exist."
+//         );
+//     }
+
+//     // 3. Lock and verify company training assignments
+//     const sortedTrainingIds = [...uniqueTrainingIds].sort(
+//         (a, b) => a - b
+//     );
+
+//     const placeholders = sortedTrainingIds
+//         .map(() => "?")
+//         .join(",");
+
+//     const [assignments] = await connection.query(
+//         `
+//         SELECT
+//             ct.company_trainings_id,
+//             ct.training_id,
+//             ct.training_users_limit,
+//             ct.training_expiry_on,
+//             t.training_title
+
+//         FROM tbl_company_trainings ct
+
+//         INNER JOIN tbl_trainings t
+//             ON t.training_id = ct.training_id
+
+//         WHERE
+//             ct.company_id = ?
+//             AND ct.training_id IN (${placeholders})
+//             AND ct.is_active = b'1'
+//             AND ct.training_expiry_on > NOW()
+//             AND t.is_active = b'1'
+//             AND t.publish_status = 'PUBLISHED'
+//             AND t.training_status = 'ACTIVE'
+
+//         ORDER BY ct.training_id
+//         FOR UPDATE
+//         `,
+//         [companyId, ...sortedTrainingIds]
+//     );
+
+//     if (assignments.length !== uniqueTrainingIds.length) {
+//         throw new Error(
+//             // "One or more selected trainings are not assigned to your company, inactive, or expired."
+//             "One or more selected trainings are not assigned to your company, inactive, or expired."
+//         );
+//     }
+
+//     const assignmentMap = new Map(
+//         assignments.map(item => [
+//             Number(item.training_id),
+//             item
+//         ])
+//     );
+
+//     // 4. Find existing pending or approved enrollments
+//     const [existingEnrollments] = await connection.query(
+//         `
+//         SELECT training_id, user_id
+//         FROM tbl_enrollments
+//         WHERE
+//             user_id = ?
+//             AND training_id IN (${placeholders})
+//             AND enroll_status IN ('P', 'A')
+//         `,
+//         [userId, ...sortedTrainingIds]
+//     );
+
+//     const alreadyEnrolled = new Set(
+//         existingEnrollments.map(
+//             row => Number(row.training_id)
+//         )
+//     );
+
+//     const newTrainingIds = uniqueTrainingIds.filter(
+//         id => !alreadyEnrolled.has(id)
+//     );
+
+//     // 5. Check company-wide training capacity
+//     for (const trainingId of newTrainingIds) {
+//         const assignment = assignmentMap.get(trainingId);
+
+//         const [countRows] = await connection.query(
+//             `
+//             SELECT COUNT(DISTINCT e.user_id) AS enrolled_count
+
+//             FROM tbl_enrollments e
+
+//             INNER JOIN tbl_users u
+//                 ON u.user_id = e.user_id
+
+//             WHERE
+//                 e.training_id = ?
+//                 AND u.company_id = ?
+//                 AND e.enroll_status IN ('P', 'A')
+//             `,
+//             [trainingId, companyId]
+//         );
+
+//         const enrolledCount = Number(
+//             countRows[0].enrolled_count
+//         );
+
+//         const userLimit = Number(
+//             assignment.training_users_limit
+//         );
+
+//         if (enrolledCount >= userLimit) {
+//             throw new Error(
+//                 `The enrollment limit for "${assignment.training_title}" has been reached.`
+//             );
+//         }
+//     }
+
+//     // 6. Insert new approved enrollments
+//     if (newTrainingIds.length > 0) {
+//         const values = newTrainingIds
+//             .map(() => "(?, ?, 'A', ?)")
+//             .join(",");
+
+//         const params = newTrainingIds.flatMap(
+//             trainingId => [
+//                 userId,
+//                 trainingId,
+//                 createdBy
+//             ]
+//         );
+
+//         await connection.query(
+//             `
+//             INSERT INTO tbl_enrollments
+//                 (user_id, training_id, enroll_status, created_by)
+//             VALUES ${values}
+//             `,
+//             params
+//         );
+//     }
+
+//     return {
+//         requested: uniqueTrainingIds.length,
+//         enrolled: newTrainingIds.length,
+//         alreadyEnrolled: alreadyEnrolled.size,
+//         enrolledTrainingIds: newTrainingIds,
+//         alreadyEnrolledTrainingIds: [...alreadyEnrolled]
+//     };
+// };
+
 exports.enrollEmployeeInTrainings = async (
     connection,
     {
@@ -1804,27 +2126,28 @@ exports.enrollEmployeeInTrainings = async (
     }
 
     // 6. Insert new approved enrollments
-    if (newTrainingIds.length > 0) {
-        const values = newTrainingIds
-            .map(() => "(?, ?, 'A', ?)")
-            .join(",");
 
-        const params = newTrainingIds.flatMap(
-            trainingId => [
-                userId,
-                trainingId,
-                createdBy
-            ]
-        );
+    // 6. Insert new approved enrollments
+    const enrolledCourses = [];
 
-        await connection.query(
+    for (const trainingId of newTrainingIds) {
+
+        const [insertResult] = await connection.query(
             `
             INSERT INTO tbl_enrollments
                 (user_id, training_id, enroll_status, created_by)
-            VALUES ${values}
+            VALUES (?, ?, 'A', ?)
             `,
-            params
+            [userId, trainingId, createdBy]
         );
+
+        const assignment = assignmentMap.get(trainingId);
+
+        enrolledCourses.push({
+            enroll_id: insertResult.insertId,
+            training_id: trainingId,
+            training_title: assignment.training_title
+        });
     }
 
     return {
@@ -1832,6 +2155,8 @@ exports.enrollEmployeeInTrainings = async (
         enrolled: newTrainingIds.length,
         alreadyEnrolled: alreadyEnrolled.size,
         enrolledTrainingIds: newTrainingIds,
-        alreadyEnrolledTrainingIds: [...alreadyEnrolled]
+        alreadyEnrolledTrainingIds: [...alreadyEnrolled],
+        enrolledCourses
     };
+
 };

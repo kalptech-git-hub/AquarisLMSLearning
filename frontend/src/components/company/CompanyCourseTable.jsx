@@ -12,12 +12,15 @@ import {
 import { selectStyles } from "../../utils/selectStyles.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
+import { useEffect } from "react";
 
 
 // Columns pinned on the left on phone widths while the rest scroll horizontally
 const STICKY_COLUMN_IDS = ["index", "training_name"];
 
-const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false }) => {
+const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false, handleView, highlightedTraining,
+}) => {
+
     const [globalFilter, setGlobalFilter] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -44,28 +47,10 @@ const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false
     const navigate = useNavigate();
     const location = useLocation();
 
-    // const filteredData = useMemo(() => {
-    //     return companyCourses.filter((course) => {
-    //         const search = searchTerm.toLowerCase();
-    //         const name = (course.training_title || "").toLowerCase();
-    //         const userLimit = (course.training_users_limit || "").toLowerCase();
-    //         const expiryOn = (course.training_expiry_on || "").toLowerCase();
-
-    //         const matchesSearch =
-    //             name.includes(search) || userLimit.includes(search) || expiryOn.includes(search);
-
-    //         const matchesStatus =
-    //             statusFilter === "all" || String(course.is_active) === String(statusFilter);
-
-    //         return matchesSearch && matchesStatus;
-    //     });
-    // }, [companyCourses, searchTerm, statusFilter]);
-
-
     const filteredData = useMemo(() => {
         return companyCourses.filter((course) => {
 
-            const search = searchTerm.toLowerCase();
+            const search = globalFilter.toLowerCase();
 
             const name = String(course.training_title || "").toLowerCase();
 
@@ -87,7 +72,7 @@ const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false
 
             return matchesSearch && matchesStatus;
         });
-    }, [companyCourses, searchTerm, statusFilter]);
+    }, [companyCourses, globalFilter, statusFilter]);
 
     const [currentPageSize, setCurrentPageSize] = useState(20); // Default to 20 rows per page
     const [currentPage, setCurrentPage] = useState(1); // Current page number
@@ -178,47 +163,62 @@ const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false
             },
 
 
-            // {
-            //     header: "Actions",
-            //     size: 80,
+            {
+                header: "Actions",
+                size: 80,
 
-            //     cell: ({ row }) => (
+                cell: ({ row }) => (
 
-            //         <div className="flex items-center justify-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
 
-            //             <button
-            //       onClick={() =>
-            //         handleView(row.original)
-            //       }
-            //       className="text-blue-600 hover:text-blue-800 cursor-pointer"
-            //       title="View Instructor"
-            //     >
-            //       <FiEye className="text-lg" />
-            //     </button>
+                        <button
+                            onClick={() =>
+                                handleView(row.original)
+                            }
+                            className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                            title="View Instructor"
+                        >
+                            <FiEye className="text-lg" />
+                        </button>
 
-            //             <button
-            //       onClick={() =>
-            //         handleEdit(row.original)
-            //       }
-            //       className="text-amber-600 hover:text-amber-900 cursor-pointer"
-            //       title="Edit Instructor"
-            //     >
-            //       <FiEdit className="text-lg" />
-            //     </button>
+                    </div>
 
+                ),
 
-
-            //         </div>
-
-            //     ),
-
-            //     enableSorting: false,
-            // },
+                enableSorting: false,
+            },
 
         ],
-        // [handleEdit, handleView]
-        []
+        [handleView]
+        
     );
+
+      useEffect(() => {
+    
+        console.log()
+            if (!highlightedTraining) return;
+    
+            const rowIndex = filteredData.findIndex(
+                companyCourses =>
+                    Number(companyCourses.training_id) ===
+                    Number(highlightedTraining)
+            );
+    
+            if (rowIndex === -1) return;
+    
+            const pageSize = pagination.pageSize;
+            const targetPage = Math.floor(rowIndex / pageSize);
+    
+            setPagination(prev => ({
+                ...prev,
+                pageIndex: targetPage
+            }));
+    
+        }, [
+            highlightedTraining,
+            filteredData,
+            pagination.pageSize
+        ]);
 
     const table = useReactTable({
         data: filteredData,
@@ -234,6 +234,215 @@ const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    // Automatically move to the page containing the notified course
+    // useEffect(() => {
+    //     if (!highlightedTraining) return;
+
+    //     const rowIndex = filteredData.findIndex(
+    //         (course) =>
+    //             Number(course.training_id) === Number(highlightedTraining)
+    //     );
+
+    //     if (rowIndex === -1) return;
+
+    //     const targetPage = Math.floor(rowIndex / pagination.pageSize);
+
+    //     // Change page first if the course is on another page
+    //     if (pagination.pageIndex !== targetPage) {
+    //         setPagination((prev) => ({
+    //             ...prev,
+    //             pageIndex: targetPage,
+    //         }));
+
+    //         return;
+    //     }
+
+    //     // Scroll after the correct page has rendered
+    //     const timer = setTimeout(() => {
+    //         const row = document.getElementById(
+    //             `company-course-${highlightedTraining}`
+    //         );
+
+    //         if (row) {
+    //             row.scrollIntoView({
+    //                 behavior: "smooth",
+    //                 block: "center",
+    //             });
+    //         }
+    //     }, 150);
+
+    //     return () => clearTimeout(timer);
+
+    // }, [highlightedTraining, filteredData, pagination.pageIndex, pagination.pageSize]);
+
+    /* */
+    // Move to the page containing the notified course and scroll to it
+    // useEffect(() => {
+    //     if (!highlightedTraining || !filteredData.length) return;
+
+    //     const rowIndex = filteredData.findIndex(
+    //         (course) =>
+    //             Number(course.training_id) === Number(highlightedTraining)
+    //     );
+
+    //     if (rowIndex === -1) {
+    //         console.log("Highlighted course not found in filtered data");
+    //         return;
+    //     }
+
+    //     const targetPage = Math.floor(rowIndex / pagination.pageSize);
+
+    //     // First switch to the page containing the course
+    //     if (pagination.pageIndex !== targetPage) {
+    //         setPagination((prev) => ({
+    //             ...prev,
+    //             pageIndex: targetPage,
+    //         }));
+
+    //         return;
+    //     }
+
+    //     // Wait for the new page to render, then scroll
+    //     const timer = setTimeout(() => {
+    //         const row = document.getElementById(
+    //             `company-course-${highlightedTraining}`
+    //         );
+
+    //         if (row) {
+    //             row.scrollIntoView({
+    //                 behavior: "smooth",
+    //                 block: "center",
+    //             });
+    //         }
+    //     }, 200);
+
+    //     return () => clearTimeout(timer);
+
+    // }, [
+    //     highlightedTraining,
+    //     filteredData,
+    //     pagination.pageIndex,
+    //     pagination.pageSize,
+    // ]);
+
+    /** */
+    //     useEffect(() => {
+    //     if (!highlightedTraining || !companyCourses.length) return;
+
+    //     const rows = table.getPrePaginationRowModel().rows;
+
+    //     const rowIndex = rows.findIndex(
+    //         (row) =>
+    //             Number(row.original.training_id) === Number(highlightedTraining)
+    //     );
+
+    //     console.log("Highlight target:", highlightedTraining);
+    //     console.log("Table row IDs:", rows.map(row => row.original.training_id));
+    //     console.log("Target row index:", rowIndex);
+
+    //     if (rowIndex === -1) {
+    //         console.log("Target course is not present in the table.");
+    //         return;
+    //     }
+
+    //     const targetPage = Math.floor(rowIndex / pagination.pageSize);
+
+    //     if (pagination.pageIndex !== targetPage) {
+    //         setPagination(prev => ({
+    //             ...prev,
+    //             pageIndex: targetPage,
+    //         }));
+    //         return;
+    //     }
+
+    //     const timer = setTimeout(() => {
+    //         const row = document.getElementById(
+    //             `company-course-${highlightedTraining}`
+    //         );
+
+    //         console.log("Target DOM row:", row);
+
+    //         row?.scrollIntoView({
+    //             behavior: "smooth",
+    //             block: "center",
+    //         });
+    //     }, 300);
+
+    //     return () => clearTimeout(timer);
+
+    // }, [
+    //     highlightedTraining,
+    //     companyCourses,
+    //     pagination.pageIndex,
+    //     pagination.pageSize,
+    //     table,
+    // ]);
+
+    /** */
+    // useEffect(() => {
+    //     console.log("Highlight useEffect is running");
+    //     console.log("highlightedTraining:", highlightedTraining);
+    //     console.log("companyCourses:", companyCourses);
+    //     console.log("companyCourses length:", companyCourses.length);
+
+    //     if (!highlightedTraining || !companyCourses.length) {
+    //         console.log("Returning early: missing highlight ID or courses");
+    //         return;
+    //     }
+
+    //     const rows = table.getPrePaginationRowModel().rows;
+
+    //     console.log(
+    //         "Table row IDs:",
+    //         rows.map(row => row.original.training_id)
+    //     );
+
+    //     const rowIndex = rows.findIndex(
+    //         row =>
+    //             Number(row.original.training_id) === Number(highlightedTraining)
+    //     );
+
+    //     console.log("Target row index:", rowIndex);
+
+    //     if (rowIndex === -1) {
+    //         console.log("Target course not found");
+    //         return;
+    //     }
+
+    //     const targetPage = Math.floor(rowIndex / pagination.pageSize);
+
+    //     if (pagination.pageIndex !== targetPage) {
+    //         setPagination(prev => ({
+    //             ...prev,
+    //             pageIndex: targetPage,
+    //         }));
+    //         return;
+    //     }
+
+    //     const timer = setTimeout(() => {
+    //         const row = document.getElementById(
+    //             `company-course-${highlightedTraining}`
+    //         );
+
+    //         console.log("Target DOM row:", row);
+
+    //         row?.scrollIntoView({
+    //             behavior: "smooth",
+    //             block: "center",
+    //         });
+    //     }, 300);
+
+    //     return () => clearTimeout(timer);
+
+    // }, [
+    //     highlightedTraining,
+    //     companyCourses,
+    //     pagination.pageIndex,
+    //     pagination.pageSize,
+    //     table,
+    // ]);
+
+  
 
     if (companyCoursesLoading) {
         return (
@@ -417,60 +626,85 @@ const CompanyCourseTable = ({ companyCourses = [], companyCoursesLoading = false
 
                         {table.getRowModel().rows.length > 0 ? (
 
-                            table.getRowModel().rows.map((row) => (
+                            table.getRowModel().rows.map((row) => {
+                                const isHighlighted =
+                                    // Number(row.original.training_id) === Number(highlightedTraining);
+                                    Number(row.original.training_id) === highlightedTraining;
 
-                                <tr
-                                    key={row.id}
-                                    id={`instructor-${row.original.instructor_id}`}
-                                    // was: className="hover:bg-gray-50"
-                                    className={`group hover:bg-gray-50"`}
-                                >
+                                return (
 
-                                    {row.getVisibleCells().map((cell) => {
+                                    <tr
+                                        key={row.id}
+                                        id={`company-course-${row.original.training_id}`}
+                                        // was: className="hover:bg-gray-50"
+                                        className={`group transition-colors duration-500
+                                                 ${Number(row.original.training_id) === Number(highlightedTraining)
+                                                ? "bg-slate-200 ring-2 ring-slate-400 ring-inset"
+                                                : "hover:bg-gray-50"
+                                            }
+            `}
+                                    >
 
-                                        const sticky = isStickyCol(cell.column.id);
+                                        {row.getVisibleCells().map((cell) => {
 
-                                        return (
+                                            const sticky = isStickyCol(cell.column.id);
 
-                                            <td
-                                                key={cell.id}
-                                                style={
-                                                    sticky
-                                                        ? { left: stickyLeftOffset(cell.column.id) }
-                                                        : undefined
-                                                }
-                                                // was: className="px-6 py-4 text-sm"
-                                                className={`px-4 sm:px-6 py-4 text-sm
-                               ${sticky
-                                                        ? "sticky z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.15)] bg-white group-hover:bg-gray-50"
-                                                        : ""
+                                            return (
 
+                                                <td
+                                                    key={cell.id}
+                                                    style={
+                                                        sticky
+                                                            ? { left: stickyLeftOffset(cell.column.id) }
+                                                            : undefined
                                                     }
-                                                    ${cell.column.id === "index"
-                                                        ? "min-w-[56px]"
-                                                        : ""
-                                                    }
-                                                    ${cell.column.id === "user_full_name"
-                                                        ? "min-w-[150px] font-medium shadow-[2px_0_4px_rgba(0,0,0,0.06)]"
-                                                        : ""
-                                                    }
-                                                `}
-                                            >
+                                                    // was: className="px-6 py-4 text-sm"
+                                                    //     className={`px-4 sm:px-6 py-4 text-sm
+                                                    //         ${sticky
+                                                    //             ? "sticky z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.15)] bg-white group-hover:bg-gray-50"
+                                                    //             : ""
 
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
+                                                    //         }
+                                                    //     ${cell.column.id === "index"
+                                                    //             ? "min-w-[56px]"
+                                                    //             : ""
+                                                    //         }
+                                                    //     ${cell.column.id === "user_full_name"
+                                                    //             ? "min-w-[150px] font-medium shadow-[2px_0_4px_rgba(0,0,0,0.06)]"
+                                                    //             : ""
+                                                    //         }
+                                                    // `}
 
-                                            </td>
+                                                    className={`px-4 sm:px-6 py-4 text-sm
+                                                            ${sticky
+                                                            ? `sticky z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.15)]
+                                                                ${isHighlighted
+                                                                ? "bg-slate-200"
+                                                                : "bg-white group-hover:bg-gray-50"
+                                                            }`
+                                                            : isHighlighted
+                                                                ? "bg-slate-200"
+                                                                : ""
+                                                        }
+                                                         
+                                                    `}
+                                                >
 
-                                        );
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
 
-                                    })}
+                                                </td>
 
-                                </tr>
+                                            );
 
-                            ))
+                                        })}
+
+                                    </tr>
+
+                                )
+                            })
 
                         ) : (
 

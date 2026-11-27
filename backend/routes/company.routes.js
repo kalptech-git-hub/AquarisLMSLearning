@@ -9,7 +9,6 @@ const userUpload = require("../middlewares/userUpload.middleware");
 const {
   createEmployee,
   getEmployees,
-  getCourses,
   enrollEmployee,
   getAllCompanies,
   assignTrainingsToCompany,
@@ -20,13 +19,18 @@ const {
   updateCompany,
   getDashboard,
   getCompanyTrainingReport,
+  getCompanyTrainings,
+  getEmployeeEnrolledTrainingdropdownController,
 } = require("../controllers/company.controller");
 
 // Dashboard stata
 router.get("/dashboard", authMiddleware, companyAdminMiddleware, getDashboard);
 
 // Fetch courses for dropdown for enrolling employees
-router.get("/courses", authMiddleware, companyAdminMiddleware, getCourses);
+router.get("/trainings", authMiddleware, companyAdminMiddleware, getCompanyTrainings);
+
+// Fetch courses for dropdown for enrolling employees
+router.get("/employee-training-dropdown", authMiddleware, companyAdminMiddleware, getEmployeeEnrolledTrainingdropdownController);
 
 // Fetch all employees for the company
 router.get("/employees", authMiddleware, companyAdminMiddleware, getEmployees);
